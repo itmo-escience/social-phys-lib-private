@@ -157,7 +157,7 @@ namespace SF
 	// </F2>
 
     // <F3>
-	/*float minDistanceSquared = INT_MAX;
+	float minDistanceSquared = INT_MAX;
 	Vector2 minDiff = Vector2();
 	repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
@@ -182,23 +182,11 @@ namespace SF
 	float distance = sqrt(minDistanceSquared) - radius_;
 	float forceAmount = repulsiveObstacleFactor * exp(-distance / repulsiveObstacle_);
         
-    correction += forceAmount * minDiff.normalized();*/
+    correction += forceAmount * minDiff.normalized();
     // </F3>
 		
 	// <F5>
 	Vector3 pv = sim_->getPlatformVelocity();
-
-	/*if(direction_ > 0) 
-		sim_->setPlatformVelocity(Vector3(pv.x(), pv.y(), pv.z() + 0.005)); 
-	else	
-		sim_->setPlatformVelocity(Vector3(pv.x(), pv.y(), pv.z() - 0.005)); 
-		
-	pv = sim_->getPlatformVelocity();
-
-	if(pv.z() > 0.40 || pv.z() < -0.40)
-		direction_ = -direction_;
-		
-	forceAcceleration_.update(pv.getLength() - oldPlatformVelocity_.getLength(), forceAcceleration_.setDirectionForZ(pv.z()));*/
 
 	/*!
 	 *	@brief	2D Roration section
@@ -263,14 +251,6 @@ namespace SF
 	{
 		angleXZ = sim_->getPlatformRotationXZ();
 
-		/*if(angleXZ < M_PI)
-			mult = M_PI / fabs(M_PI / 2 - angleXZ);
-		else 
-			mult = M_PI / fabs(1.5f * M_PI - angleXZ);
-
-		if (mult > 10)
-			mult = 10;*/
-
 		Vector3 XZforce = 
 			Vector3(radiusXOZ * cos(angleXZ - angleY) + center.x(), center.y(), radiusXOZ * sin(angleXZ - angleY) + center.z()) - 
 			Vector3(radiusXOZ * cos(angleXZ) + center.x(), center.y(), radiusXOZ * sin(angleXZ) + center.z());
@@ -283,14 +263,6 @@ namespace SF
 	{
 		angleYZ = sim_->getPlatformRotationYZ();
 
-		/*if(angleYZ < M_PI)
-			mult = M_PI / fabs(M_PI / 2 - angleYZ);
-		else 
-			mult = M_PI / fabs(1.5f * M_PI - angleYZ);
-
-		if (mult > 10)
-			mult = 10;*/
-
 		Vector3 YZforce = 
 			Vector3(center.x(), radiusYOZ * cos(angleYZ - angleX) + center.y(), radiusYOZ * sin(angleYZ - angleX) + center.z()) - 
 			Vector3(center.x(), radiusYOZ * cos(angleYZ) + center.y(), radiusYOZ * sin(angleYZ) + center.z());
@@ -298,7 +270,6 @@ namespace SF
 		pv += mult * YZforce;
 	}
 
-	//rotationVector = Vector3(position_.x(), position_.y(), 0) - newPosition;
 	correction += Vector2(rotationVector.x(), rotationVector.y());
 
 	/*!
