@@ -106,7 +106,12 @@ namespace SF
 	*/
 	float getPerception(Vector2 *arg1, Vector2 *arg2);
 
-	//float getNormalizedSpeed(float currentSpeed, float maxSpeed);
+	 /*!
+     *  @brief      Normalizing the velocity
+     *  @param      currentSpeed	Current speed
+     *  @param      maxSpeed		Max speed
+     */
+	float getNormalizedSpeed(float currentSpeed, float maxSpeed);
 		
 	/*
 	*	@brief		Gets point on line nearest to selected position 

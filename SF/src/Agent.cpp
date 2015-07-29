@@ -74,6 +74,7 @@ namespace SF
 			direction_(1),
 			timeHorizonObst_(0.0f), 
 			velocity_(), 
+			accelerationBuffer_(0.0f),
 			previosPosition_(INT_MIN, INT_MIN), 
 			forceAcceleration_(0, 0),
 			oldPlatformVelocity_(),
@@ -118,13 +119,13 @@ namespace SF
   }
 
 
-  /*float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed)
+  float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed)
     {
         if (currentSpeed <= maxSpeed)
             return 1;
 
         return maxSpeed / currentSpeed;
-    }*/
+    }
 
   /* Search for the best new velocity. */
   void Agent::computeNewVelocity()
@@ -401,20 +402,7 @@ namespace SF
 
   void Agent::update()
   {
-	  float delta = 0.05f;
-	  velocity_ = newVelocity_;
-	  position_ += velocity_ * sim_->timeStep_ * speedList_[id_];
-
-	  if(speedList_[id_] < maxSpeed_)
-		  setSpeedList(id_, speedList_[id_] + delta);
-	  else
-		  setSpeedList(id_, speedList_[id_] - delta);
-
-
-
-
-
-	/*setNullSpeed(id_);
+	setNullSpeed(id_);
 
 	relaxationTime_ = 0.8f;
 
@@ -429,8 +417,8 @@ namespace SF
         setSpeedList(id_, 0.0f);
     }
 
-    float mult = getNormalizedSpeed(speedList_[id_], desiredSpeed_);
-    float tempAcceleration = 1 / relaxationTime_ * (desiredSpeed_ - speedList_[id_]) * mult;
+    float mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+    float tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
 
     if (!isForced_)
     {
@@ -452,6 +440,6 @@ namespace SF
 			(float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))
 		);
 
-    previosPosition_ = position_;*/
+    previosPosition_ = position_;
   }  
 }
