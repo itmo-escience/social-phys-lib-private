@@ -404,8 +404,6 @@ namespace SF
   {
 	setNullSpeed(id_);
 
-	relaxationTime_ = 0.8f;
-
 	if (previosPosition_.x() == INT_MIN && previosPosition_.y() == INT_MIN)
       previosPosition_ = position_;
 
@@ -431,7 +429,7 @@ namespace SF
 		acceleration_ += accelerationBuffer_ * accelerationCoefficient_;
         accelerationBuffer_ = 0;
     }
-
+	
 	position_ += velocity_ * sim_->timeStep_ * acceleration_;
 
     setSpeedList

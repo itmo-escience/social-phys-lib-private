@@ -19,6 +19,7 @@ namespace SF2D {
 		float Radius;
 		float MaxSpeed;
 		float AccelerationCoefficient;
+		float RelaxationTime;
 		float RepulsiveAgent;
 		float RepulsiveAgentFactor;
 		float RepulsiveObstacle;
@@ -37,6 +38,7 @@ namespace SF2D {
 			float radius, 
 			float maxSpeed, 
 			float accelerationCoefficient, 
+			float relaxationTime,
 			float repulsiveAgent, 
 			float repulsiveAgentFactor, 
 			float repulsiveObstacle, 
@@ -83,6 +85,7 @@ namespace SF2D {
 					float radius,
 					float maxSpeed, 
 					float accelerationCoefficient, 
+					float relaxationTime,
 					float repulsiveAgent, 
 					float repulsiveAgentFactor, 
 					float repulsiveObstacle, 

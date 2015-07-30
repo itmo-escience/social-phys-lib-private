@@ -91,6 +91,7 @@ namespace SF
     agent->timeHorizonObst_ = defaultAgent_->timeHorizonObst_;
     agent->velocity_ = defaultAgent_->velocity_;
 	agent->accelerationCoefficient_ = defaultAgent_->accelerationCoefficient_;
+	agent->relaxationTime_ = defaultAgent_->relaxationTime_;
 	agent->repulsiveAgent_ = defaultAgent_->repulsiveAgent_;
 	agent->repulsiveAgentFactor_ = defaultAgent_->repulsiveAgentFactor_;
 	agent->repulsiveObstacle_ = defaultAgent_->repulsiveObstacle_;
@@ -114,6 +115,7 @@ namespace SF
 	  float radius, 
 	  float maxSpeed, 
 	  float accelerationCoefficient, 
+	  float relaxationTime,
 	  float repulsiveAgent, 
 	  float repulsiveAgentFactor, 
 	  float repulsiveObstacle, 
@@ -133,6 +135,7 @@ namespace SF
     agent->timeHorizonObst_ = timeHorizonObst;
     agent->velocity_ = velocity;
 	agent->accelerationCoefficient_ = accelerationCoefficient;
+	agent->relaxationTime_ = relaxationTime;
 	agent->repulsiveAgent_ = repulsiveAgent;
 	agent->repulsiveAgentFactor_ = repulsiveAgentFactor;
 	agent->repulsiveObstacle_ = repulsiveObstacle;
@@ -305,6 +308,7 @@ namespace SF
     defaultAgent_->radius_ = apc._radius;
 	defaultAgent_->timeHorizonObst_ = apc._timeHorizon;
 	defaultAgent_->accelerationCoefficient_ = apc._accelerationCoefficient;
+	defaultAgent_->relaxationTime_ = apc._relaxationTime;
 	defaultAgent_->repulsiveAgent_ = apc._repulsiveAgent;
 	defaultAgent_->repulsiveAgentFactor_ = apc._repulsiveAgentFactor;
 	defaultAgent_->repulsiveObstacle_ = apc._repulsiveObstacle;
