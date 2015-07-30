@@ -36,7 +36,7 @@ namespace ConsoleApplication1
                 sim.setTimeStep(0.25f);
                 
                 /* Specify the default parameters for agents that are subsequently added. */
-                AgentProperty ap = new AgentProperty(15.0f, 10, 5.0f, 1.2f, 2.0f, 2.0f, 0.5f, 0.6f, 100, 13.3f, 10, 0.25f, 1.0f, new Vector2());
+                AgentProperty ap = new AgentProperty(15.0f, 10, 5.0f, 1.2f, 2.0f, 2.0f, 0.5f, 8, 0.6f, 100, 13.3f, 10, 0.25f, 1.0f, new Vector2());
                 sim.setAgentDefaults(ap);
 
                 /*

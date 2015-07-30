@@ -128,6 +128,7 @@ namespace SF
 		float radius, 
 		float maxSpeed, 
 		float accelerationCoefficient, 
+		float relaxationTime,
 		float repulsiveAgent, 
 		float repulsiveAgentFactor, 
 		float repulsiveObstacle, 
