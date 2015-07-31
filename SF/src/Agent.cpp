@@ -402,7 +402,6 @@ namespace SF
 
   void Agent::update()
   {
-	float speed = 0;
 	setNullSpeed(id_);
 
 	if (previosPosition_.x() == INT_MIN && previosPosition_.y() == INT_MIN)
@@ -410,7 +409,7 @@ namespace SF
 
 	velocity_ = newVelocity_;
 
-    if (velocity_.x() == 0 && velocity_.y() == 0)
+	if (fabs(velocity_.x()) < 0.0001f && fabs(velocity_.y()) < 0.0001f)
     {
 		acceleration_ = 0.0f;
         setSpeedList(id_, 0.0f);
@@ -431,10 +430,11 @@ namespace SF
         accelerationBuffer_ = 0;
     }
 	
-	position_ += velocity_ * sim_->timeStep_ * acceleration_;
-	speed = (float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2)) * sim_->timeStep_;
+	float diff = 0;
 
-    setSpeedList(id_, speed);
+	position_ += velocity_ * sim_->timeStep_ * acceleration_;
+
+    setSpeedList(id_, (float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2)) / sim_->timeStep_);
 
     previosPosition_ = position_;
   }  
