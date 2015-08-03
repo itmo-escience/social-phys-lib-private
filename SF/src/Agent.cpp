@@ -211,9 +211,9 @@ namespace SF
 
 	// rotaion degree set
 	float 
-		angleX = sim_->getRotationDegreeSet().getRotationOX(),
-		angleY = sim_->getRotationDegreeSet().getRotationOY(),
-		angleZ = sim_->getRotationDegreeSet().getRotationOZ();
+		angleX = sim_->getRotationDegreeSet().getRotationOX() * sim_->timeStep_,
+		angleY = sim_->getRotationDegreeSet().getRotationOY() * sim_->timeStep_,
+		angleZ = sim_->getRotationDegreeSet().getRotationOZ() * sim_->timeStep_;
 
 	// angle projection
 	float 
@@ -293,7 +293,7 @@ namespace SF
 	// </F5>
     
 
-    newVelocity_ += correction * 0.005f;
+    newVelocity_ += correction;
   }
 
   void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
