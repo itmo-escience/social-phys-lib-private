@@ -293,7 +293,7 @@ namespace SF
 	// </F5>
     
 
-    newVelocity_ += correction * 0.005f;
+    newVelocity_ += correction;
   }
 
   void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
