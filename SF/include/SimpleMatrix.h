@@ -1,4 +1,5 @@
-#pragma once
+#include "Definitions.h"
+
 class SimpleMatrix
 {
 public:
@@ -23,5 +24,7 @@ public:
 	SimpleMatrix(void);
 
 	~SimpleMatrix(void);
+
+	static SimpleMatrix getRotationX(float angle);
 };
 
