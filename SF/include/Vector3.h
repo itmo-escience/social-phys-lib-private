@@ -13,6 +13,8 @@
 #include <cmath>
 #include <ostream>
 
+#include "SimpleMatrix.h"
+
 namespace SF
 {
 /*!
@@ -257,6 +259,22 @@ public:
 		val_[2] -= vector[2];
 
 		return *this;
+	}
+
+	inline static Vector3& transformCoordinate(Vector3 coordinate, SimpleMatrix transform)
+	{
+		int 
+			X,
+			Y,
+			Z,
+			W;
+
+		X = (coordinate.x() * transform.m11) + (coordinate.y() * transform.m21) + (coordinate.z() * transform.m31) + transform.m41;
+		Y = (coordinate.x() * transform.m12) + (coordinate.y() * transform.m22) + (coordinate.z() * transform.m32) + transform.m42;
+        Z = (coordinate.x() * transform.m13) + (coordinate.y() * transform.m23) + (coordinate.z() * transform.m33) + transform.m43;
+        W = 1 / ((coordinate.x() * transform.m14) + (coordinate.y() * transform.m24) + (coordinate.z() * transform.m34) + transform.m44);
+
+        return Vector3(X * W, Y * W, Z * W);
 	}
 
 private:

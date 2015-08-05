@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Agent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\AgentPropertyConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -41,6 +38,12 @@
     <ClInclude Include="include\RotationDegreeSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\SimpleMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Agent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AgentPropertyConfig.cpp">
@@ -53,6 +56,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SFSimulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SimpleMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Agent.cpp">
