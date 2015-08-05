@@ -443,14 +443,19 @@ namespace SF
     previosPosition_ = position_;
   }
 
-  inline float roll(float t, float radian)
+  inline float getRoll(float t, float radian)
   {
 	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
   }
 
-  inline Vector3 omega (float t, float dt, float radian)
+  inline Vector3 getOmega (float t, float dt, float radian)
   {
-	  float dRoll	=	(roll(t + dt / 2, radian) - roll(t - dt / 2, radian)) / dt;
+	  float dRoll	=	(getRoll(t + dt / 2, radian) - getRoll(t - dt / 2, radian)) / dt;
 	  return Vector3( dRoll, 0, 0 );
   }
+
+  inline Vector3 getOmegaDifference (float t, float dt, float radian)
+	{
+		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
+	}
 }
