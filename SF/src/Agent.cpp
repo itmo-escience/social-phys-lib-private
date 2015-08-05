@@ -187,13 +187,13 @@ namespace SF
     // </F3>
 		
 	// <F5>
-	Vector3 pv = sim_->getPlatformVelocity();
+	//Vector3 pv = sim_->getPlatformVelocity();
 
 	/*!
 	 *	@brief	2D Roration section
 	 */
 	// rotation center
-	Vector3 center = sim_->getRotationDegreeSet().getCenter();	
+	/*Vector3 center = sim_->getRotationDegreeSet().getCenter();	
 	
 	// relative values	
 	float 
@@ -271,12 +271,12 @@ namespace SF
 		pv += mult * YZforce;
 	}
 
-	correction += Vector2(rotationVector.x(), rotationVector.y());
+	correction += Vector2(rotationVector.x(), rotationVector.y());*/
 
 	/*!
 	 *	@brief	Forvard section
 	 */
-	if(isNotPlaneCase(pv))
+	/*if(isNotPlaneCase(pv))
 	{
 		Vector2 totalFieldProjection = getVectorProjectionXY(pv);
 		float inclineAngle = fabs(getInclineAngle(pv));
@@ -289,9 +289,13 @@ namespace SF
 		correction += total;
 	}
 	
-	oldPlatformVelocity_ = pv;
+	oldPlatformVelocity_ = pv;*/
 	// </F5>
     
+	// <F5>
+	
+	// </F5>
+
 
     newVelocity_ += correction;
   }
@@ -437,5 +441,23 @@ namespace SF
     setSpeedList(id_, (float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2)) / sim_->timeStep_);
 
     previosPosition_ = position_;
-  }  
+  }
+
+  inline float getRoll(float t, float radian)
+  {
+	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
+  }
+
+  inline Vector3 getOmega (float t, float dt, float radian)
+  {
+	  float dRoll	=	(getRoll(t + dt / 2, radian) - getRoll(t - dt / 2, radian)) / dt;
+	  return Vector3( dRoll, 0, 0 );
+  }
+
+  inline Vector3 getOmegaDifference (float t, float dt, float radian)
+	{
+		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
+	}
+
+
 }
