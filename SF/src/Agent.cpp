@@ -458,4 +458,6 @@ namespace SF
 	{
 		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
 	}
+
+
 }
