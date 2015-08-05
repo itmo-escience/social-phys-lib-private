@@ -13,5 +13,13 @@ SimpleMatrix::~SimpleMatrix(void)
 
 SimpleMatrix SimpleMatrix::getRotationX(float angle)
 {
-	SimpleMatrix result = SimpleMatrix();	
+	SimpleMatrix result = SimpleMatrix();
+
+	float c = cos(angle);
+    float s = sin(angle);
+
+    result.m22 = c;
+    result.m23 = s;
+    result.m32 = -s;
+    result.m33 = c;
 }
