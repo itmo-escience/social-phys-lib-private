@@ -290,6 +290,19 @@ public:
 		return Vector3(X, Y, Z);
 	}
 
+	inline static Vector3& getCross(Vector3 left, Vector3 right)
+	{
+		int X,
+			Y,
+			Z;
+
+		X = (left.y() * right.z()) - (left.z() * right.y());
+        Y = (left.z() * right.x()) - (left.x() * right.z());
+		Z = (left.x() * right.y()) - (left.y() * right.x());
+
+		return Vector3(X, Y, Z);
+	}
+
 
 private:
 	float val_[3];
