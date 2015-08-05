@@ -277,6 +277,20 @@ public:
         return Vector3(X * W, Y * W, Z * W);
 	}
 
+	inline static Vector3& transformNormal(Vector3 normal, SimpleMatrix transform)
+	{
+		int X,
+			Y,
+			Z;
+
+		X = (normal.x() * transform.m11) + (normal.y() * transform.m21) + (normal.z() * transform.m31);
+		Y = (normal.x() * transform.m12) + (normal.y() * transform.m22) + (normal.z() * transform.m32);
+		Z = (normal.x() * transform.m13) + (normal.y() * transform.m23) + (normal.z() * transform.m33);
+
+		return Vector3(X, Y, Z);
+	}
+
+
 private:
 	float val_[3];
 };
