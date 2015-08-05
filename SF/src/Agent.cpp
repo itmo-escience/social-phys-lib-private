@@ -448,4 +448,9 @@ namespace SF
 	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
   }
 
+  inline Vector3 omega (float t, float dt, float radian)
+  {
+	  float dRoll	=	(roll(t + dt / 2, radian) - roll(t - dt / 2, radian)) / dt;
+	  return Vector3( dRoll, 0, 0 );
+  }
 }
