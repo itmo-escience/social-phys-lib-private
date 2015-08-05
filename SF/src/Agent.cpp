@@ -443,5 +443,9 @@ namespace SF
     previosPosition_ = position_;
   }
 
+  inline float roll(float t, float radian)
+  {
+	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
+  }
 
 }
