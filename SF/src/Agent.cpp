@@ -156,7 +156,7 @@ namespace SF
 
 	}
 	// </F2>
-
+	
     // <F3>
 	float minDistanceSquared = INT_MAX;
 	Vector2 minDiff = Vector2();
@@ -185,7 +185,7 @@ namespace SF
         
     correction += forceAmount * minDiff.normalized();
     // </F3>
-		
+	
 	// <F5>
 	Vector3 pv = sim_->getPlatformVelocity();
 
@@ -292,7 +292,6 @@ namespace SF
 	oldPlatformVelocity_ = pv;
 	// </F5>
     
-
     newVelocity_ += correction;
   }
 
@@ -409,7 +408,7 @@ namespace SF
 
 	velocity_ = newVelocity_;
 
-	if (fabs(velocity_.x()) < 0.0001f && fabs(velocity_.y()) < 0.0001f)
+	if (fabs(prefVelocity_.x()) < 0.0001f && fabs(prefVelocity_.y()) < 0.0001f)
     {
 		acceleration_ = 0.0f;
         setSpeedList(id_, 0.0f);
