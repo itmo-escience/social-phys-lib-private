@@ -59,6 +59,7 @@ namespace SF2D {
 		float _radius;
 		float _maxSpeed;
 		float _accelerationCoefficient;
+		float _relaxationTime;
 		float _repulsiveAgent;
 		float _repulsiveAgentFactor;
 		float _repulsiveObstacle;
