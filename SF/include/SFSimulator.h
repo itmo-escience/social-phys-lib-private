@@ -521,7 +521,7 @@ namespace SF
 	float getPlatformRotationXZ();
 	float getPlatformRotationYZ();
 
-
+	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
   private:
     std::vector<Agent*> agents_;

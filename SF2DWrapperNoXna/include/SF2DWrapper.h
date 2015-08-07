@@ -137,6 +137,7 @@ namespace SF2D {
 				void processObstacles();
 				bool queryVisibility(SFVector2 point1, SFVector2 point2, float radius) ;
 				float getAgentTimeHorizonObst(int agentNo) ;
-				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);				
+				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);			
+				System::Collections::Generic::List<int>^ getAgentNeighboursIndexList(int agentNo, float radius);
 	};
 }

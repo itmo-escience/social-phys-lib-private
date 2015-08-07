@@ -446,4 +446,28 @@ namespace SF
 	  return platformRotationYZ_;
   }
 
+  std::vector<size_t> SFSimulator::getAgentNeighboursIndexList(size_t index, float radius)
+  {
+	  std::vector<size_t> result;
+	  if(agents_.size() > 0)
+	  {
+		  if(index >= agents_.size())
+			  result.push_back(-1);
+		  else 
+		  {
+			  float rangeSq = sqr(radius);
+			 
+			  agents_[index]->agentNeighborsIndexList_.clear();
+			  this->kdTree_->computeAgentNeighborsIndexList(agents_[index], rangeSq);
+
+			  for(int i = 0; i < agents_[index]->agentNeighborsIndexList_.size(); i++)
+				  result.push_back(agents_[index]->agentNeighborsIndexList_[i].first);
+		  }
+	  }
+	  else
+		  result.push_back(-1);
+
+	  return result;
+  }
+
 }

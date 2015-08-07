@@ -139,7 +139,10 @@ namespace SF
     void queryAgentTreeRecursive(Agent* agent, float& rangeSq,
                                  size_t node) const;
 
-    void queryObstacleTreeRecursive(Agent* agent, float rangeSq,
+	void queryAgentNeighborsIndexListTreeRecursive(Agent* agent, float& rangeSq,
+                                 size_t node) const;
+    
+	void queryObstacleTreeRecursive(Agent* agent, float rangeSq,
                                     const ObstacleTreeNode* node) const;
 
     /*!
@@ -160,6 +163,8 @@ namespace SF
     bool queryVisibilityRecursive(const Vector2& q1, const Vector2& q2,
                                   float radius, 
                                   const ObstacleTreeNode* node) const;
+
+	void computeAgentNeighborsIndexList(Agent* agent, float& rangeSq) const;
 
     std::vector<Agent*> agents_;	
     std::vector<AgentTreeNode> agentTree_;
