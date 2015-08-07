@@ -70,6 +70,9 @@ namespace SF
      */
     void insertAgentNeighbor(const Agent* agent, float& rangeSq);
 
+	void insertAgentNeighborsIndex(const Agent* agent, float& rangeSq);
+
+
     /*!
      *  @brief      Inserts a static obstacle neighbor into the set of neighbors
      *              of this agent.
@@ -164,6 +167,7 @@ namespace SF
 	*/
 	Vector2 getVectorProjectionYZ(Vector3 s);
 
+
 	
 
 	bool isForced_;
@@ -193,6 +197,7 @@ namespace SF
 	Vector3 oldPlatformVelocity_;
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
+	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
         

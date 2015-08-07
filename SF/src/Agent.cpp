@@ -336,6 +336,24 @@ namespace SF
     }
   }
 
+  void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
+  {if (this != agent) {
+      const float distSq = absSq(position_ - agent->position_);
+
+      if (distSq < rangeSq) {
+		agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
+		size_t i = agentNeighborsIndexList_.size() - 1;
+        
+		while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) {
+          agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
+          --i;
+        }
+
+		agentNeighborsIndexList_[i] = std::make_pair(agent->id_, distSq);
+       }
+      }
+  }
+
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point)
 	{
 		Vector2 relativeEndPoint = *end - *start;
