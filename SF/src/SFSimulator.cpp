@@ -455,13 +455,14 @@ namespace SF
 			  result.push_back(-1);
 		  else 
 		  {
+			  Agent* agent = agents_[index];
 			  float rangeSq = sqr(radius);
 			 
-			  agents_[index]->agentNeighborsIndexList_.clear();
-			  this->kdTree_->computeAgentNeighborsIndexList(agents_[index], rangeSq);
+			  agent->agentNeighborsIndexList_.clear();
+			  this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
-			  for(int i = 0; i < agents_[index]->agentNeighborsIndexList_.size(); i++)
-				  result.push_back(agents_[index]->agentNeighborsIndexList_[i].first);
+			  for(int i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+				  result.push_back(agent->agentNeighborsIndexList_[i].first);
 		  }
 	  }
 	  else
