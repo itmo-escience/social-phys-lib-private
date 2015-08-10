@@ -41,6 +41,8 @@ SimpleMatrix SimpleMatrix::getRotationX(float angle)
     result.m23 = s;
     result.m32 = -s;
     result.m33 = c;
+
+	return result;
 }
 
 SimpleMatrix SimpleMatrix::getInvert()
