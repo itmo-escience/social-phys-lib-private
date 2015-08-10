@@ -494,7 +494,7 @@ namespace SF
 
 	Vector3 Agent::transformNormal(Vector3 normal, SimpleMatrix transform)
 	{
-		int X,
+		float X,
 			Y,
 			Z;
 
@@ -507,7 +507,7 @@ namespace SF
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right)
 	{
-		int X,
+		float X,
 			Y,
 			Z;
 
