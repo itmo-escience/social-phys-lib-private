@@ -300,13 +300,13 @@ namespace SF
 	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, maxRadian);
 	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, maxRadian);
 
-	Vector3 r = Vector3().transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
-	Vector3 v = Vector3().transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
+	Vector3 r = transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
+	Vector3 v = transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
 
-	Vector3 a = Vector3().getCross(omega, Vector3().getCross(omega, r)) + Vector3().getCross(omegaDifference, r) + 2 * Vector3().getCross(omega, v);
+	Vector3 a = getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) + 2 * getCross(omega, v);
 	
 	SimpleMatrix im = transform.getInvert();
-	Vector3 localAcceleration = Vector3().transformNormal(a, im);
+	Vector3 localAcceleration = transformNormal(a, im);
 
 	Vector2 total = velocity_ + Vector2(localAcceleration.x(), localAcceleration.y()) * sim_->timeStep_;
 
@@ -476,5 +476,45 @@ namespace SF
 		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
 	}
 
+	Vector3 Agent::transformCoordinate(Vector3 coordinate, SimpleMatrix transform)
+	{
+		float 
+			X,
+			Y,
+			Z,
+			W;
 
+		X = (coordinate.x() * transform.m11) + (coordinate.y() * transform.m21) + (coordinate.z() * transform.m31) + transform.m41;
+		Y = (coordinate.x() * transform.m12) + (coordinate.y() * transform.m22) + (coordinate.z() * transform.m32) + transform.m42;
+        Z = (coordinate.x() * transform.m13) + (coordinate.y() * transform.m23) + (coordinate.z() * transform.m33) + transform.m43;
+        W = 1 / ((coordinate.x() * transform.m14) + (coordinate.y() * transform.m24) + (coordinate.z() * transform.m34) + transform.m44);
+
+        return Vector3(X * W, Y * W, Z * W);
+	}
+
+	Vector3 Agent::transformNormal(Vector3 normal, SimpleMatrix transform)
+	{
+		int X,
+			Y,
+			Z;
+
+		X = (normal.x() * transform.m11) + (normal.y() * transform.m21) + (normal.z() * transform.m31);
+		Y = (normal.x() * transform.m12) + (normal.y() * transform.m22) + (normal.z() * transform.m32);
+		Z = (normal.x() * transform.m13) + (normal.y() * transform.m23) + (normal.z() * transform.m33);
+
+		return Vector3(X, Y, Z);
+	}
+
+	Vector3 Agent::getCross(Vector3 left, Vector3 right)
+	{
+		int X,
+			Y,
+			Z;
+
+		X = (left.y() * right.z()) - (left.z() * right.y());
+        Y = (left.z() * right.x()) - (left.x() * right.z());
+		Z = (left.x() * right.y()) - (left.y() * right.x());
+
+		return Vector3(X, Y, Z);
+	}
 }
