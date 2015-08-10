@@ -293,13 +293,12 @@ namespace SF
 	// </F5>
     
 	// <F5>
-	float RADIAN = 0.2f;
+	float maxRadian = 0.2f;
 
-	float roll = getRoll(sim_->globalTime_, RADIAN);
 	SimpleMatrix transform = SimpleMatrix.getRotationX(sim_->globalTime_);
 	
-	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, RADIAN);
-	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, RADIAN);
+	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, maxRadian);
+	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, maxRadian);
 
 	Vector3 r = Vector3.transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
 	Vector3 v = Vector3.transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
