@@ -14,6 +14,18 @@ SimpleMatrix::SimpleMatrix(float value)
     m41 = m42 = m43 = m44 = value;
 }
 
+SimpleMatrix::SimpleMatrix(
+		float out11, float out12, float out13, float out14,
+		float out21, float out22, float out23, float out24,
+		float out31, float out32, float out33, float out34,
+		float out41, float out42, float out43, float out44)
+{
+	m11 = out11; m12 = out12; m13 = out13; m14 = out14; 
+	m21 = out21; m22 = out22; m23 = out23; m24 = out24; 
+	m31 = out31; m32 = out32; m33 = out33; m34 = out34; 
+	m41 = out41; m42 = out42; m43 = out43; m44 = out44; 
+}
+
 SimpleMatrix::~SimpleMatrix(void)
 {
 }
