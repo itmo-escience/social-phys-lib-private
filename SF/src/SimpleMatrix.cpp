@@ -36,7 +36,7 @@ SimpleMatrix::~SimpleMatrix(void)
 
 SimpleMatrix SimpleMatrix::getRotationX(float angle)
 {
-	SimpleMatrix result = SimpleMatrix();
+	SimpleMatrix result = SimpleMatrix();	// identity
 
 	float c = cos(angle);
     float s = sin(angle);
