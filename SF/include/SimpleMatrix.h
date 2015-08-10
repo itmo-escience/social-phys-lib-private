@@ -27,6 +27,6 @@ public:
 	~SimpleMatrix(void);
 
 	static SimpleMatrix getRotationX(float angle);
-	void getInvert();
+	SimpleMatrix getInvert();
 };
 
