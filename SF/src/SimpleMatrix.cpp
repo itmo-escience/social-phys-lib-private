@@ -45,8 +45,6 @@ SimpleMatrix SimpleMatrix::getRotationX(float angle)
 
 SimpleMatrix SimpleMatrix::getInvert()
 {
-	SimpleMatrix result = SimpleMatrix();
-
 	float b0 = (m31 * m42) - (m32 * m41);
     float b1 = (m31 * m43) - (m33 * m41);
     float b2 = (m34 * m41) - (m31 * m44);
@@ -61,10 +59,7 @@ SimpleMatrix SimpleMatrix::getInvert()
 
     float det = m11 * d11 - m12 * d12 + m13 * d13 - m14 * d14;
     if (fabs(det) < 0.0001f)
-    {
-        result = SimpleMatrix(0.0f);
-        return;
-    }
+        return SimpleMatrix(0.0f);
 
     det = 1.0f / det;
 
@@ -90,10 +85,10 @@ SimpleMatrix SimpleMatrix::getInvert()
     float d43 = m31 * -a4 + m32 * a2 + m34 * a0;
     float d44 = m31 * a3 + m32 * -a1 + m33 * a0;
 
-    m11 = +d11 * det; m12 = -d21 * det; m13 = +d31 * det; m14 = -d41 * det;
-    m21 = -d12 * det; m22 = +d22 * det; m23 = -d32 * det; m24 = +d42 * det;
-    m31 = +d13 * det; m32 = -d23 * det; m33 = +d33 * det; m34 = -d43 * det;
-    m41 = -d14 * det; m42 = +d24 * det; m43 = -d34 * det; m44 = +d44 * det;
 
-	return result;
+	return SimpleMatrix(
+		d11 * det, -d21 * det, d31 * det, -d41 * det,
+		-d12 * det, d22 * det, -d32 * det, d42 * det,
+		d13 * det, -d23 * det, d33 * det, -d43 * det,
+		-d14 * det, d24 * det, -d34 * det, d44 * det);
 }
