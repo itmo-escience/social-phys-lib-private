@@ -191,6 +191,8 @@ namespace SF
 	Vector2 previosPosition_;
     Vector2 velocity_;
 	Vector3 oldPlatformVelocity_;
+	Vector3 getOmega(float t, float dt, float radian);
+	Vector3 getOmegaDifference(float t, float dt, float radian);
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
     std::map<int, float> speedList_;
