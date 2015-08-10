@@ -22,9 +22,11 @@ public:
 		m44;
 
 	SimpleMatrix(void);
+	SimpleMatrix(float value);
 
 	~SimpleMatrix(void);
 
 	static SimpleMatrix getRotationX(float angle);
+	void getInvert();
 };
 
