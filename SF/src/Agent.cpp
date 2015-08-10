@@ -305,6 +305,10 @@ namespace SF
 	Vector3 v = Vector3.transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
 
 	Vector3 a = Vector3.getCross(omega, Vector3.getCross(omega, r)) + Vector3.getCross(omegaDifference, r) + 2 * Vector3.getCross(omega, v);
+	
+	SimpleMatrix im = transform.getInvert();
+	Vector3 localAcceleration = Vector3.transformNormal(a, im);
+	Vector2 total = Vector2(localAcceleration.x(), localAcceleration.y());
 	// </F5>
 
 
