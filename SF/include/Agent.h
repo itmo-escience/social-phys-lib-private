@@ -193,6 +193,9 @@ namespace SF
 	Vector3 oldPlatformVelocity_;
 	Vector3 getOmega(float t, float dt, float radian);
 	Vector3 getOmegaDifference(float t, float dt, float radian);
+	Vector3 transformCoordinate(Vector3 coordinate, SimpleMatrix transform);
+	Vector3 transformNormal(Vector3 normal, SimpleMatrix transform);
+	Vector3 getCross(Vector3 left, Vector3 right);
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
     std::map<int, float> speedList_;
