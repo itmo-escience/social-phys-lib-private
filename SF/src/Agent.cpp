@@ -295,18 +295,18 @@ namespace SF
 	// <F5>
 	float maxRadian = 0.2f;
 
-	SimpleMatrix transform = SimpleMatrix.getRotationX(sim_->globalTime_);
+	SimpleMatrix transform = SimpleMatrix().getRotationX(sim_->globalTime_);
 	
 	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, maxRadian);
 	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, maxRadian);
 
-	Vector3 r = Vector3.transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
-	Vector3 v = Vector3.transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
+	Vector3 r = Vector3().transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
+	Vector3 v = Vector3().transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
 
-	Vector3 a = Vector3.getCross(omega, Vector3.getCross(omega, r)) + Vector3.getCross(omegaDifference, r) + 2 * Vector3.getCross(omega, v);
+	Vector3 a = Vector3().getCross(omega, Vector3().getCross(omega, r)) + Vector3().getCross(omegaDifference, r) + 2 * Vector3().getCross(omega, v);
 	
 	SimpleMatrix im = transform.getInvert();
-	Vector3 localAcceleration = Vector3.transformNormal(a, im);
+	Vector3 localAcceleration = Vector3().transformNormal(a, im);
 	Vector2 total = Vector2(localAcceleration.x(), localAcceleration.y());
 	// </F5>
 
@@ -462,13 +462,13 @@ namespace SF
 	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
   }
 
-  inline Vector3 getOmega (float t, float dt, float radian)
+  Vector3 Agent::getOmega (float t, float dt, float radian)
   {
 	  float dRoll	=	(getRoll(t + dt / 2, radian) - getRoll(t - dt / 2, radian)) / dt;
 	  return Vector3( dRoll, 0, 0 );
   }
 
-  inline Vector3 getOmegaDifference (float t, float dt, float radian)
+  Vector3 Agent::getOmegaDifference (float t, float dt, float radian)
 	{
 		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
 	}
