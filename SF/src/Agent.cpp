@@ -307,7 +307,10 @@ namespace SF
 	
 	SimpleMatrix im = transform.getInvert();
 	Vector3 localAcceleration = Vector3().transformNormal(a, im);
-	Vector2 total = Vector2(localAcceleration.x(), localAcceleration.y());
+
+	Vector2 total = velocity_ + Vector2(localAcceleration.x(), localAcceleration.y()) * sim_->timeStep_;
+
+	correction += total;
 	// </F5>
 
 
