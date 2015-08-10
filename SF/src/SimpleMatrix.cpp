@@ -4,6 +4,10 @@
 SimpleMatrix::SimpleMatrix(void)
 {
 	m11 = m22 = m33 = m44 = 1;
+	m12 = m13 = m14 =
+    m21 = m23 = m24 =
+    m31 = m32 = m34 =
+    m41 = m42 = m43 = 0.0f;
 }
 
 SimpleMatrix::SimpleMatrix(float value)
