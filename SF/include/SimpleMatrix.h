@@ -23,10 +23,15 @@ public:
 
 	SimpleMatrix(void);
 	SimpleMatrix(float value);
+	SimpleMatrix(
+		float out11, float out12, float out13, float out14,
+		float out21, float out22, float out23, float out24,
+		float out31, float out32, float out33, float out34,
+		float out41, float out42, float out43, float out44);
 
 	~SimpleMatrix(void);
 
 	static SimpleMatrix getRotationX(float angle);
-	void getInvert();
+	SimpleMatrix getInvert();
 };
 
