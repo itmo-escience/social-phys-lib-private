@@ -64,6 +64,21 @@ SimpleMatrix SimpleMatrix::getRotationY(float angle)
 	return result;
 }
 
+SimpleMatrix SimpleMatrix::getRotationZ(float angle)
+{
+	SimpleMatrix result = SimpleMatrix();	// identity
+
+	float c = cos(angle);
+    float s = sin(angle);
+
+    result.m11 = c;
+    result.m12 = s;
+    result.m21 = -s;
+    result.m22 = c;
+
+	return result;
+}
+
 SimpleMatrix SimpleMatrix::getInvert()
 {
 	float b0 = (m31 * m42) - (m32 * m41);
