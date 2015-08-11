@@ -295,7 +295,7 @@ namespace SF
 	// <F5>
 	float maxRadian = 0.2f;
 
-	SimpleMatrix transform = SimpleMatrix().getRotationX(sim_->globalTime_);
+	SimpleMatrix transform = getRotationX(sim_->globalTime_);
 	
 	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, maxRadian);
 	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, maxRadian);
@@ -517,4 +517,50 @@ namespace SF
 
 		return Vector3(X, Y, Z);
 	}
+
+	SimpleMatrix Agent::getRotationX(float angle)
+{
+	SimpleMatrix result = SimpleMatrix();	// identity
+
+	float c = cos(angle);
+    float s = sin(angle);
+
+    result.m22 = c;
+    result.m23 = s;
+    result.m32 = -s;
+    result.m33 = c;
+
+	return result;
+}
+
+SimpleMatrix Agent::getRotationY(float angle)
+{
+	SimpleMatrix result = SimpleMatrix();	// identity
+
+	float c = cos(angle);
+    float s = sin(angle);
+
+    result.m11 = c;
+    result.m13 = -s;
+    result.m31 = s;
+    result.m33 = c;
+
+	return result;
+}
+
+SimpleMatrix Agent::getRotationZ(float angle)
+{
+	SimpleMatrix result = SimpleMatrix();	// identity
+
+	float c = cos(angle);
+    float s = sin(angle);
+
+    result.m11 = c;
+    result.m12 = s;
+    result.m21 = -s;
+    result.m22 = c;
+
+	return result;
+}
+
 }
