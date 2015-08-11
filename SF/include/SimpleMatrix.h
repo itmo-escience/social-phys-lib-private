@@ -31,10 +31,6 @@ public:
 
 	~SimpleMatrix(void);
 
-	static SimpleMatrix getRotationX(float angle);
-	static SimpleMatrix getRotationY(float angle);
-	static SimpleMatrix getRotationZ(float angle);
-
 	SimpleMatrix getInvert();
 };
 

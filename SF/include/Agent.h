@@ -196,6 +196,10 @@ namespace SF
 	Vector3 transformCoordinate(Vector3 coordinate, SimpleMatrix transform);
 	Vector3 transformNormal(Vector3 normal, SimpleMatrix transform);
 	Vector3 getCross(Vector3 left, Vector3 right);
+	SimpleMatrix getRotationX(float angle);
+	SimpleMatrix getRotationY(float angle);
+	SimpleMatrix getRotationZ(float angle);
+
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
     std::map<int, float> speedList_;
