@@ -430,7 +430,7 @@ namespace SF
 
 	velocity_ = newVelocity_;
 
-	if (fabs(velocity_.x()) < 0.0001f && fabs(velocity_.y()) < 0.0001f)
+	if (fabs(prefVelocity_.x()) < 0.0001f && fabs(prefVelocity_.y()) < 0.0001f)
     {
 		acceleration_ = 0.0f;
         setSpeedList(id_, 0.0f);
