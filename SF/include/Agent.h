@@ -165,7 +165,8 @@ namespace SF
 	Vector2 getVectorProjectionYZ(Vector3 s);
 
 	float getRoll(float t, float radian);
-	float Agent::degreesToRadians(float degree);
+	float degreesToRadians(float degree);
+	float radiansToDegrees(float radian);
 	Vector3 getOmega(float t, float dt, float radian);
 	Vector3 getOmegaDifference(float t, float dt, float radian);
 	Vector3 transformCoordinate(Vector3 coordinate, SimpleMatrix transform);
