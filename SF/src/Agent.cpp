@@ -520,48 +520,58 @@ namespace SF
 	}
 
 	SimpleMatrix Agent::getRotationX(float angle)
-{
-	SimpleMatrix result = SimpleMatrix();	// identity
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-	float c = cos(angle);
-    float s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
-    result.m22 = c;
-    result.m23 = s;
-    result.m32 = -s;
-    result.m33 = c;
+		result.m22 = c;
+		result.m23 = s;
+		result.m32 = -s;
+		result.m33 = c;
 
-	return result;
-}
+		return result;
+	}
 
-SimpleMatrix Agent::getRotationY(float angle)
-{
-	SimpleMatrix result = SimpleMatrix();	// identity
+	SimpleMatrix Agent::getRotationY(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-	float c = cos(angle);
-    float s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
-    result.m11 = c;
-    result.m13 = -s;
-    result.m31 = s;
-    result.m33 = c;
+		result.m11 = c;
+		result.m13 = -s;
+		result.m31 = s;
+		result.m33 = c;
 
-	return result;
-}
+		return result;
+	}
 
-SimpleMatrix Agent::getRotationZ(float angle)
-{
-	SimpleMatrix result = SimpleMatrix();	// identity
+	SimpleMatrix Agent::getRotationZ(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-	float c = cos(angle);
-    float s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
-    result.m11 = c;
-    result.m12 = s;
-    result.m21 = -s;
-    result.m22 = c;
+		result.m11 = c;
+		result.m12 = s;
+		result.m21 = -s;
+		result.m22 = c;
 
-	return result;
-}
+		return result;
+	}
+
+	float Agent::degreesToRadians(float degree)
+    {
+        return degree * (M_PI / 180.0f);
+    }
+
+	float Agent::radiansToDegrees(float radian)
+    {
+        return radian * (180.0f / M_PI);
+    }
 
 }

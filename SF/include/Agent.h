@@ -165,6 +165,16 @@ namespace SF
 	Vector2 getVectorProjectionYZ(Vector3 s);
 
 	float getRoll(float t, float radian);
+	float degreesToRadians(float degree);
+	float radiansToDegrees(float radian);
+	Vector3 getOmega(float t, float dt, float radian);
+	Vector3 getOmegaDifference(float t, float dt, float radian);
+	Vector3 transformCoordinate(Vector3 coordinate, SimpleMatrix transform);
+	Vector3 transformNormal(Vector3 normal, SimpleMatrix transform);
+	Vector3 getCross(Vector3 left, Vector3 right);
+	SimpleMatrix getRotationX(float angle);
+	SimpleMatrix getRotationY(float angle);
+	SimpleMatrix getRotationZ(float angle);
 
 	bool isForced_;
 	size_t id_;
@@ -191,14 +201,7 @@ namespace SF
 	Vector2 previosPosition_;
     Vector2 velocity_;
 	Vector3 oldPlatformVelocity_;
-	Vector3 getOmega(float t, float dt, float radian);
-	Vector3 getOmegaDifference(float t, float dt, float radian);
-	Vector3 transformCoordinate(Vector3 coordinate, SimpleMatrix transform);
-	Vector3 transformNormal(Vector3 normal, SimpleMatrix transform);
-	Vector3 getCross(Vector3 left, Vector3 right);
-	SimpleMatrix getRotationX(float angle);
-	SimpleMatrix getRotationY(float angle);
-	SimpleMatrix getRotationZ(float angle);
+	
 
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
