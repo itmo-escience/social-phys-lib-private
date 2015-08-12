@@ -295,6 +295,7 @@ namespace SF
 	// <F5>
 	float maxRadian = 0.2f;
 	float roll = getRoll(sim_->globalTime_, maxRadian);
+	Vector3 a;
 
 	SimpleMatrix transform = getRotationX(getRoll(sim_->globalTime_, maxRadian));
 	
@@ -304,7 +305,10 @@ namespace SF
 	Vector3 r = transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
 	Vector3 v = transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
 
-	Vector3 a = getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) + 2 * getCross(omega, v);
+	if (radiansToDegrees(roll) > 0)
+    	a = -getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) + 2 * getCross(omega, v);
+    else
+		a = getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) + 2 * getCross(omega, v);
 	
 	SimpleMatrix im = transform.getInvert();
 	Vector3 localAcceleration = transformNormal(a, im);
@@ -463,7 +467,8 @@ namespace SF
 
   float Agent::getRoll(float t, float radian)
   {
-	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
+	  float res = (float) sin(t * M_PI * 2 * 0.05f) *  radian;
+	  return res;
   }
 
   Vector3 Agent::getOmega (float t, float dt, float radian)
