@@ -294,8 +294,9 @@ namespace SF
     
 	// <F5>
 	float maxRadian = 0.2f;
+	float roll = getRoll(sim_->globalTime_, maxRadian);
 
-	SimpleMatrix transform = getRotationX(sim_->globalTime_);
+	SimpleMatrix transform = getRotationX(getRoll(sim_->globalTime_, maxRadian));
 	
 	Vector3 omega = getOmega(sim_->globalTime_, sim_->timeStep_, maxRadian);
 	Vector3 omegaDifference = getOmegaDifference(sim_->globalTime_, sim_->timeStep_, maxRadian);
@@ -460,7 +461,7 @@ namespace SF
     previosPosition_ = position_;
   }
 
-  inline float getRoll(float t, float radian)
+  float Agent::getRoll(float t, float radian)
   {
 	  return (float) sin(t * M_PI * 2 * 0.05f) *  radian;
   }

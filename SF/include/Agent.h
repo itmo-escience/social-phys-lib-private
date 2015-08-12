@@ -164,7 +164,7 @@ namespace SF
 	*/
 	Vector2 getVectorProjectionYZ(Vector3 s);
 
-	
+	float getRoll(float t, float radian);
 
 	bool isForced_;
 	size_t id_;
