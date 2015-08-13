@@ -294,7 +294,8 @@ namespace SF
 
 	// <F5>
 	Vector3 
-		omega, 
+		omega,
+		dOmega,
 		R, 
 		V, 
 		A,
@@ -303,7 +304,10 @@ namespace SF
 		fixedV,
 		fixedA;
 
-	omega = Vector3(0.2f, 0, 0);
+	float radian = degreesToRadians(15);
+
+	omega = getOmega(sim_->globalTime_, sim_->timeStep_, radian);
+	dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radian);
 	
 	R = Vector3(position_.x(), position_.y(), 0);
 	V = Vector3(velocity_.x(), velocity_.y(), 0);
