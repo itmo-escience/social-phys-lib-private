@@ -158,7 +158,7 @@ namespace SF
 	// </F2>
 
     // <F3>
-	/*float minDistanceSquared = INT_MAX;
+	float minDistanceSquared = INT_MAX;
 	Vector2 minDiff = Vector2();
 	repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
@@ -183,7 +183,7 @@ namespace SF
 	float distance = sqrt(minDistanceSquared) - radius_;
 	float forceAmount = repulsiveObstacleFactor * exp(-distance / repulsiveObstacle_);
         
-    correction += forceAmount * minDiff.normalized();*/
+    correction += forceAmount * minDiff.normalized();
     // </F3>
 		
 	// <F5>
@@ -305,10 +305,7 @@ namespace SF
 	Vector3 r = transformCoordinate(Vector3(position_.x(), position_.y(), 0), transform);
 	Vector3 v = transformNormal(Vector3(velocity_.x(), velocity_.y(), 0), transform);
 
-	/*if (radiansToDegrees(roll) > 0)
-    	a = -getCross(omega, getCross(omega, r)) - getCross(omegaDifference, r) + getCross(omega, v);
-    else*/
-		a = getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) - 2 * getCross(omega, v);
+	a = getCross(omega, getCross(omega, r)) + getCross(omegaDifference, r) - 2 * getCross(omega, v);
 	
 	SimpleMatrix im = transform.getInvert();
 	Vector3 localAcceleration = transformNormal(a, im);
@@ -467,7 +464,7 @@ namespace SF
 
   float Agent::getRoll(float t, float radian)
   {
-	  float res = (float) sin(t * M_PI * 2 * 0.05f) * degreesToRadians(15);
+	  float res = 24 * (float) sin(t * M_PI * 2 * 1) * degreesToRadians(1);
 	  return res;
   }
 
