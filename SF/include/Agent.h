@@ -169,6 +169,8 @@ namespace SF
 	Vector3 getCross(Vector3 left, Vector3 right);
 	float degreesToRadians(float degree);
 	float radiansToDegrees(float degree);
+	float getRoll(float t, float radian);
+
 
 	bool isForced_;
 	size_t id_;

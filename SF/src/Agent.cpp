@@ -298,6 +298,7 @@ namespace SF
 		R, 
 		V, 
 		A,
+		fixedOmega,
 		fixedR, 
 		fixedV,
 		fixedA;
@@ -507,4 +508,10 @@ namespace SF
     {
         return radian * (180.0f / M_PI);
     }
+
+	float Agent::getRoll(float t, float radian)
+	{
+		float res = (float) sin(t * M_PI * 2 * 0.05f) * degreesToRadians(15);
+		return res;
+	}
 }
