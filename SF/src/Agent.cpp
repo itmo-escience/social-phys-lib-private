@@ -323,11 +323,14 @@ namespace SF
 		V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
 	fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(omega, fixedR) + 2 * getCross(omega, fixedV);
+	
 	A = Vector3(
 		fixedA.x() / cos(omega.x()),
 		fixedA.y() / cos(omega.y()),
 		0);
 
+	Vector2 result = (velocity_ + Vector2(A.x(), A.y()) * sim_->timeStep_);
+	correction += result;
 	// </F5>
 	
     
