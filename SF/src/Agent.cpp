@@ -298,6 +298,7 @@ namespace SF
 		R, 
 		V, 
 		A,
+		fixedOmega,
 		fixedR, 
 		fixedV,
 		fixedA;
@@ -507,4 +508,21 @@ namespace SF
     {
         return radian * (180.0f / M_PI);
     }
+
+	float Agent::getRoll(float t, float radian)
+	{
+		float res = (float) sin(t * M_PI * 2 * 0.05f) * degreesToRadians(15);
+		return res;
+	}
+
+	Vector3 Agent::getOmega(float t, float dt, float radian)
+	{
+		float dRoll	=	(getRoll(t + dt / 2, radian) - getRoll(t - dt / 2, radian)) / dt;
+		return Vector3( dRoll, 0, 0 );
+	}
+
+	Vector3 Agent::getDOmega(float t, float dt, float radian)
+	{
+		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
+	}
 }
