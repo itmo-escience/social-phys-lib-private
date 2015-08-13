@@ -496,4 +496,14 @@ namespace SF
 
 		return Vector3(X, Y, Z);
 	}
+
+	float Agent::degreesToRadians(float degree)
+    {
+        return degree * (M_PI / 180.0f);
+    }
+
+	float Agent::radiansToDegrees(float radian)
+    {
+        return radian * (180.0f / M_PI);
+    }
 }
