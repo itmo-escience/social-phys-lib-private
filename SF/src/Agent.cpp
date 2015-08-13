@@ -317,6 +317,7 @@ namespace SF
 		V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 		V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
+	fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(omega, fixedR) + 2 * getCross(omega, fixedV);
 	// </F5>
 	
     
