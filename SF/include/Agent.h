@@ -166,9 +166,9 @@ namespace SF
 	*	@param		s		Vector
 	*/
 	Vector2 getVectorProjectionYZ(Vector3 s);
-
-
-	
+	Vector3 getCross(Vector3 left, Vector3 right);
+	float degreesToRadians(float degree);
+	float radiansToDegrees(float degree);
 
 	bool isForced_;
 	size_t id_;

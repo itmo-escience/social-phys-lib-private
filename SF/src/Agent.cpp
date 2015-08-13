@@ -316,6 +316,7 @@ namespace SF
 		V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
 		V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 		V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
 	// </F5>
 	
     
@@ -481,5 +482,28 @@ namespace SF
     setSpeedList(id_, (float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2)) / sim_->timeStep_);
 
     previosPosition_ = position_;
-  }  
+  }
+
+	Vector3 Agent::getCross(Vector3 left, Vector3 right)
+	{
+		float X,
+			Y,
+			Z;
+
+		X = (left.y() * right.z()) - (left.z() * right.y());
+        Y = (left.z() * right.x()) - (left.x() * right.z());
+		Z = (left.x() * right.y()) - (left.y() * right.x());
+
+		return Vector3(X, Y, Z);
+	}
+
+	float Agent::degreesToRadians(float degree)
+    {
+        return degree * (M_PI / 180.0f);
+    }
+
+	float Agent::radiansToDegrees(float radian)
+    {
+        return radian * (180.0f / M_PI);
+    }
 }
