@@ -293,7 +293,29 @@ namespace SF
 	// </F5>
 
 	// <F5>
+	Vector3 
+		omega, 
+		R, 
+		V, 
+		A,
+		fixedR, 
+		fixedV,
+		fixedA;
 
+	omega = Vector3(0.2f, 0, 0);
+	
+	R = Vector3(position_.x(), position_.y(), 0);
+	V = Vector3(velocity_.x(), velocity_.y(), 0);
+	
+	fixedR = Vector3(
+		R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+		R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+		R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+
+	fixedV = Vector3(
+		V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+		V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+		V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 	// </F5>
 	
     
