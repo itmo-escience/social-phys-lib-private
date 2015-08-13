@@ -306,6 +306,11 @@ namespace SF
 	
 	R = Vector3(position_.x(), position_.y(), 0);
 	V = Vector3(velocity_.x(), velocity_.y(), 0);
+	
+	fixedR = Vector3(
+		R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+		R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+		R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
 	// </F5>
 	
     
