@@ -187,13 +187,13 @@ namespace SF
     // </F3>
 	
 	// <F5>
-	Vector3 pv = sim_->getPlatformVelocity();
+	//Vector3 pv = sim_->getPlatformVelocity();
 
 	/*!
 	 *	@brief	2D Roration section
 	 */
 	// rotation center
-	Vector3 center = sim_->getRotationDegreeSet().getCenter();	
+	/*Vector3 center = sim_->getRotationDegreeSet().getCenter();	
 	
 	// relative values	
 	float 
@@ -271,12 +271,12 @@ namespace SF
 		pv += mult * YZforce;
 	}
 
-	correction += Vector2(rotationVector.x(), rotationVector.y());
+	correction += Vector2(rotationVector.x(), rotationVector.y());*/
 
 	/*!
 	 *	@brief	Forvard section
 	 */
-	if(isNotPlaneCase(pv))
+	/*if(isNotPlaneCase(pv))
 	{
 		Vector2 totalFieldProjection = getVectorProjectionXY(pv);
 		float inclineAngle = fabs(getInclineAngle(pv));
@@ -289,8 +289,13 @@ namespace SF
 		correction += total;
 	}
 	
-	oldPlatformVelocity_ = pv;
+	oldPlatformVelocity_ = pv;*/
 	// </F5>
+
+	// <F5>
+
+	// </F5>
+	
     
     newVelocity_ += correction;
   }
