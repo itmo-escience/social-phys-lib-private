@@ -521,20 +521,28 @@ namespace SF
         return radian * (180.0f / M_PI);
     }
 
-	float Agent::getRoll(float t, float radian)
+	Vector3 Agent::getRoll(float t, float radian)
 	{
-		float res = (float) sin(t * M_PI * 2 * 0.05f) * degreesToRadians(15);
-		return res;
+		float X = sin(t * M_PI * 2 * 0.09f) * radian;
+		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
+		float Z = sin(t * M_PI * 2 * 0.09f) * 0; ;
+
+		return Vector3(X, Y, Z);
 	}
 
 	Vector3 Agent::getOmega(float t, float dt, float radian)
 	{
-		float dRoll	=	(getRoll(t + dt / 2, radian) - getRoll(t - dt / 2, radian)) / dt;
-		return Vector3( dRoll, 0, 0 );
+		float X	= (getRoll(t + dt / 2, radian).x() - getRoll(t - dt / 2, radian).x()) / dt;
+		float Y	= (getRoll(t + dt / 2, radian).y() - getRoll(t - dt / 2, radian).y()) / dt;
+
+		return Vector3(X, Y, 0);
 	}
 
 	Vector3 Agent::getDOmega(float t, float dt, float radian)
 	{
-		return (getOmega(t + dt / 2, dt, radian) - getOmega(t - dt / 2, dt, radian)) / dt;
+		float X	= (getOmega(t + dt / 2, dt, radian).x() - getOmega(t - dt / 2, dt, radian).x()) / dt;
+		float Y	= (getOmega(t + dt / 2, dt, radian).y() - getOmega(t - dt / 2, dt, radian).y()) / dt;
+
+		return Vector3(X, Y, 0);
 	}
 }

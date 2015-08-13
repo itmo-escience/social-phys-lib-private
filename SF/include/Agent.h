@@ -169,7 +169,7 @@ namespace SF
 	Vector3 getCross(Vector3 left, Vector3 right);
 	float degreesToRadians(float degree);
 	float radiansToDegrees(float degree);
-	float getRoll(float t, float radian);
+	Vector3 getRoll(float t, float radian);
 	Vector3 getOmega(float t, float dt, float radian);
 	Vector3 getDOmega(float t, float dt, float radian);
 
