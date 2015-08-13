@@ -170,6 +170,8 @@ namespace SF
 	float degreesToRadians(float degree);
 	float radiansToDegrees(float degree);
 	float getRoll(float t, float radian);
+	Vector3 getOmega(float t, float dt, float radian);
+	Vector3 getDOmega(float t, float dt, float radian);
 
 
 	bool isForced_;
