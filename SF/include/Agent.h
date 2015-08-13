@@ -167,7 +167,7 @@ namespace SF
 	*/
 	Vector2 getVectorProjectionYZ(Vector3 s);
 
-
+	Vector3 getCross(Vector3 left, Vector3 right);
 	
 
 	bool isForced_;
