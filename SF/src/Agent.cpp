@@ -293,7 +293,19 @@ namespace SF
 	// </F5>
 
 	// <F5>
+	Vector3 
+		omega, 
+		R, 
+		V, 
+		A,
+		fixedR, 
+		fixedV,
+		fixedA;
 
+	omega = Vector3(0.2f, 0, 0);
+	
+	R = Vector3(position_.x(), position_.y(), 0);
+	V = Vector3(velocity_.x(), velocity_.y(), 0);
 	// </F5>
 	
     
