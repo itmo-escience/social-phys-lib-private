@@ -563,23 +563,28 @@ namespace SF
 	{
 		float X = sin(t * M_PI * 2 * 0.09f) * radian;
 		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
-		float Z = sin(t * M_PI * 2 * 0.09f) * 0;
-
-		return Vector3(X, Y, Z);
+		
+		return Vector3(X, Y, 0);
 	}
 
 	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
 	{
 		if(pt == X)
 		{
-			float value = (getRoll(pt, t + dt / 2, radian).x() - getRoll(pt, t - dt / 2, radian).x()) / dt;
+			float value = 
+				(getRoll(pt, t + dt / 2, radian).x() - 
+				getRoll(pt, t - dt / 2, radian).x()) / dt;
+			
 			return Vector3(value, 0, 0);
 		}
 		
 		if(pt == Y)
 		{
-			float value = (getRoll(pt, t + dt / 2, radian).y() - getRoll(pt, t - dt / 2, radian).y()) / dt;
-			Vector3(0, value, 0);
+			float value = 
+				(getRoll(pt, t + dt / 2, radian).y() - 
+				getRoll(pt, t - dt / 2, radian).y()) / dt;
+			
+			return Vector3(0, value, 0);
 		}
 	}
 
@@ -587,13 +592,19 @@ namespace SF
 	{
 		if(pt == X)
 		{
-			float value	= (getOmega(pt, t + dt / 2, dt, radian).x() - getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
+			float value	= 
+				(getOmega(pt, t + dt / 2, dt, radian).x() - 
+				getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
+			
 			return Vector3(value, 0, 0);
 		}
 
 		if(pt == Y)
 		{
-			float value	= (getOmega(pt, t + dt / 2, dt, radian).y() - getOmega(pt, t - dt / 2, dt, radian).y()) / dt;
+			float value	= 
+				(getOmega(pt, t + dt / 2, dt, radian).y() - 
+				getOmega(pt, t - dt / 2, dt, radian).y()) / dt;
+			
 			return Vector3(0, value, 0);
 		}
 	}
