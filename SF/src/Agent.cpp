@@ -561,26 +561,50 @@ namespace SF
 
 	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
-		float X = sin(t * M_PI * 2 * 0.09f) * radian;
-		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
-		float Z = sin(t * M_PI * 2 * 0.09f) * 0;
-
-		return Vector3(X, Y, Z);
+		float value = sin(t * M_PI * 2 * 0.09f) * radian;
+		
+		return Vector3(value, value, 0);
 	}
 
 	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
 	{
-		float X	= (getRoll(pt, t + dt / 2, radian).x() - getRoll(pt, t - dt / 2, radian).x()) / dt;
-		float Y	= 0; //(getRoll(t + dt / 2, radian).y() - getRoll(t - dt / 2, radian).y()) / dt;
-
-		return Vector3(X, Y, 0);
+		if(pt == X)
+		{
+			float value = 
+				(getRoll(pt, t + dt / 2, radian).x() - 
+				getRoll(pt, t - dt / 2, radian).x()) / dt;
+			
+			return Vector3(value, 0, 0);
+		}
+		
+		if(pt == Y)
+		{
+			float value = 
+				(getRoll(pt, t + dt / 2, radian).y() - 
+				getRoll(pt, t - dt / 2, radian).y()) / dt;
+			
+			return Vector3(0, value, 0);
+		}
 	}
 
 	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
 	{
-		float X	= (getOmega(pt, t + dt / 2, dt, radian).x() - getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
-		float Y	= 0; //(getOmega(t + dt / 2, dt, radian).y() - getOmega(t - dt / 2, dt, radian).y()) / dt;
+		if(pt == X)
+		{
+			float value	= 
+				(getOmega(pt, t + dt / 2, dt, radian).x() - 
+				getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
+			
+			return Vector3(value, 0, 0);
+		}
 
-		return Vector3(X, Y, 0);
+		if(pt == Y)
+		{
+			float value	= 
+				(getOmega(pt, t + dt / 2, dt, radian).y() - 
+				getOmega(pt, t - dt / 2, dt, radian).y()) / dt;
+			
+			return Vector3(0, value, 0);
+		}
 	}
 }
