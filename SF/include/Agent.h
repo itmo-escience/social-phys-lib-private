@@ -205,6 +205,12 @@ namespace SF
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
         
+	enum
+	{
+		X = 1,
+		Y
+	}
+	ParameterType;
 
     friend class KdTree;
     friend class SFSimulator;
