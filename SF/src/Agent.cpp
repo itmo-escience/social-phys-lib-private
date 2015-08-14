@@ -315,7 +315,12 @@ namespace SF
 	if(fabs(radianX) > 0.001f)
 	{
 		omega = Vector3((getRoll(sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x() - getRoll(sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x()) / sim_->timeStep_, 0, 0);
-		dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radianX);
+		dOmega = Vector3(
+			(getOmega(sim_->globalTime_ + sim_->timeStep_ / 2, sim_->timeStep_, radianX).x() - getOmega(sim_->globalTime_ - sim_->timeStep_ / 2, sim_->timeStep_, radianX).x()) / sim_->timeStep_,
+			0,
+			0);
+		
+		//dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radianX);
 	
 		R = Vector3(position_.x(), position_.y(), 0);
 		V = Vector3(velocity_.x(), velocity_.y(), 0);
