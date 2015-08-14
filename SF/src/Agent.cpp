@@ -309,7 +309,7 @@ namespace SF
 		newVY = Vector2();
 
 	float 
-		radianX = degreesToRadians(0),
+		radianX = degreesToRadians(15),
 		radianY = degreesToRadians(15);
 
 	if(fabs(radianX) > 0.001f)
@@ -585,9 +585,16 @@ namespace SF
 
 	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
 	{
-		float X	= (getOmega(pt, t + dt / 2, dt, radian).x() - getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
-		float Y	= 0; //(getOmega(t + dt / 2, dt, radian).y() - getOmega(t - dt / 2, dt, radian).y()) / dt;
+		if(pt == X)
+		{
+			float value	= (getOmega(pt, t + dt / 2, dt, radian).x() - getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
+			return Vector3(value, 0, 0);
+		}
 
-		return Vector3(X, Y, 0);
+		if(pt == Y)
+		{
+			float value	= (getOmega(pt, t + dt / 2, dt, radian).y() - getOmega(pt, t - dt / 2, dt, radian).y()) / dt;
+			return Vector3(0, value, 0);
+		}
 	}
 }
