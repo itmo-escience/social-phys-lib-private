@@ -304,32 +304,71 @@ namespace SF
 		fixedV,
 		fixedA;
 
-	float radian = degreesToRadians(15);
+	Vector2
+		newVX = Vector2(),
+		newVY = Vector2();
 
-	omega = getOmega(sim_->globalTime_, sim_->timeStep_, radian);
-	dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radian);
+	float 
+		radianX = degreesToRadians(15),
+		radianY = degreesToRadians(15);
+
+	if(fabs(radianX) > 0.001f)
+	{
+		omega = getOmega(sim_->globalTime_, sim_->timeStep_, radianX);
+		dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radianX);
 	
-	R = Vector3(position_.x(), position_.y(), 0);
-	V = Vector3(velocity_.x(), velocity_.y(), 0);
+		R = Vector3(position_.x(), position_.y(), 0);
+		V = Vector3(velocity_.x(), velocity_.y(), 0);
 	
-	fixedR = Vector3(
-		R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-		R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-		R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+		fixedR = Vector3(
+			R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+			R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+			R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
 
-	fixedV = Vector3(
-		V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-		V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-		V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+		fixedV = Vector3(
+			V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+			V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+			V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
-	fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+		fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
-	A = Vector3(
-		fixedA.x() / cos(omega.x()),
-		fixedA.y() / cos(omega.y()),
-		0);
+		A = Vector3(
+			fixedA.x() / cos(omega.x()),
+			fixedA.y() / cos(omega.y()),
+			0);
 
-	Vector2 result = (velocity_ + Vector2(A.x(), A.y()) * sim_->timeStep_);
+		newVX = Vector2(A.x(), A.y());
+	}
+
+	if(fabs(radianY) > 0.001f)
+	{
+		omega = getOmega(sim_->globalTime_, sim_->timeStep_, radianY);
+		dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radianY);
+	
+		R = Vector3(position_.x(), position_.y(), 0);
+		V = Vector3(velocity_.x(), velocity_.y(), 0);
+	
+		fixedR = Vector3(
+			R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+			R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+			R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+
+		fixedV = Vector3(
+			V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+			V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+			V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+		fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+	
+		A = Vector3(
+			fixedA.x() / cos(omega.x()),
+			fixedA.y() / cos(omega.y()),
+			0);
+
+		newVY = Vector2(A.x(), A.y());
+	}
+
+	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 	correction += result;
 	// </F5>
 	
@@ -523,7 +562,7 @@ namespace SF
 
 	Vector3 Agent::getRoll(float t, float radian)
 	{
-		float X = sin(t * M_PI * 2 * 0.09f) * radian;
+		float X = sin(t * M_PI * 2 * 0.009f) * radian;
 		float Y = sin(t * M_PI * 2 * 0.09f) * 0;
 		float Z = sin(t * M_PI * 2 * 0.09f) * 0;
 
