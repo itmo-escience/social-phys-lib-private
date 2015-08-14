@@ -561,10 +561,9 @@ namespace SF
 
 	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
-		float X = sin(t * M_PI * 2 * 0.09f) * radian;
-		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
+		float value = sin(t * M_PI * 2 * 0.09f) * radian;
 		
-		return Vector3(X, Y, 0);
+		return Vector3(value, value, 0);
 	}
 
 	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
