@@ -314,8 +314,9 @@ namespace SF
 
 	if(fabs(radianX) > 0.001f)
 	{
-		omega = Vector3((getRoll(sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x() - getRoll(sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x()) / sim_->timeStep_, 0, 0);
-		dOmega = Vector3((getOmega(sim_->globalTime_ + sim_->timeStep_ / 2, sim_->timeStep_, radianX).x() - getOmega(sim_->globalTime_ - sim_->timeStep_ / 2, sim_->timeStep_, radianX).x()) / sim_->timeStep_,	0, 0);
+		ParameterType parameterType = X;
+		omega = Vector3((getRoll(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x() - getRoll(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x()) / sim_->timeStep_, 0, 0);
+		dOmega = Vector3((getOmega(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, sim_->timeStep_, radianX).x() - getOmega(parameterType, sim_->globalTime_ - sim_->timeStep_ / 2, sim_->timeStep_, radianX).x()) / sim_->timeStep_,	0, 0);
 		
 		R = Vector3(position_.x(), position_.y(), 0);
 		V = Vector3(velocity_.x(), velocity_.y(), 0);
@@ -339,8 +340,9 @@ namespace SF
 
 	if(fabs(radianY) > 0.001f)
 	{
-		omega = getOmega(sim_->globalTime_, sim_->timeStep_, radianY);
-		dOmega = getDOmega(sim_->globalTime_, sim_->timeStep_, radianY);
+		ParameterType parameterType = Y;
+		omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
+		dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
 	
 		R = Vector3(position_.x(), position_.y(), 0);
 		V = Vector3(velocity_.x(), velocity_.y(), 0);
@@ -557,7 +559,7 @@ namespace SF
         return radian * (180.0f / M_PI);
     }
 
-	Vector3 Agent::getRoll(float t, float radian)
+	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
 		float X = sin(t * M_PI * 2 * 0.09f) * radian;
 		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
@@ -566,17 +568,17 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
-	Vector3 Agent::getOmega(float t, float dt, float radian)
+	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
 	{
-		float X	= (getRoll(t + dt / 2, radian).x() - getRoll(t - dt / 2, radian).x()) / dt;
+		float X	= (getRoll(pt, t + dt / 2, radian).x() - getRoll(pt, t - dt / 2, radian).x()) / dt;
 		float Y	= 0; //(getRoll(t + dt / 2, radian).y() - getRoll(t - dt / 2, radian).y()) / dt;
 
 		return Vector3(X, Y, 0);
 	}
 
-	Vector3 Agent::getDOmega(float t, float dt, float radian)
+	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
 	{
-		float X	= (getOmega(t + dt / 2, dt, radian).x() - getOmega(t - dt / 2, dt, radian).x()) / dt;
+		float X	= (getOmega(pt, t + dt / 2, dt, radian).x() - getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
 		float Y	= 0; //(getOmega(t + dt / 2, dt, radian).y() - getOmega(t - dt / 2, dt, radian).y()) / dt;
 
 		return Vector3(X, Y, 0);
