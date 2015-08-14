@@ -165,13 +165,22 @@ namespace SF
 	*	@brief		Returns projection for YOZ plane
 	*	@param		s		Vector
 	*/
+
+	    
+	typedef enum
+	{
+		X = 1,
+		Y
+	}
+	ParameterType;
+
 	Vector2 getVectorProjectionYZ(Vector3 s);
 	Vector3 getCross(Vector3 left, Vector3 right);
 	float degreesToRadians(float degree);
 	float radiansToDegrees(float degree);
-	Vector3 getRoll(float t, float radian);
-	Vector3 getOmega(float t, float dt, float radian);
-	Vector3 getDOmega(float t, float dt, float radian);
+	Vector3 getRoll(ParameterType pt, float t, float radian);
+	Vector3 getOmega(ParameterType pt, float t, float dt, float radian);
+	Vector3 getDOmega(ParameterType pt, float t, float dt, float radian);
 
 
 	bool isForced_;
@@ -204,14 +213,7 @@ namespace SF
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
-        
-	enum
-	{
-		X = 1,
-		Y
-	}
-	ParameterType;
-
+    
     friend class KdTree;
     friend class SFSimulator;
   };

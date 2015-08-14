@@ -557,7 +557,7 @@ namespace SF
         return radian * (180.0f / M_PI);
     }
 
-	Vector3 Agent::getRoll(float t, float radian)
+	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
 		float X = sin(t * M_PI * 2 * 0.09f) * radian;
 		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
@@ -566,7 +566,7 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
-	Vector3 Agent::getOmega(float t, float dt, float radian)
+	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
 	{
 		float X	= (getRoll(t + dt / 2, radian).x() - getRoll(t - dt / 2, radian).x()) / dt;
 		float Y	= 0; //(getRoll(t + dt / 2, radian).y() - getRoll(t - dt / 2, radian).y()) / dt;
@@ -574,7 +574,7 @@ namespace SF
 		return Vector3(X, Y, 0);
 	}
 
-	Vector3 Agent::getDOmega(float t, float dt, float radian)
+	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
 	{
 		float X	= (getOmega(t + dt / 2, dt, radian).x() - getOmega(t - dt / 2, dt, radian).x()) / dt;
 		float Y	= 0; //(getOmega(t + dt / 2, dt, radian).y() - getOmega(t - dt / 2, dt, radian).y()) / dt;
