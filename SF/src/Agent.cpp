@@ -562,8 +562,8 @@ namespace SF
 
 	Vector3 Agent::getRoll(float t, float radian)
 	{
-		float X = sin(t * M_PI * 2 * 0.009f) * radian;
-		float Y = sin(t * M_PI * 2 * 0.09f) * 0;
+		float X = sin(t * M_PI * 2 * 0.09f) * radian;
+		float Y = sin(t * M_PI * 2 * 0.09f) * radian;
 		float Z = sin(t * M_PI * 2 * 0.09f) * 0;
 
 		return Vector3(X, Y, Z);
