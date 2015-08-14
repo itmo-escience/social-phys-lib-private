@@ -368,7 +368,7 @@ namespace SF
 	}
 
 	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
-	correction += result;
+	correction += result * 0.2f;
 	// </F5>
 	
     
