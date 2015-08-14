@@ -315,9 +315,9 @@ namespace SF
 	if(fabs(radianX) > 0.001f)
 	{
 		ParameterType parameterType = X;
-		omega = Vector3((getRoll(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x() - getRoll(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, radianX).x()) / sim_->timeStep_, 0, 0);
-		dOmega = Vector3((getOmega(parameterType, sim_->globalTime_ + sim_->timeStep_ / 2, sim_->timeStep_, radianX).x() - getOmega(parameterType, sim_->globalTime_ - sim_->timeStep_ / 2, sim_->timeStep_, radianX).x()) / sim_->timeStep_,	0, 0);
-		
+		omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+		dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+
 		R = Vector3(position_.x(), position_.y(), 0);
 		V = Vector3(velocity_.x(), velocity_.y(), 0);
 	
