@@ -368,6 +368,23 @@ namespace SF
 	}
 
 	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+
+	
+	Vector3 platformVeclocity = sim_->getPlatformVelocity();
+	float 
+		accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
+		oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
+
+	float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+
+	if(difference > 0)	// positive difference
+		result = result * (1 + fabs(difference));
+	else
+		result = result * (1 - fabs(difference));
+
+	oldPlatformVelocity_ = platformVeclocity;
+
+
 	correction += result * 0.2f;
 	// </F5>
 	
