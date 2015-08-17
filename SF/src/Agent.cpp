@@ -368,7 +368,7 @@ namespace SF
 	}
 
 	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
-	correction += result * 0.1f;
+	correction += result * 0.2f;
 	// </F5>
 	
     
@@ -561,7 +561,7 @@ namespace SF
 
 	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
-		int period = 10;
+		int period = (pt == X) ? sim_->getRotationDegreeSet().getCenter().x() : sim_->getRotationDegreeSet().getCenter().y();
 		float value = sin(t * M_PI / period) * radian;
 		
 		return Vector3(value, value, 0);
