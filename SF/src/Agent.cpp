@@ -367,7 +367,7 @@ namespace SF
 		newVY = Vector2(A.x(), A.y());
 	}
 
-	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_) * 0.001f;
 
 	
 	Vector3 platformVeclocity = sim_->getPlatformVelocity();
@@ -578,8 +578,7 @@ namespace SF
 
 	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
 	{
-		int period = (pt == X) ? sim_->getRotationDegreeSet().getCenter().x() : sim_->getRotationDegreeSet().getCenter().y();
-		float value = sin(t * M_PI / period) * radian;
+		float value = radian;
 		
 		return Vector3(value, value, 0);
 	}
@@ -588,18 +587,14 @@ namespace SF
 	{
 		if(pt == X)
 		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).x() - 
-				getRoll(pt, t - dt / 2, radian).x()) / dt;
+			float value = getRoll(pt, sim_->globalTime_, radian).x() / dt;
 			
 			return Vector3(value, 0, 0);
 		}
 		
 		if(pt == Y)
 		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).y() - 
-				getRoll(pt, t - dt / 2, radian).y()) / dt;
+			float value = getRoll(pt, sim_->globalTime_, radian).y() / dt;
 			
 			return Vector3(0, value, 0);
 		}
