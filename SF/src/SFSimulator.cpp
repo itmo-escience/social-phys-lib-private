@@ -100,7 +100,8 @@ namespace SF
 	agent->repulsiveAgent_ = defaultAgent_->repulsiveAgent_;
 	agent->repulsiveAgentFactor_ = defaultAgent_->repulsiveAgentFactor_;
 	agent->repulsiveObstacle_ = defaultAgent_->repulsiveObstacle_;
-	agent->repulsiveObstacleFactor = defaultAgent_->repulsiveObstacleFactor;
+	agent->repulsiveObstacleFactor_ = defaultAgent_->repulsiveObstacleFactor_;
+	agent->platformFactor_ = defaultAgent_->platformFactor_;
 	agent->perception_ = defaultAgent_->perception_;
 	agent->friction_ = defaultAgent_->friction_;
 	
@@ -125,6 +126,7 @@ namespace SF
 	  float repulsiveAgentFactor, 
 	  float repulsiveObstacle, 
 	  float repulsiveObstacleFactor,
+	  float platformFactor,
 	  float perception, 
 	  float friction,
 	  const Vector2& velocity
@@ -144,7 +146,8 @@ namespace SF
 	agent->repulsiveAgent_ = repulsiveAgent;
 	agent->repulsiveAgentFactor_ = repulsiveAgentFactor;
 	agent->repulsiveObstacle_ = repulsiveObstacle;
-	agent->repulsiveObstacleFactor = repulsiveObstacleFactor;
+	agent->repulsiveObstacleFactor_ = repulsiveObstacleFactor;
+	agent->platformFactor_ = platformFactor;
 	agent->perception_ = perception;
 	agent->friction_ = friction;
 
@@ -317,7 +320,8 @@ namespace SF
 	defaultAgent_->repulsiveAgent_ = apc._repulsiveAgent;
 	defaultAgent_->repulsiveAgentFactor_ = apc._repulsiveAgentFactor;
 	defaultAgent_->repulsiveObstacle_ = apc._repulsiveObstacle;
-	defaultAgent_->repulsiveObstacleFactor = apc._repulsiveObstacleFactor;
+	defaultAgent_->repulsiveObstacleFactor_ = apc._repulsiveObstacleFactor;
+	defaultAgent_->platformFactor_ = apc._platformFactor;
 	defaultAgent_->perception_ = apc._perception;
 	defaultAgent_->friction_ = apc._friction;
     defaultAgent_->velocity_ = apc._velocity;
