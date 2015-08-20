@@ -510,8 +510,6 @@ namespace SF
 	*/
 	RotationDegreeSet getRotationDegreeSet();
 
-	void setRotationInterval(Vector3 inPast, Vector3 inFuture);
-
 	/*!
 	*	@brief		Some useful methods
 	*/
@@ -537,8 +535,8 @@ namespace SF
 	float platformRotationXY_;
 	float platformRotationXZ_;
 	float platformRotationYZ_;
-	Vector3 oldRotation_;
-	Vector3 nextRotation_;
+	Vector3 prevPrevRotation_;
+	Vector3 prevRotation_;
 
     friend class Agent;
     friend class KdTree;
