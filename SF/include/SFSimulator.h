@@ -523,6 +523,11 @@ namespace SF
 
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
+	Vector3 rotationInPast_;
+	Vector3 rotationNow_;
+	Vector3 rotationInFuture_;
+
+
   private:
     std::vector<Agent*> agents_;
     Agent* defaultAgent_;
@@ -535,7 +540,7 @@ namespace SF
 	float platformRotationXY_;
 	float platformRotationXZ_;
 	float platformRotationYZ_;
-
+	
 
     friend class Agent;
     friend class KdTree;
