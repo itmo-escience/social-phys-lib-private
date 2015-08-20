@@ -133,6 +133,7 @@ namespace SF
 		float repulsiveAgentFactor, 
 		float repulsiveObstacle, 
 		float repulsiveObstacleFactor,
+		float platformFactor,
 		float perception,
 		float friction,
 		const Vector2& velocity = Vector2()

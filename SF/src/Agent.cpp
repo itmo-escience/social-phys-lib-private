@@ -181,7 +181,7 @@ namespace SF
     }
 
 	float distance = sqrt(minDistanceSquared) - radius_;
-	float forceAmount = repulsiveObstacleFactor * exp(-distance / repulsiveObstacle_);
+	float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
         
     correction += forceAmount * minDiff.normalized();
     // </F3>
@@ -382,7 +382,7 @@ namespace SF
 
 		oldPlatformVelocity_ = platformVeclocity;
 
-		correction += result * 0.000005f;
+		correction += result * platformFactor_;
 	}
 	// </F5>
 	

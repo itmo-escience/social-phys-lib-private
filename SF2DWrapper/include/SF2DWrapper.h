@@ -24,6 +24,7 @@ namespace SF2D {
 		float RepulsiveAgentFactor;
 		float RepulsiveObstacle;
 		float RepulsiveObstacleFactor;
+		float PlatformFactor;
 		float Perception;
 		float Friction;
 		Microsoft::Xna::Framework::Vector2 Velocity;
@@ -43,6 +44,7 @@ namespace SF2D {
 			float repulsiveAgentFactor, 
 			float repulsiveObstacle, 
 			float repulsiveObstacleFactor,
+			float platformFactor,
 			float perception, 
 			float friction,
 			Microsoft::Xna::Framework::Vector2 velocity
@@ -61,6 +63,7 @@ namespace SF2D {
 		float _repulsiveAgentFactor;
 		float _repulsiveObstacle;
 		float _repulsiveObstacleFactor;
+		float _platformFactor;
 		float _perception;
 		float _friction;
 		Microsoft::Xna::Framework::Vector2 _velocity;
@@ -91,6 +94,7 @@ namespace SF2D {
 					float repulsiveAgentFactor, 
 					float repulsiveObstacle, 
 					float repulsiveObstacleFactor,
+					float platformFactor,
 					float perception, 
 					float friction,
 					Microsoft::Xna::Framework::Vector2 velocity 
