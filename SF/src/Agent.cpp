@@ -76,6 +76,8 @@ namespace SF
 			velocity_(), 
 			accelerationBuffer_(0.0f),
 			previosPosition_(INT_MIN, INT_MIN), 
+			oldRotation_(),
+			nextRotation_(),
 			forceAcceleration_(0, 0),
 			oldPlatformVelocity_(),
 			id_(0)
