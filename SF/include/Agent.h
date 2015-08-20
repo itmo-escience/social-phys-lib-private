@@ -174,6 +174,14 @@ namespace SF
 	}
 	ParameterType;
 
+	typedef enum
+	{
+		PAST = 1,
+		NOW, 
+		FUTURE
+	}
+	TimeType;
+
 	Vector2 getVectorProjectionYZ(Vector3 s);
 	Vector3 getCross(Vector3 left, Vector3 right);
 	float degreesToRadians(float degree);
