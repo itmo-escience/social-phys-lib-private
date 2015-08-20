@@ -581,13 +581,20 @@ namespace SF
 
 	Vector3 Agent::getRoll(ParameterType pt, TimeType tt)
 	{
+		Vector3 rotation;
 		float value;
 
+		if(tt == PAST)
+			rotation = sim_->rotationInPast_;
+		
+		if(tt == FUTURE)
+			rotation = sim_->rotationInFuture_;
+
 		if(pt == X)
-			value = sim_->getRotationDegreeSet().getRotationOX();
+			value = rotation.x();
 		
 		if(pt == Y)
-			value = sim_->getRotationDegreeSet().getRotationOY();
+			value = rotation.y();
 
 		return Vector3(value, value, 0);
 	}
