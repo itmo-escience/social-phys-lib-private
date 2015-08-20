@@ -592,25 +592,17 @@ namespace SF
 		return Vector3(value, value, 0);
 	}
 
-	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
+	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
-		if(pt == X)
-		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).x() - 
-				getRoll(pt, t - dt / 2, radian).x()) / dt;
+		float value = 
+				(getRoll(pt, FUTURE).x() - 
+				getRoll(pt, PAST).x()) / sim_->timeStep_;
 			
+		if(pt == X)
 			return Vector3(value, 0, 0);
-		}
 		
 		if(pt == Y)
-		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).y() - 
-				getRoll(pt, t - dt / 2, radian).y()) / dt;
-			
 			return Vector3(0, value, 0);
-		}
 	}
 
 	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
