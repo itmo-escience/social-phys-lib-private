@@ -310,11 +310,7 @@ namespace SF
 			newVX = Vector2(),
 			newVY = Vector2();
 
-		float 
-			radianX = degreesToRadians(sim_->rotationNow_.y()),
-			radianY = degreesToRadians(sim_->rotationNow_.x());
-
-		if(fabs(radianX) > 0.001f)
+		if(fabs(sim_->rotationNow_.x()) > 0.001f)
 		{
 			ParameterType parameterType = X;
 			omega = getOmega(parameterType, NOW);
@@ -340,7 +336,7 @@ namespace SF
 			newVX = Vector2(A.x(), A.y());
 		}
 
-		if(fabs(radianY) > 0.001f)
+		if(fabs(sim_->rotationNow_.y()) > 0.001f)
 		{
 			ParameterType parameterType = Y;
 			omega = getOmega(parameterType, NOW);
@@ -371,7 +367,7 @@ namespace SF
 
 		Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
-	
+
 		Vector3 platformVeclocity = sim_->getPlatformVelocity();
 		float 
 			accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
@@ -385,7 +381,6 @@ namespace SF
 			result = result * (1 - fabs(difference));
 
 		oldPlatformVelocity_ = platformVeclocity;
-
 
 		correction += result * 0.000005f;
 	}
