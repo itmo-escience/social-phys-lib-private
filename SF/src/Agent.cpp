@@ -606,9 +606,14 @@ namespace SF
 
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
-		float value = 
-				(getRoll(pt, FUTURE).x() - 
-				getRoll(pt, PAST).x()) / sim_->timeStep_;
+		float value;
+		
+		if(tt == NOW)
+			value = (getRoll(pt, NOW2FUTURE).x() - getRoll(pt, PAST2NOW).x()) / sim_->timeStep_;
+		else if(tt == NOW2FUTURE)
+			value = (getRoll(pt, FUTURE).x() - getRoll(pt, NOW).x()) / sim_->timeStep_;
+		else if(tt == PAST2NOW)
+			value = (getRoll(pt, NOW).x() - getRoll(pt, PAST).x()) / sim_->timeStep_;
 			
 		if(pt == X)
 			return Vector3(value, 0, 0);
@@ -619,9 +624,10 @@ namespace SF
 
 	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
-		float value	= 
-				(getOmega(pt, FUTURE).x() - 
-				getOmega(pt, PAST).x()) / sim_->timeStep_;
+		float value;
+
+		if(tt == NOW)
+			value = (getOmega(pt, NOW2FUTURE).x() - getOmega(pt, PAST2NOW).x()) / sim_->timeStep_;
 			
 		if(pt == X)
 			return Vector3(value, 0, 0);
