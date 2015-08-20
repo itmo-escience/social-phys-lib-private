@@ -21,6 +21,7 @@ AgentProperty::AgentProperty(
 	float repulsiveAgentFactor, 
 	float repulsiveObstacle, 
 	float repulsiveObstacleFactor,
+	float platformFactor,
 	float perception, 
 	float friction,
 	SFVector2 velocity
@@ -37,6 +38,7 @@ AgentProperty::AgentProperty(
 	RepulsiveAgentFactor(repulsiveAgentFactor),
 	RepulsiveObstacle(repulsiveObstacle),
 	RepulsiveObstacleFactor(repulsiveObstacleFactor),
+	PlatformFactor(platformFactor),
 	Perception(perception),
 	Friction(friction),
 	Velocity(velocity)
@@ -68,6 +70,7 @@ int SFSimulator::addAgent(
 	float repulsiveAgentFactor, 
 	float repulsiveObstacle, 
 	float repulsiveObstacleFactor,
+	float platformFactor,
 	float perception, 
 	float friction,
 	SFVector2 velocity 
@@ -90,6 +93,7 @@ int SFSimulator::addAgent(
 		repulsiveAgentFactor, 
 		repulsiveObstacle, 
 		repulsiveObstacleFactor, 
+		platformFactor,
 		perception, 
 		friction,
 		vel
@@ -207,6 +211,7 @@ void SFSimulator::setAgentDefaults(AgentProperty^ ap)
 		ap->RepulsiveAgentFactor,
 		ap->RepulsiveObstacle,
 		ap->RepulsiveObstacleFactor,
+		ap->PlatformFactor,
 		ap->Perception,
 		ap->Friction,
 		SF::Vector2(ap->Velocity.X, ap->Velocity.Y)
