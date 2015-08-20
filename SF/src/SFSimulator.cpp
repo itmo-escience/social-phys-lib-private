@@ -33,8 +33,9 @@ namespace SF
 	platformRotationXY_(0),
 	platformRotationXZ_(0),
 	platformRotationYZ_(0),
-	prevPrevRotation_(),
-	prevRotation_(),
+	rotationInPast_(),
+	rotationNow_(),
+	rotationInFuture_(),
 	platformVelocity_()
 	{
 		kdTree_ = new KdTree(this);
@@ -392,7 +393,10 @@ namespace SF
 
   void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
   {
-	  angleSet_ = set;
+	  /*if(prevPrevRotation_ == Vector3())
+		  prevPrevRotation_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  else if(prevRotation_ == Vector3())
+		  prevRotation_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ())*/
   }
 
   void SFSimulator::setAdditionalForce(Vector3 velocity, RotationDegreeSet set)
