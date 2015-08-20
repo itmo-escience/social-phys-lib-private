@@ -16,6 +16,7 @@ namespace SF
 		float repulsiveAgentFactor, 
 		float repulsiveObstacle, 
 		float repulsiveObstacleFactor,
+		float platformFactor,
 		float perception, 
 		float friction,
 		Vector2 velocity
@@ -32,6 +33,7 @@ namespace SF
 		_repulsiveAgentFactor(repulsiveAgentFactor),
 		_repulsiveObstacle(repulsiveObstacle),
 		_repulsiveObstacleFactor(repulsiveObstacleFactor),
+		_platformFactor(platformFactor),
 		_perception(perception),
 		_friction(friction),
 		_velocity(velocity)
