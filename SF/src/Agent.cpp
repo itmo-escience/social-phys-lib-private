@@ -317,8 +317,8 @@ namespace SF
 		if(fabs(radianX) > 0.001f)
 		{
 			ParameterType parameterType = X;
-			omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
-			dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+			omega = getOmega(parameterType, NOW);
+			dOmega = getDOmega(parameterType, NOW);
 
 			R = Vector3(position_.x(), position_.y(), 0);
 			V = Vector3(velocity_.x(), velocity_.y(), 0);
@@ -343,8 +343,8 @@ namespace SF
 		if(fabs(radianY) > 0.001f)
 		{
 			ParameterType parameterType = Y;
-			omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
-			dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
+			omega = getOmega(parameterType, NOW);
+			dOmega = getDOmega(parameterType, NOW);
 	
 			R = Vector3(position_.x(), position_.y(), 0);
 			V = Vector3(velocity_.x(), velocity_.y(), 0);
@@ -387,7 +387,7 @@ namespace SF
 		oldPlatformVelocity_ = platformVeclocity;
 
 
-		correction += result * 0.2f;
+		correction += result * 0.000005f;
 	}
 	// </F5>
 	
@@ -606,9 +606,14 @@ namespace SF
 
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
-		float value = 
-				(getRoll(pt, FUTURE).x() - 
-				getRoll(pt, PAST).x()) / sim_->timeStep_;
+		float value;
+		
+		if(tt == NOW)
+			value = (getRoll(pt, NOW2FUTURE).x() - getRoll(pt, PAST2NOW).x()) / sim_->timeStep_;
+		else if(tt == NOW2FUTURE)
+			value = (getRoll(pt, FUTURE).x() - getRoll(pt, NOW).x()) / sim_->timeStep_;
+		else if(tt == PAST2NOW)
+			value = (getRoll(pt, NOW).x() - getRoll(pt, PAST).x()) / sim_->timeStep_;
 			
 		if(pt == X)
 			return Vector3(value, 0, 0);
@@ -619,9 +624,10 @@ namespace SF
 
 	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
-		float value	= 
-				(getOmega(pt, FUTURE).x() - 
-				getOmega(pt, PAST).x()) / sim_->timeStep_;
+		float value;
+
+		if(tt == NOW)
+			value = (getOmega(pt, NOW2FUTURE).x() - getOmega(pt, PAST2NOW).x()) / sim_->timeStep_;
 			
 		if(pt == X)
 			return Vector3(value, 0, 0);
