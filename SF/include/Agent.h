@@ -177,7 +177,9 @@ namespace SF
 	typedef enum
 	{
 		PAST = 1,
+		PAST2NOW,
 		NOW, 
+		NOW2FUTURE,
 		FUTURE
 	}
 	TimeType;
