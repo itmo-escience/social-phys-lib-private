@@ -33,6 +33,8 @@ namespace SF
 	platformRotationXY_(0),
 	platformRotationXZ_(0),
 	platformRotationYZ_(0),
+	oldRotation_(),
+	nextRotation_(),
 	platformVelocity_()
 	{
 		kdTree_ = new KdTree(this);
@@ -386,6 +388,11 @@ namespace SF
   RotationDegreeSet SFSimulator::getRotationDegreeSet()
   {
 	  return angleSet_;
+  }
+
+  void setRotationInterval(Vector3 inPast, Vector3 inFuture)
+  {
+	  
   }
 
   void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
