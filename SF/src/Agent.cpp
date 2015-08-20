@@ -293,7 +293,7 @@ namespace SF
 	// </F5>
 
 	// <F5>
-	if(sim_->rotationInFuture_ != Vector3())
+	if(sim_->rotationFuture_ != Vector3())
 	{
 		Vector3 
 			omega,
@@ -579,58 +579,54 @@ namespace SF
         return radian * (180.0f / M_PI);
     }
 
-	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
+	Vector3 Agent::getRoll(ParameterType pt, TimeType tt)
 	{
+		Vector3 rotation;
 		float value;
 
+		if(tt == PAST)
+			rotation = sim_->rotationPast_;
+		else if(tt == PAST2NOW)
+			rotation = sim_->rotationPast2Now_;
+		else if(tt == NOW)
+			rotation = sim_->rotationNow_;
+		else if(tt == NOW2FUTURE)
+			rotation == sim_->rotationNow2Future_;
+		if(tt == FUTURE)
+			rotation = sim_->rotationFuture_;
+
 		if(pt == X)
-			value = sim_->getRotationDegreeSet().getRotationOX();
+			value = rotation.x();
 		
 		if(pt == Y)
-			value = sim_->getRotationDegreeSet().getRotationOY();
+			value = rotation.y();
 
 		return Vector3(value, value, 0);
 	}
 
-	Vector3 Agent::getOmega(ParameterType pt, float t, float dt, float radian)
+	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
-		if(pt == X)
-		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).x() - 
-				getRoll(pt, t - dt / 2, radian).x()) / dt;
+		float value = 
+				(getRoll(pt, FUTURE).x() - 
+				getRoll(pt, PAST).x()) / sim_->timeStep_;
 			
+		if(pt == X)
 			return Vector3(value, 0, 0);
-		}
 		
 		if(pt == Y)
-		{
-			float value = 
-				(getRoll(pt, t + dt / 2, radian).y() - 
-				getRoll(pt, t - dt / 2, radian).y()) / dt;
-			
 			return Vector3(0, value, 0);
-		}
 	}
 
-	Vector3 Agent::getDOmega(ParameterType pt, float t, float dt, float radian)
+	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
+		float value	= 
+				(getOmega(pt, FUTURE).x() - 
+				getOmega(pt, PAST).x()) / sim_->timeStep_;
+			
 		if(pt == X)
-		{
-			float value	= 
-				(getOmega(pt, t + dt / 2, dt, radian).x() - 
-				getOmega(pt, t - dt / 2, dt, radian).x()) / dt;
-			
 			return Vector3(value, 0, 0);
-		}
-
+		
 		if(pt == Y)
-		{
-			float value	= 
-				(getOmega(pt, t + dt / 2, dt, radian).y() - 
-				getOmega(pt, t - dt / 2, dt, radian).y()) / dt;
-			
 			return Vector3(0, value, 0);
-		}
 	}
 }

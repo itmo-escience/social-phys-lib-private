@@ -523,9 +523,11 @@ namespace SF
 
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
-	Vector3 rotationInPast_;
+	Vector3 rotationPast_;
+	Vector3 rotationPast2Now_;
 	Vector3 rotationNow_;
-	Vector3 rotationInFuture_;
+	Vector3 rotationNow2Future_;
+	Vector3 rotationFuture_;
 
 
   private:

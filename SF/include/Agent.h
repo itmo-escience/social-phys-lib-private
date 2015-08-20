@@ -174,13 +174,23 @@ namespace SF
 	}
 	ParameterType;
 
+	typedef enum
+	{
+		PAST = 1,
+		PAST2NOW,
+		NOW, 
+		NOW2FUTURE,
+		FUTURE
+	}
+	TimeType;
+
 	Vector2 getVectorProjectionYZ(Vector3 s);
 	Vector3 getCross(Vector3 left, Vector3 right);
 	float degreesToRadians(float degree);
 	float radiansToDegrees(float degree);
-	Vector3 getRoll(ParameterType pt, float t, float radian);
-	Vector3 getOmega(ParameterType pt, float t, float dt, float radian);
-	Vector3 getDOmega(ParameterType pt, float t, float dt, float radian);
+	Vector3 getRoll(ParameterType pt, TimeType tt);
+	Vector3 getOmega(ParameterType pt, TimeType tt);
+	Vector3 getDOmega(ParameterType pt, TimeType tt);
 
 
 	bool isForced_;
