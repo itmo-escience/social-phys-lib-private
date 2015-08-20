@@ -387,7 +387,7 @@ namespace SF
 		oldPlatformVelocity_ = platformVeclocity;
 
 
-		correction += result * 0.2f;
+		correction += result * 0.000005f;
 	}
 	// </F5>
 	
