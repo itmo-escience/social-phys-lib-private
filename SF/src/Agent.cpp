@@ -293,99 +293,102 @@ namespace SF
 	// </F5>
 
 	// <F5>
-	Vector3 
-		omega,
-		dOmega,
-		R, 
-		V, 
-		A,
-		fixedOmega,
-		fixedR, 
-		fixedV,
-		fixedA;
-
-	Vector2
-		newVX = Vector2(),
-		newVY = Vector2();
-
-	float 
-		radianX = degreesToRadians(sim_->getRotationDegreeSet().getRotationOX()),
-		radianY = degreesToRadians(sim_->getRotationDegreeSet().getRotationOY());
-
-	if(fabs(radianX) > 0.001f)
+	if(sim_->rotationInFuture_ != Vector3())
 	{
-		ParameterType parameterType = X;
-		omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
-		dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+		Vector3 
+			omega,
+			dOmega,
+			R, 
+			V, 
+			A,
+			fixedOmega,
+			fixedR, 
+			fixedV,
+			fixedA;
 
-		R = Vector3(position_.x(), position_.y(), 0);
-		V = Vector3(velocity_.x(), velocity_.y(), 0);
+		Vector2
+			newVX = Vector2(),
+			newVY = Vector2();
+
+		float 
+			radianX = degreesToRadians(sim_->rotationNow_.x()),
+			radianY = degreesToRadians(sim_->rotationNow_.y());
+
+		if(fabs(radianX) > 0.001f)
+		{
+			ParameterType parameterType = X;
+			omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+			dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianX);
+
+			R = Vector3(position_.x(), position_.y(), 0);
+			V = Vector3(velocity_.x(), velocity_.y(), 0);
 	
-		fixedR = Vector3(
-			R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-			R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-			R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+			fixedR = Vector3(
+				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
 
-		fixedV = Vector3(
-			V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-			V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-			V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+			fixedV = Vector3(
+				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
-		fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
-		A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
+			A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
 
-		newVX = Vector2(A.x(), A.y());
+			newVX = Vector2(A.x(), A.y());
+		}
+
+		if(fabs(radianY) > 0.001f)
+		{
+			ParameterType parameterType = Y;
+			omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
+			dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
+	
+			R = Vector3(position_.x(), position_.y(), 0);
+			V = Vector3(velocity_.x(), velocity_.y(), 0);
+	
+			fixedR = Vector3(
+				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+
+			fixedV = Vector3(
+				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+	
+			A = Vector3(
+				fixedA.x() / cos(omega.x()),
+				fixedA.y() / cos(omega.y()),
+				0);
+
+			newVY = Vector2(A.x(), A.y());
+		}
+
+		Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+
+	
+		Vector3 platformVeclocity = sim_->getPlatformVelocity();
+		float 
+			accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
+			oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
+
+		float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+
+		if(difference > 0)	// positive difference
+			result = result * (1 + fabs(difference));
+		else
+			result = result * (1 - fabs(difference));
+
+		oldPlatformVelocity_ = platformVeclocity;
+
+
+		correction += result * 0.2f;
 	}
-
-	if(fabs(radianY) > 0.001f)
-	{
-		ParameterType parameterType = Y;
-		omega = getOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
-		dOmega = getDOmega(parameterType, sim_->globalTime_, sim_->timeStep_, radianY);
-	
-		R = Vector3(position_.x(), position_.y(), 0);
-		V = Vector3(velocity_.x(), velocity_.y(), 0);
-	
-		fixedR = Vector3(
-			R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-			R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-			R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
-
-		fixedV = Vector3(
-			V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-			V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-			V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
-
-		fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
-	
-		A = Vector3(
-			fixedA.x() / cos(omega.x()),
-			fixedA.y() / cos(omega.y()),
-			0);
-
-		newVY = Vector2(A.x(), A.y());
-	}
-
-	Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
-
-	
-	Vector3 platformVeclocity = sim_->getPlatformVelocity();
-	float 
-		accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
-		oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
-
-	float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
-
-	if(difference > 0)	// positive difference
-		result = result * (1 + fabs(difference));
-	else
-		result = result * (1 - fabs(difference));
-
-	oldPlatformVelocity_ = platformVeclocity;
-
-
-	correction += result * 0.2f;
 	// </F5>
 	
     
