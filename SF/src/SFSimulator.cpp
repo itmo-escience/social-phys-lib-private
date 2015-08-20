@@ -393,10 +393,18 @@ namespace SF
 
   void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
   {
-	  /*if(prevPrevRotation_ == Vector3())
-		  prevPrevRotation_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
-	  else if(prevRotation_ == Vector3())
-		  prevRotation_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ())*/
+	  if(rotationInPast_ == Vector3())
+		  rotationInPast_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  else if(rotationNow_ == Vector3())
+		  rotationNow_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  else if(rotationInFuture_ == Vector3())
+		  rotationInFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  else
+	  {
+		  rotationInPast_ = rotationNow_;
+		  rotationNow_ = rotationInFuture_;
+		  rotationInFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  }
   }
 
   void SFSimulator::setAdditionalForce(Vector3 velocity, RotationDegreeSet set)
