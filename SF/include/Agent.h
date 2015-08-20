@@ -188,7 +188,7 @@ namespace SF
 	float radiansToDegrees(float degree);
 	Vector3 getRoll(ParameterType pt, TimeType tt);
 	Vector3 getOmega(ParameterType pt, TimeType tt);
-	Vector3 getDOmega(ParameterType pt, float t, float dt, float radian);
+	Vector3 getDOmega(ParameterType pt, TimeType tt);
 
 
 	bool isForced_;
