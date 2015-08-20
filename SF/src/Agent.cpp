@@ -293,7 +293,7 @@ namespace SF
 	// </F5>
 
 	// <F5>
-	if(sim_->rotationInFuture_ != Vector3())
+	if(sim_->rotationFuture_ != Vector3())
 	{
 		Vector3 
 			omega,
@@ -585,10 +585,15 @@ namespace SF
 		float value;
 
 		if(tt == PAST)
-			rotation = sim_->rotationInPast_;
-		
+			rotation = sim_->rotationPast_;
+		else if(tt == PAST2NOW)
+			rotation = sim_->rotationPast2Now_;
+		else if(tt == NOW)
+			rotation = sim_->rotationNow_;
+		else if(tt == NOW2FUTURE)
+			rotation == sim_->rotationNow2Future_;
 		if(tt == FUTURE)
-			rotation = sim_->rotationInFuture_;
+			rotation = sim_->rotationFuture_;
 
 		if(pt == X)
 			value = rotation.x();
