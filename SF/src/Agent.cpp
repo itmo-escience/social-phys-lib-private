@@ -311,8 +311,8 @@ namespace SF
 			newVY = Vector2();
 
 		float 
-			radianX = degreesToRadians(sim_->rotationNow_.x()),
-			radianY = degreesToRadians(sim_->rotationNow_.y());
+			radianX = degreesToRadians(sim_->rotationNow_.y()),
+			radianY = degreesToRadians(sim_->rotationNow_.x());
 
 		if(fabs(radianX) > 0.001f)
 		{
