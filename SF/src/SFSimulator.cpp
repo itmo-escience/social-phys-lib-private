@@ -33,9 +33,11 @@ namespace SF
 	platformRotationXY_(0),
 	platformRotationXZ_(0),
 	platformRotationYZ_(0),
-	rotationInPast_(),
+	rotationPast_(),
+	rotationPast2Now_(),
 	rotationNow_(),
-	rotationInFuture_(),
+	rotationNow2Future_(),
+	rotationFuture_(),
 	platformVelocity_()
 	{
 		kdTree_ = new KdTree(this);
@@ -393,17 +395,17 @@ namespace SF
 
   void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
   {
-	  if(rotationInPast_ == Vector3())
-		  rotationInPast_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  if(rotationPast_ == Vector3())
+		  rotationPast_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
 	  else if(rotationNow_ == Vector3())
 		  rotationNow_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
-	  else if(rotationInFuture_ == Vector3())
-		  rotationInFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+	  else if(rotationFuture_ == Vector3())
+		  rotationFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
 	  else
 	  {
-		  rotationInPast_ = rotationNow_;
-		  rotationNow_ = rotationInFuture_;
-		  rotationInFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
+		  rotationPast_ = rotationNow_;
+		  rotationNow_ = rotationFuture_;
+		  rotationFuture_ = Vector3(set.getRotationOX(), set.getRotationOY(), set.getRotationOZ());
 	  }
   }
 
