@@ -208,6 +208,8 @@ namespace SF
 	Vector2 previosPosition_;
     Vector2 velocity_;
 	Vector3 oldPlatformVelocity_;
+	Vector3 oldRotaion_;
+	Vector3 nextRotation_;
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
