@@ -579,7 +579,7 @@ namespace SF
         return radian * (180.0f / M_PI);
     }
 
-	Vector3 Agent::getRoll(ParameterType pt, float t, float radian)
+	Vector3 Agent::getRoll(ParameterType pt, TimeType tt)
 	{
 		float value;
 
