@@ -298,8 +298,8 @@ namespace SF
 		Vector3 
 			omega,
 			dOmega,
-			R, 
-			V, 
+			R = Vector3(position_.x(), position_.y(), 0),
+			V = Vector3(velocity_.x(), velocity_.y(), 0),
 			A,
 			fixedOmega,
 			fixedR, 
@@ -316,9 +316,6 @@ namespace SF
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
 
-			R = Vector3(position_.x(), position_.y(), 0);
-			V = Vector3(velocity_.x(), velocity_.y(), 0);
-	
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
@@ -341,9 +338,6 @@ namespace SF
 			ParameterType parameterType = Y;
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
-	
-			R = Vector3(position_.x(), position_.y(), 0);
-			V = Vector3(velocity_.x(), velocity_.y(), 0);
 	
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
