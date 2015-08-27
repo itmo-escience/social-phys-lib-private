@@ -293,12 +293,14 @@ namespace SF
 	// </F5>
 
 	// <F5>
+	Vector3 center = sim_->getRotationDegreeSet().getCenter();
+
 	if(sim_->rotationFuture_ != Vector3())
 	{
 		Vector3 
 			omega,
 			dOmega,
-			R = Vector3(position_.x(), position_.y(), 0),
+			R = Vector3(fabs(position_.x() - center.x()), fabs(position_.y() - center.y()), 0),
 			V = Vector3(velocity_.x(), velocity_.y(), 0),
 			A,
 			fixedOmega,
