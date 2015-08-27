@@ -399,6 +399,8 @@ namespace SF
 
   void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
   {
+	  angleSet_ = set;
+	  
 	  if(set.getRotationOX() != 0 || set.getRotationOY() != 0 || set.getRotationOZ() != 0)
 	  {
 		  if(rotationPast_ == Vector3())
