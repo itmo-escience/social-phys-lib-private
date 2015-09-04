@@ -342,12 +342,12 @@ namespace SF
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) - R.x() * sin(omega.y()));
 
 			fixedV = Vector3(
 				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
