@@ -306,6 +306,10 @@ namespace SF
 			fixedV,
 			fixedA;
 
+		SimpleMatrix 
+			xForm = SimpleMatrix(),
+			yForm = SimpleMatrix();
+
 		Vector2
 			newVX = Vector2(),
 			newVY = Vector2();
@@ -315,6 +319,7 @@ namespace SF
 			ParameterType parameterType = X;
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
+			xForm = getRotationX(getRoll(parameterType, NOW).x());
 
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -338,7 +343,8 @@ namespace SF
 			ParameterType parameterType = Y;
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
-	
+			yForm = getRotationY(getRoll(parameterType, NOW).y());
+			
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
