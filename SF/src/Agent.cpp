@@ -312,7 +312,9 @@ namespace SF
 			determinantCentralForceX = 0,
 			determinantCentralForceY = 0,
 			determinantTangentialForceX = 0,
-			determinantTangentialForceY = 0;
+			determinantTangentialForceY = 0,
+			determinantCoriolisForceX = 0,
+			determinantCoriolisForceY = 0;
 
 		SimpleMatrix 
 			xForm = SimpleMatrix(),
@@ -363,6 +365,12 @@ namespace SF
 					getCross(dOmega, R) : 
 					getCross(R, dOmega);
 
+			determinantCoriolisForceX = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+			CoriolisForce = 
+				(determinantCoriolisForceX > 0) ? 
+					2 * getCross(omega, V) : 
+					2 * getCross(V, omega);
+
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
 			A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
@@ -410,6 +418,12 @@ namespace SF
 				(determinantCentralForceY > 0) ? 
 					getCross(dOmega, R) : 
 					getCross(R, dOmega);
+
+			determinantCoriolisForceY = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+			CoriolisForce = 
+				(determinantCoriolisForceY > 0) ? 
+					2 * getCross(omega, V) : 
+					2 * getCross(V, omega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
