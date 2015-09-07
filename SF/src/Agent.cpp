@@ -310,7 +310,9 @@ namespace SF
 			determinantPrefixCentralForceX = 0,
 			determinantPrefixCentralForceY = 0,
 			determinantCentralForceX = 0,
-			determinantCentralForceY = 0;
+			determinantCentralForceY = 0,
+			determinantTangentialForceX = 0,
+			determinantTangentialForceY = 0;
 
 		SimpleMatrix 
 			xForm = SimpleMatrix(),
@@ -355,6 +357,12 @@ namespace SF
 					getCross(omega, prefixCentralForce) : 
 					getCross(prefixCentralForce, omega);
 
+			determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+			tangentialForce = 
+				(determinantCentralForceX > 0) ? 
+					getCross(dOmega, R) : 
+					getCross(R, dOmega);
+
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
 			A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
@@ -396,6 +404,12 @@ namespace SF
 				(determinantCentralForceY > 0) ? 
 					getCross(omega, prefixCentralForce) : 
 					getCross(prefixCentralForce, omega);
+
+			determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+			tangentialForce = 
+				(determinantCentralForceY > 0) ? 
+					getCross(dOmega, R) : 
+					getCross(R, dOmega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
