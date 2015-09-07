@@ -307,8 +307,10 @@ namespace SF
 			fixedA = Vector3();
 			
 		float 
-			determinantX = 0,
-			determinantY = 0;
+			determinantPrefixCentralForceX = 0,
+			determinantPrefixCentralForceY = 0,
+			determinantCentralForceX = 0,
+			determinantCentralForceY = 0;
 
 		SimpleMatrix 
 			xForm = SimpleMatrix(),
@@ -341,11 +343,17 @@ namespace SF
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
-			determinantX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			determinantPrefixCentralForceX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
 			prefixCentralForce = 
-				(determinantX > 0) ?
+				(determinantPrefixCentralForceX > 0) ?
 					getCross(omega, R) :
 					getCross(R, omega);
+
+			determinantCentralForceX = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+            centralForce = 
+				(determinantCentralForceX > 0) ? 
+					getCross(omega, prefixCentralForce) : 
+					getCross(prefixCentralForce, omega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
@@ -377,11 +385,17 @@ namespace SF
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
 
-			determinantY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			determinantPrefixCentralForceY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
 			prefixCentralForce = 
-				(determinantY > 0) ?
+				(determinantPrefixCentralForceY > 0) ?
 					getCross(omega, R) :
 					getCross(R, omega);
+
+			determinantCentralForceY = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+            centralForce = 
+				(determinantCentralForceY > 0) ? 
+					getCross(omega, prefixCentralForce) : 
+					getCross(prefixCentralForce, omega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
