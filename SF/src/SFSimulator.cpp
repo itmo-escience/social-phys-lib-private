@@ -403,23 +403,23 @@ namespace SF
 	  {
 		  if(rotationPast_ == Vector3())
 		  {
-			  rotationPast_ = Vector3(set.getRotationOY() + 30, set.getRotationOX() + 30, set.getRotationOZ() + 30);
+			  rotationPast_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 		  }
 		  else if(rotationNow_ == Vector3())
 		  {
-			  rotationNow_ = Vector3(set.getRotationOY() + 30, set.getRotationOX() + 30, set.getRotationOZ() + 30);
+			  rotationNow_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 			  rotationPast2Now_ = (rotationPast_ + rotationNow_) / 2;
 		  }
 		  else if(rotationFuture_ == Vector3())
 		  {
-			  rotationFuture_ = Vector3(set.getRotationOY() + 30, set.getRotationOX() + 30, set.getRotationOZ() + 30);
+			  rotationFuture_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 			  rotationNow2Future_ = (rotationNow_ + rotationFuture_) / 2;
 		  }
 		  else
 		  {
 			  rotationPast_ = rotationNow_;
 			  rotationNow_ = rotationFuture_;
-			  rotationFuture_ = Vector3(set.getRotationOY() + 30, set.getRotationOX() + 30, set.getRotationOZ() + 30);
+			  rotationFuture_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 			  rotationPast2Now_ = (rotationPast_ + rotationNow_) / 2;
 			  rotationNow2Future_ = (rotationNow_ + rotationFuture_) / 2;
 		  }
