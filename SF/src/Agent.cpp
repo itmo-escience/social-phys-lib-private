@@ -307,8 +307,8 @@ namespace SF
 			fixedA = Vector3();
 			
 		float 
-			DeterminantX = 0,
-			DeterminantY = 0;
+			determinantX = 0,
+			determinantY = 0;
 
 		SimpleMatrix 
 			xForm = SimpleMatrix(),
@@ -341,7 +341,11 @@ namespace SF
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
-			DeterminantX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			determinantX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			prefixCentralForce = 
+				(determinantX > 0) ?
+					getCross(omega, R) :
+					getCross(R, omega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
@@ -373,7 +377,11 @@ namespace SF
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
 
-			DeterminantY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			determinantY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+			prefixCentralForce = 
+				(determinantY > 0) ?
+					getCross(omega, R) :
+					getCross(R, omega);
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
