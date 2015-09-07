@@ -624,4 +624,49 @@ namespace SF
 		if(pt == Y)
 			return Vector3(0, value, 0);
 	}
+
+	SimpleMatrix Agent::getRotationX(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m22 = c;
+		result.m23 = s;
+		result.m32 = -s;
+		result.m33 = c;
+
+		return result;
+	}
+
+	SimpleMatrix Agent::getRotationY(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m11 = c;
+		result.m13 = -s;
+		result.m31 = s;
+		result.m33 = c;
+
+		return result;
+	}
+
+	SimpleMatrix Agent::getRotationZ(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m11 = c;
+		result.m12 = s;
+		result.m21 = -s;
+		result.m22 = c;
+
+		return result;
+	}
 }
