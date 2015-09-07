@@ -300,11 +300,15 @@ namespace SF
 			dOmega,
 			R = Vector3(position_.x(), position_.y(), 0),
 			V = Vector3(velocity_.x(), velocity_.y(), 0),
-			A,
-			fixedOmega,
-			fixedR, 
-			fixedV,
-			fixedA;
+			A = Vector3(),
+			fixedOmega = Vector3(),
+			fixedR = Vector3(), 
+			fixedV = Vector3(),
+			fixedA = Vector3();
+			
+		float 
+			DeterminantX = 0,
+			DeterminantY = 0;
 
 		SimpleMatrix 
 			xForm = SimpleMatrix(),
@@ -321,6 +325,12 @@ namespace SF
 			dOmega = getDOmega(parameterType, NOW);
 			xForm = getRotationX(getRoll(parameterType, NOW).x());
 
+			Vector3 
+				prefixCentralForce = Vector3(),
+				centralForce = Vector3(),
+				tangentialForce = Vector3(),
+				CoriolisForce = Vector3();
+
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
@@ -330,6 +340,8 @@ namespace SF
 				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+			DeterminantX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
@@ -345,6 +357,12 @@ namespace SF
 			dOmega = getDOmega(parameterType, NOW);
 			yForm = getRotationY(getRoll(parameterType, NOW).y());
 			
+			Vector3 
+				prefixCentralForce = Vector3(),
+				centralForce = Vector3(),
+				tangentialForce = Vector3(),
+				CoriolisForce = Vector3();
+
 			fixedR = Vector3(
 				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
@@ -354,6 +372,8 @@ namespace SF
 				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
 				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
+
+			DeterminantY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
 
 			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
 	
