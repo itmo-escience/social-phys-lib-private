@@ -370,8 +370,8 @@ namespace SF
 				(determinantCoriolisForceX > 0) ? 
 					2 * getCross(omega, V) : 
 					2 * getCross(V, omega);
-
-			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+		
+			fixedA = centralForce + tangentialForce - CoriolisForce;
 	
 			A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
 
@@ -425,7 +425,7 @@ namespace SF
 					2 * getCross(omega, V) : 
 					2 * getCross(V, omega);
 
-			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+			fixedA = centralForce + tangentialForce - CoriolisForce;
 	
 			A = Vector3(
 				fixedA.x() / cos(omega.x()),
