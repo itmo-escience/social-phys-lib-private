@@ -389,3 +389,33 @@ double SFSimulator::getObstaclePressure(int index)
 {
 	return _sim->getObstaclePressure(index);
 }
+
+System::Collections::Generic::List<double>^ SFSimulator::getAgentPressureList()
+{
+	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();
+	
+	for (int i = 0; i < getNumAgents(); i++)
+		out->Add(getAgentPressure(i));
+	
+	return out;
+}
+
+System::Collections::Generic::List<double>^ SFSimulator::getObstaclePressureList()
+{
+	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();
+
+	for (int i = 0; i < getNumAgents(); i++)
+		out->Add(getObstaclePressure(i));
+
+	return out;
+}
+
+System::Collections::Generic::List<SFVector2>^ SFSimulator::getPositionList()
+{
+	System::Collections::Generic::List<SFVector2>^ out = gcnew System::Collections::Generic::List<SFVector2>();
+
+	for (int i = 0; i < getNumAgents(); i++)
+		out->Add(getAgentPosition(i));
+
+	return out;
+}
