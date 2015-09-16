@@ -504,12 +504,12 @@ namespace SF
 	  return result;
   }
 
-  float SFSimulator::getAgentPressure(size_t index)
+  double SFSimulator::getAgentPressure(size_t index)
   {
 	  return agents_[index]->agentPressure_;
   }
 
-  float SFSimulator::getObstaclePressure(size_t index)
+  double SFSimulator::getObstaclePressure(size_t index)
   {
 	  return agents_[index]->obstaclePressure_;
   }
