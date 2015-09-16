@@ -78,6 +78,8 @@ namespace SF
 			previosPosition_(INT_MIN, INT_MIN), 
 			forceAcceleration_(0, 0),
 			oldPlatformVelocity_(),
+			obstaclePressure_(),
+			agentPressure_(),
 			id_(0)
   { setNullSpeed(id_); }
 
@@ -151,8 +153,10 @@ namespace SF
 		float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
 		float ratio = (getLength(d) + getLength(d - y)) / 2 * b;
 		Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
+		Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+		agentPressure_ = getLength(force);
 
-		correction += potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+		correction += force;
 
 	}
 	// </F2>
@@ -182,8 +186,10 @@ namespace SF
 
 	float distance = sqrt(minDistanceSquared) - radius_;
 	float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-        
-    correction += forceAmount * minDiff.normalized();
+	Vector2 force = forceAmount * minDiff.normalized();
+	obstaclePressure_ = getLength(force);
+
+	correction += force;
     // </F3>
 	
 	// <F5>

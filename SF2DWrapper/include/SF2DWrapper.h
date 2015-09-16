@@ -133,5 +133,7 @@ namespace SF2D {
 				bool queryVisibility(Microsoft::Xna::Framework::Vector2 point1, Microsoft::Xna::Framework::Vector2 point2, float radius) ;
 				float getAgentTimeHorizonObst(int agentNo) ;
 				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);
+				float getAgentPressure(int index);
+				float getObstaclePressure(int index);
 	};
 }

@@ -347,3 +347,13 @@ void SFSimulator::setAgentTimeHorizonObst(int agentNo, float timeHorizonObst)
 {
 	_sim->setAgentTimeHorizonObst(agentNo,timeHorizonObst) ;
 }
+
+float SFSimulator::getAgentPressure(int index)
+{
+	return _sim->getAgentPressure(index);
+}
+
+float SFSimulator::getObstaclePressure(int index)
+{
+	return _sim->getObstaclePressure(index);
+}

@@ -379,3 +379,13 @@ System::Collections::Generic::List<int>^ SFSimulator::getAgentNeighboursIndexLis
 
 	return out;
 }
+
+float SFSimulator::getAgentPressure(int index)
+{
+	return _sim->getAgentPressure(index);
+}
+
+float SFSimulator::getObstaclePressure(int index)
+{
+	return _sim->getObstaclePressure(index);
+}

@@ -143,5 +143,7 @@ namespace SF2D {
 				float getAgentTimeHorizonObst(int agentNo) ;
 				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);			
 				System::Collections::Generic::List<int>^ getAgentNeighboursIndexList(int agentNo, float radius);
+				float getObstaclePressure(int index);
+				float getAgentPressure(int index);
 	};
 }
