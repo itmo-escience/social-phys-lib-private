@@ -522,6 +522,9 @@ namespace SF
 	float getPlatformRotationXZ();
 	float getPlatformRotationYZ();
 
+	float getAgentPressure(size_t index);
+	float getObstaclePressure(size_t index);
+
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
 	Vector3 rotationPast_;
