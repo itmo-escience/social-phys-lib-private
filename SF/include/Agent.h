@@ -212,8 +212,8 @@ namespace SF
 	float platformFactor_;
     float perception_;
 	float friction_;
-	float obstaclePressure_;
-	float agentPressure_;
+	double obstaclePressure_;
+	double agentPressure_;
 	ForceAcceleration forceAcceleration_;
     Vector2 newVelocity_;
     Vector2 position_;
