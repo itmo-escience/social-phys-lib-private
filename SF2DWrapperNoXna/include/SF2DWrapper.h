@@ -145,5 +145,8 @@ namespace SF2D {
 				System::Collections::Generic::List<int>^ getAgentNeighboursIndexList(int agentNo, float radius);
 				double getObstaclePressure(int index);
 				double getAgentPressure(int index);
+				System::Collections::Generic::List<double>^ getAgentPressureList();
+				System::Collections::Generic::List<double>^ getObstaclePressureList();
+				System::Collections::Generic::List<SFVector2>^ getPositionList();
 	};
 }
