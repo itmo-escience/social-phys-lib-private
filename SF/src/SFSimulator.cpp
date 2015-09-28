@@ -41,16 +41,6 @@ namespace SF
 	platformVelocity_()
 	{
 		kdTree_ = new KdTree(this);
-
-		// attraction section
-		attractiveStrength_ = 5;
-		attractiveRange_ = 1;
-
-		repulsiveStrength_ = 3;
-		repulsiveRange_ = 1;
-
-		attractionTime_ = 2;
-		attractionPointList_ = { Vector2(5, 5), Vector2(7, 7) };
 	}
 
   SFSimulator::~SFSimulator()
@@ -442,6 +432,15 @@ namespace SF
 	  setRotationDegreeSet(set);
   }
 
+  void SFSimulator::setAttractionForce(std::vector<Vector2> pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractionTime_)
+  {
+	  attractivePointList_ = pointList;
+	  
+	  attractiveStrength_ = attractiveStrength;
+	  repulsiveStrength_ = repulsiveStrength;
+	  attractiveRange_ = attractiveRange;
+	  repulsiveRange_ = repulsiveRange;
+  }
 
   void SFSimulator::addPlatformRotationXY(float value)
   {
