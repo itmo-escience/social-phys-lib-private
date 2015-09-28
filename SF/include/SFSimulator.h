@@ -546,7 +546,13 @@ namespace SF
 	float platformRotationXY_;
 	float platformRotationXZ_;
 	float platformRotationYZ_;
-	
+
+	float attractionTime_;
+	float attractiveStrength_;
+	float attractiveRange_;
+	float repulsiveStrength_;
+	float repulsiveRange_;
+	std::vector<Vector2> attractionPointList_;
 
     friend class Agent;
     friend class KdTree;

@@ -80,8 +80,15 @@ namespace SF
 			oldPlatformVelocity_(),
 			obstaclePressure_(),
 			agentPressure_(),
+			attractionTimeList_(),
 			id_(0)
-  { setNullSpeed(id_); }
+	{ 
+	  setNullSpeed(id_); 
+
+	  // attraction section
+	  for (size_t i = 0; i < sim->attractionPointList_.size(); i++)
+		  attractionTimeList_.push_back(0);
+	}
 
   Agent::~Agent() { }
 
@@ -157,7 +164,6 @@ namespace SF
 		agentPressure_ = getLength(force);
 
 		correction += force;
-
 	}
 	// </F2>
 	
@@ -192,6 +198,17 @@ namespace SF
 	correction += force;
     // </F3>
 	
+	// <F4>
+	float time = sim_->attractionTime_;
+	std::vector<Vector2> attractionPointList = sim_->attractionPointList_;
+	for (size_t i = 0; i < attractionPointList.size(); i++)
+	{
+		Vector2 force = getAttractiveForce(position_, attractionPointList[i]);
+
+		correction += force;
+	}
+	// </F4>
+
 	// <F5>
 	//Vector3 pv = sim_->getPlatformVelocity();
 
@@ -251,30 +268,6 @@ namespace SF
 		// relative positions X
 		newPosition += Vector3(radiusXOY * cos(angleZ + angleXY) + center.x(), radiusXOY * sin(angleZ + angleXY) + center.y(), center.z());
 		rotationVector = Vector3(position_.x(), position_.y(), 0) - newPosition;
-	}
-
-	// angleXZ
-	if(angleY != 0)
-	{
-		angleXZ = sim_->getPlatformRotationXZ();
-
-		Vector3 XZforce = 
-			Vector3(radiusXOZ * cos(angleXZ - angleY) + center.x(), center.y(), radiusXOZ * sin(angleXZ - angleY) + center.z()) - 
-			Vector3(radiusXOZ * cos(angleXZ) + center.x(), center.y(), radiusXOZ * sin(angleXZ) + center.z());
-		
-		pv += mult * XZforce;
-	}
-	
-	// angleYZ
-	if(angleX != 0)
-	{
-		angleYZ = sim_->getPlatformRotationYZ();
-
-		Vector3 YZforce = 
-			Vector3(center.x(), radiusYOZ * cos(angleYZ - angleX) + center.y(), radiusYOZ * sin(angleYZ - angleX) + center.z()) - 
-			Vector3(center.x(), radiusYOZ * cos(angleYZ) + center.y(), radiusYOZ * sin(angleYZ) + center.z());
-		
-		pv += mult * YZforce;
 	}
 
 	correction += Vector2(rotationVector.x(), rotationVector.y());*/
@@ -629,5 +622,15 @@ namespace SF
 		
 		if(pt == Y)
 			return Vector3(0, value, 0);
+	}
+
+	Vector2 Agent::getAttractiveForce(Vector2 arg1, Vector2 arg2)
+	{
+		Vector2 difference = normalize(arg1 - arg2);
+		
+		float first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
+		float second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
+
+		return (first - second) * getPerception(&arg1, &arg2) * difference;
 	}
 }

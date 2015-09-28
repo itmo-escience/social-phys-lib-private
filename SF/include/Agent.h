@@ -166,6 +166,7 @@ namespace SF
 	*	@param		s		Vector
 	*/
 
+	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2);
 	    
 	typedef enum
 	{
@@ -224,6 +225,7 @@ namespace SF
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
+	std::vector<float> attractionTimeList_;
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
     
