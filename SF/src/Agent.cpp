@@ -192,6 +192,9 @@ namespace SF
 	correction += force;
     // </F3>
 	
+	// <F4>
+	// </F4>
+
 	// <F5>
 	//Vector3 pv = sim_->getPlatformVelocity();
 
@@ -251,30 +254,6 @@ namespace SF
 		// relative positions X
 		newPosition += Vector3(radiusXOY * cos(angleZ + angleXY) + center.x(), radiusXOY * sin(angleZ + angleXY) + center.y(), center.z());
 		rotationVector = Vector3(position_.x(), position_.y(), 0) - newPosition;
-	}
-
-	// angleXZ
-	if(angleY != 0)
-	{
-		angleXZ = sim_->getPlatformRotationXZ();
-
-		Vector3 XZforce = 
-			Vector3(radiusXOZ * cos(angleXZ - angleY) + center.x(), center.y(), radiusXOZ * sin(angleXZ - angleY) + center.z()) - 
-			Vector3(radiusXOZ * cos(angleXZ) + center.x(), center.y(), radiusXOZ * sin(angleXZ) + center.z());
-		
-		pv += mult * XZforce;
-	}
-	
-	// angleYZ
-	if(angleX != 0)
-	{
-		angleYZ = sim_->getPlatformRotationYZ();
-
-		Vector3 YZforce = 
-			Vector3(center.x(), radiusYOZ * cos(angleYZ - angleX) + center.y(), radiusYOZ * sin(angleYZ - angleX) + center.z()) - 
-			Vector3(center.x(), radiusYOZ * cos(angleYZ) + center.y(), radiusYOZ * sin(angleYZ) + center.z());
-		
-		pv += mult * YZforce;
 	}
 
 	correction += Vector2(rotationVector.x(), rotationVector.y());*/
