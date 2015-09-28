@@ -41,6 +41,16 @@ namespace SF
 	platformVelocity_()
 	{
 		kdTree_ = new KdTree(this);
+
+		// attraction section
+		attractiveStrength_ = 5;
+		attractiveRange_ = 1;
+
+		repulsiveStrength_ = 3;
+		repulsiveRange_ = 1;
+
+		attractionTime_ = 2;
+		attractionPointList_ = { Vector2(5, 5), Vector2(7, 7) };
 	}
 
   SFSimulator::~SFSimulator()

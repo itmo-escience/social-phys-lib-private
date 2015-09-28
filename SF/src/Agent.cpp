@@ -84,19 +84,10 @@ namespace SF
 			id_(0)
 	{ 
 	  setNullSpeed(id_); 
-	  
+
 	  // attraction section
-	  attractiveStrength_ = 5;
-	  attractiveRange_ = 1;
-
-	  repulsiveStrength_ = 3;
-	  repulsiveRange_ = 1;
-
-	  attractionTime_ = 2;
-	  attractionPointList_ = { Vector2(5, 5), Vector2(7, 7) };
-
-	  for (size_t i = 0; i < attractionPointList_.size(); i++)
-	    attractionTimeList_.push_back(0);
+	  for (size_t i = 0; i < sim->attractionPointList_.size(); i++)
+		  attractionTimeList_.push_back(0);
 	}
 
   Agent::~Agent() { }
@@ -208,8 +199,8 @@ namespace SF
     // </F3>
 	
 	// <F4>
-	float time = attractionTime_;
-	std::vector<Vector2> attractionPointList = attractionPointList_;
+	float time = sim_->attractionTime_;
+	std::vector<Vector2> attractionPointList = sim_->attractionPointList_;
 	for (size_t i = 0; i < attractionPointList.size(); i++)
 	{
 		Vector2 force = getAttractiveForce(position_, attractionPointList[i]);
@@ -637,8 +628,8 @@ namespace SF
 	{
 		Vector2 difference = normalize(arg1 - arg2);
 		
-		float first = repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / repulsiveRange_);;
-		float second = attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / attractiveRange_);;
+		float first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
+		float second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
 
 		return (first - second) * getPerception(&arg1, &arg2) * difference;
 	}
