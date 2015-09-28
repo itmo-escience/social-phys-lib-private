@@ -130,6 +130,7 @@ namespace SF2D {
 				void setAgentVelocity(array<int>^ agentNo,  array<SFVector2>^ velocity);
 				void setTimeStep(float timeStep);	
 				void setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationDegreeSet set);
+				void setAttractionForce(System::Collections::Generic::List<SFVector2>^ pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractionTime_);
 				void setPlatformVelocity(SF3D::SFVector3 velocity);
 				SF3D::SFVector3 getPlatformVelocity();
 				float getAgentFriction(int agentNo);

@@ -86,7 +86,7 @@ namespace SF
 	  setNullSpeed(id_); 
 
 	  // attraction section
-	  for (size_t i = 0; i < sim->attractionPointList_.size(); i++)
+	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
 		  attractionTimeList_.push_back(0);
 	}
 
@@ -200,7 +200,7 @@ namespace SF
 	
 	// <F4>
 	float time = sim_->attractionTime_;
-	std::vector<Vector2> attractionPointList = sim_->attractionPointList_;
+	std::vector<Vector2> attractionPointList = sim_->attractivePointList_;
 	for (size_t i = 0; i < attractionPointList.size(); i++)
 	{
 		Vector2 force = getAttractiveForce(position_, attractionPointList[i]);

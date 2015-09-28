@@ -478,6 +478,9 @@ namespace SF
 	void setAdditionalForce(Vector3 velocity, RotationDegreeSet set);
 
 	 
+	void setAttractionForce(std::vector<Vector2> pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractionTime_);
+
+
 	/*!
 	*	@brief		Sets the velocity of platform
 	*	@param		v	New value of velocity, default value is 1.0
@@ -533,6 +536,12 @@ namespace SF
 	Vector3 rotationNow2Future_;
 	Vector3 rotationFuture_;
 
+	float attractionTime_;
+	float attractiveStrength_;
+	float attractiveRange_;
+	float repulsiveStrength_;
+	float repulsiveRange_;
+	std::vector<Vector2> attractivePointList_;
 
   private:
     std::vector<Agent*> agents_;
@@ -547,12 +556,6 @@ namespace SF
 	float platformRotationXZ_;
 	float platformRotationYZ_;
 
-	float attractionTime_;
-	float attractiveStrength_;
-	float attractiveRange_;
-	float repulsiveStrength_;
-	float repulsiveRange_;
-	std::vector<Vector2> attractionPointList_;
 
     friend class Agent;
     friend class KdTree;
