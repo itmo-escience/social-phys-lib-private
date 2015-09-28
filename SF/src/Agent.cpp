@@ -80,8 +80,24 @@ namespace SF
 			oldPlatformVelocity_(),
 			obstaclePressure_(),
 			agentPressure_(),
+			attractionTimeList_(),
 			id_(0)
-  { setNullSpeed(id_); }
+	{ 
+	  setNullSpeed(id_); 
+	  
+	  // attraction section
+	  attractiveStrength_ = 5;
+	  attractiveRange_ = 1;
+
+	  repulsiveStrength_ = 3;
+	  repulsiveRange_ = 1;
+
+	  attractionTime_ = 2;
+	  attractionPointList_ = { Vector2(5, 5), Vector2(7, 7) };
+
+	  for (size_t i = 0; i < attractionPointList_.size(); i++)
+	    attractionTimeList_.push_back(0);
+	}
 
   Agent::~Agent() { }
 
@@ -157,7 +173,6 @@ namespace SF
 		agentPressure_ = getLength(force);
 
 		correction += force;
-
 	}
 	// </F2>
 	
@@ -193,6 +208,14 @@ namespace SF
     // </F3>
 	
 	// <F4>
+	float time = attractionTime_;
+	std::vector<Vector2> attractionPointList = attractionPointList_;
+	for (size_t i = 0; i < attractionPointList.size(); i++)
+	{
+		Vector2 force = getAttractiveForce(position_, attractionPointList[i]);
+
+		correction += force;
+	}
 	// </F4>
 
 	// <F5>
@@ -608,5 +631,15 @@ namespace SF
 		
 		if(pt == Y)
 			return Vector3(0, value, 0);
+	}
+
+	Vector2 Agent::getAttractiveForce(Vector2 arg1, Vector2 arg2)
+	{
+		Vector2 difference = normalize(arg1 - arg2);
+		
+		float first = repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / repulsiveRange_);;
+		float second = attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / attractiveRange_);;
+
+		return (first - second) * getPerception(&arg1, &arg2) * difference;
 	}
 }
