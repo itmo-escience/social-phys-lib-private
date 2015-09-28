@@ -213,11 +213,6 @@ namespace SF
 	float platformFactor_;
     float perception_;
 	float friction_;
-	float attractionTime_;
-	float attractiveStrength_;
-	float attractiveRange_;
-	float repulsiveStrength_;
-	float repulsiveRange_;
 	double obstaclePressure_;
 	double agentPressure_;
 	ForceAcceleration forceAcceleration_;
@@ -230,7 +225,6 @@ namespace SF
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
-	std::vector<Vector2> attractionPointList_;
 	std::vector<float> attractionTimeList_;
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
