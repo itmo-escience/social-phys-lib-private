@@ -571,9 +571,9 @@ namespace SF
 	void addPlatformRotationXZ(float value);
 	void addPlatformRotationYZ(float value);
 
-	float getPlatformRotationXY() const;
-	float getPlatformRotationXZ() const;
-	float getPlatformRotationYZ() const;
+	double getPlatformRotationXY() const;
+	double getPlatformRotationXZ() const;
+	double getPlatformRotationYZ() const;
 
 	double getAgentPressure(size_t index);
 	double getObstaclePressure(size_t index);
@@ -602,9 +602,9 @@ namespace SF
     float timeStep_;
 	Vector3 platformVelocity_;
 	RotationDegreeSet angleSet_;
-	float platformRotationXY_;
-	float platformRotationXZ_;
-	float platformRotationYZ_;
+	double platformRotationXY_;
+	double platformRotationXZ_;
+	double platformRotationYZ_;
 
 
     friend class Agent;
