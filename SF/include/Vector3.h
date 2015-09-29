@@ -24,7 +24,7 @@ public:
 	/*!
 	 *  @brief		Constructs and initializes a three-dimensional vector instance to zero.
 	 */
-	inline Vector3()
+	Vector3()
 	{
 		val_[0] = 0.0f;
 		val_[1] = 0.0f;
@@ -35,7 +35,7 @@ public:
 	 *  @brief		Constructs and initializes a three-dimensional vector from the specified three-dimensional vector.
 	 *  @param		vector		The three-dimensional vector containing the xyz-coordinates.
 	 */
-	inline Vector3(const Vector3& vector)
+	Vector3(const Vector3& vector)
 	{
 		val_[0] = vector[0];
 		val_[1] = vector[1];
@@ -46,7 +46,7 @@ public:
 	 *  @brief		Constructs and initializes a three-dimensional vector from the specified three-element array.
 	 *  @param		val		The three-element array containing the xyz-coordinates.
 	 */
-	inline explicit Vector3(const float val[3])
+	explicit Vector3(const float val[3])
 	{
 		val_[0] = val[0];
 		val_[1] = val[1];
@@ -59,14 +59,14 @@ public:
 	 *  @param		vy		The y-coordinate of the three-dimensional vector.
 	 *  @param		vz		The z-coordinate of the three-dimensional vector.
 	 */
-	inline Vector3(float vx, float vy, float vz)
+	Vector3(float vx, float vy, float vz)
 	{
 		val_[0] = vx;
 		val_[1] = vy;
 		val_[2] = vz;
 	}
 
-	inline float getLength()
+	float getLength()
 	{
 		return sqrt(pow(x(), 2) + pow(y(), 2) + pow(z(), 2));
 	}
@@ -75,7 +75,7 @@ public:
 	 *  @brief		Returns the x-coordinate of this three-dimensional vector.
 	 *  @returns	The x-coordinate of the three-dimensional vector.
 	 */
-	inline float x() const
+	float x() const
 	{
 		return val_[0];
 	}
@@ -84,7 +84,7 @@ public:
 	 *  @brief		Returns the y-coordinate of this three-dimensional vector.
 	 *  @returns	The y-coordinate of the three-dimensional vector.
 	 */
-	inline float y() const
+	float y() const
 	{
 		return val_[1];
 	}
@@ -93,7 +93,7 @@ public:
 	 *  @brief		Returns the z-coordinate of this three-dimensional vector.
 	 *  @returns	The z-coordinate of the three-dimensional vector.
 	 */
-	inline float z() const
+	float z() const
 	{
 		return val_[2];
 	}
@@ -103,7 +103,7 @@ public:
 	 *  @param		i		The coordinate that should be returned (0 <= i < 3).
 	 *  @returns    The specified coordinate of the three-dimensional vector.
 	 */
-	inline float operator[](size_t i) const
+	float operator[](size_t i) const
 	{
 		return val_[i];
 	}
@@ -113,7 +113,7 @@ public:
 	 *  @param		i		The coordinate to which a reference should be returned (0 <= i < 3).
 	 *  @returns	A reference to the specified coordinate of the three-dimensional vector.
 	 */
-	inline float& operator[](size_t i)
+	float& operator[](size_t i)
 	{
 		return val_[i];
 	}
@@ -122,7 +122,7 @@ public:
 	 *  @brief		Computes the negation of this three-dimensional vector.
 	 *  @returns	The negation of this three-dimensional vector.
 	 */
-	inline Vector3 operator-() const
+	Vector3 operator-() const
 	{
 		return Vector3(-val_[0], -val_[1], -val_[2]);
 	}
@@ -132,7 +132,7 @@ public:
 	 *  @param		vector		The three-dimensional vector with which the dot product should be computed.
 	 *  @returns	The dot product of this three-dimensional vector with a specified three-dimensional vector.
 	 */
-	inline float operator*(const Vector3& vector) const
+	float operator*(const Vector3& vector) const
 	{
 		return val_[0] * vector[0] + val_[1] * vector[1] + val_[2] * vector[2];
 	}
@@ -142,7 +142,7 @@ public:
 	 *  @param		scalar		The scalar value with which the scalar multiplication should be computed.
 	 *  @returns	The scalar multiplication of this three-dimensional vector with a specified scalar value.
 	 */
-	inline Vector3 operator*(float scalar) const
+	Vector3 operator*(float scalar) const
 	{
 		return Vector3(val_[0] * scalar, val_[1] * scalar, val_[2] * scalar);
 	}
@@ -153,9 +153,9 @@ public:
 	 *  @param		scalar		The scalar value with which the scalar division should be computed.
 	 *  @returns	The scalar division of this three-dimensional vector with a specified scalar value.
 	 */
-	inline Vector3 operator/(float scalar) const
+	Vector3 operator/(float scalar) const
 	{
-		const float invScalar = 1.0f / scalar;
+		const auto invScalar = 1.0f / scalar;
 
 		return Vector3(val_[0] * invScalar, val_[1] * invScalar, val_[2] * invScalar);
 	}
@@ -165,7 +165,7 @@ public:
 	 *  @param		vector	The three-dimensional vector with which the vector sum should be computed.
 	 *  @returns	The vector sum of this three-dimensional vector with a specified three-dimensional vector.
 	 */
-	inline Vector3 operator+(const Vector3& vector) const
+	Vector3 operator+(const Vector3& vector) const
 	{
 		return Vector3(val_[0] + vector[0], val_[1] + vector[1], val_[2] + vector[2]);
 	}
@@ -175,7 +175,7 @@ public:
 	 *  @param		vector		The three-dimensional vector with which the vector difference should be computed.
 	 *  @returns	The vector difference of this three-dimensional vector with a specified three-dimensional vector.
 	 */
-	inline Vector3 operator-(const Vector3& vector) const
+	Vector3 operator-(const Vector3& vector) const
 	{
 		return Vector3(val_[0] - vector[0], val_[1] - vector[1], val_[2] - vector[2]);
 	}
@@ -185,7 +185,7 @@ public:
 	 *  @param		vector		The three-dimensional vector with which to test for equality.
 	 *  @returns	True if the three-dimensional vectors are equal.
 	 */
-	inline bool operator==(const Vector3& vector) const
+	bool operator==(const Vector3& vector) const
 	{
 		return val_[0] == vector[0] && val_[1] == vector[1] && val_[2] == vector[2];
 	}
@@ -195,7 +195,7 @@ public:
 	 *  @param		vector		The three-dimensional vector with which to test for inequality.
 	 *  @returns	True if the three-dimensional vectors are not equal.
 	 */
-	inline bool operator!=(const Vector3& vector) const
+	bool operator!=(const Vector3& vector) const
 	{
 		return val_[0] != vector[0] || val_[1] != vector[1] || val_[2] != vector[2];
 	}
@@ -205,7 +205,7 @@ public:
 	 *  @param		scalar		The scalar value with which the scalar multiplication should be computed.
 	 *  @returns	A reference to this three-dimensional vector.
 	 */
-	inline Vector3& operator*=(float scalar)
+	Vector3& operator*=(float scalar)
 	{
 		val_[0] *= scalar;
 		val_[1] *= scalar;
@@ -219,9 +219,9 @@ public:
 	 *  @param		scalar		The scalar value with which the scalar division should be computed.
 	 *  @returns	A reference to this three-dimensional vector.
 	 */
-	inline Vector3& operator/=(float scalar)
+	Vector3& operator/=(float scalar)
 	{
-		const float invScalar = 1.0f / scalar;
+		const auto invScalar = 1.0f / scalar;
 
 		val_[0] *= invScalar;
 		val_[1] *= invScalar;
@@ -236,7 +236,7 @@ public:
 	 *  @param		vector		The three-dimensional vector with which the vector sum should be computed.
 	 *  @returns	A reference to this three-dimensional vector.
 	 */
-	inline Vector3& operator+=(const Vector3& vector)
+	Vector3& operator+=(const Vector3& vector)
 	{
 		val_[0] += vector[0];
 		val_[1] += vector[1];
@@ -250,7 +250,7 @@ public:
 	 *  @param		vector	The three-dimensional vector with which the vector difference should be computed.
 	 *  @returns	A reference to this three-dimensional vector.
 	 */
-	inline Vector3& operator-=(const Vector3& vector)
+	Vector3& operator-=(const Vector3& vector)
 	{
 		val_[0] -= vector[0];
 		val_[1] -= vector[1];

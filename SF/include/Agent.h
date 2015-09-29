@@ -18,23 +18,6 @@
 
 namespace SF
 {
-	/*
-	*	@brief		Defines simple acceleration pair
-	*/
-	class ForceAcceleration
-	{
-	public:
-		ForceAcceleration(float a, int d);
-		int getDirection() const;
-		int setDirectionForZ(float z) const;
-		void update(float a, int d);
-		float getMultCoefficient() const;
-		
-		float acceleration;	
-		int direction;
-	};
-
-
   /*!
    *  @brief      Defines an agent in the simulation.
    */
@@ -122,50 +105,12 @@ namespace SF
 	*	@param		end			Position of end of line
 	*	@param		point		Selected point
 	*/
-	Vector2 getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point);
-
-	/*
-	*	@brief		Returns correction coefficient for big angles
-	*	@param		a		cos of first angle
-	*	@param		b		cos of second angle
-	*/
-	float getCriticalAnglesCorrection(float a, float b) const;
-
-	/*
-	*	@brief		Checks if case is simple
-	*	@param		s		Vector
-	*/
-	bool isNotPlaneCase(Vector3 s) const;
-
-	/*
-	*	@brief		Returns cos of incline angle
-	*	@param		s		Vector
-	*/
-	float getInclineAngle(Vector3 s) const;
-
-	/*
-	*	@brief		Returns cos of rotation angle
-	*	@param		s		Vector
-	*/
-	float getRotationAngle(Vector3 s) const;
-
-	/*
-	*	@brief		Returns projection for XOY plane
-	*	@param		s		Vector
-	*/
-	Vector2 getVectorProjectionXY(Vector3 s) const;
-
-	/*
-	*	@brief		Returns projection for XOZ plane
-	*	@param		s		Vector
-	*/
-	Vector2 getVectorProjectionXZ(Vector3 s) const;
+	Vector2 getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const;
 
 	/*
 	*	@brief		Returns projection for YOZ plane
 	*	@param		s		Vector
 	*/
-
 	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2) const;
 	    
 	typedef enum
@@ -185,10 +130,9 @@ namespace SF
 	}
 	TimeType;
 
-	Vector2 getVectorProjectionYZ(Vector3 s) const;
 	Vector3 getCross(Vector3 left, Vector3 right) const;
-	float degreesToRadians(float degree) const;
-	float radiansToDegrees(float degree) const;
+	double degreesToRadians(float degree) const;
+	double radiansToDegrees(float degree) const;
 	Vector3 getRoll(ParameterType pt, TimeType tt) const;
 	Vector3 getOmega(ParameterType pt, TimeType tt);
 	Vector3 getDOmega(ParameterType pt, TimeType tt);
@@ -215,7 +159,6 @@ namespace SF
 	float friction_;
 	double obstaclePressure_;
 	double agentPressure_;
-	ForceAcceleration forceAcceleration_;
     Vector2 newVelocity_;
     Vector2 position_;
     Vector2 prefVelocity_;
