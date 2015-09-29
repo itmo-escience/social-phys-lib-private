@@ -384,7 +384,7 @@ System::Collections::Generic::List<int>^ SFSimulator::getAgentNeighboursIndexLis
 	std::vector<size_t> in = _sim->getAgentNeighboursIndexList(agentNo, radius);
 	System::Collections::Generic::List<int>^ out = gcnew System::Collections::Generic::List<int>(); 
 	
-	for(int i = 0; i < in.size(); i++)
+	for(size_t i = 0; i < in.size(); i++)
 		out->Add(in[i]);
 
 	return out;

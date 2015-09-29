@@ -11,52 +11,6 @@
 
 namespace SF
 {
-	ForceAcceleration::ForceAcceleration(float a, int d)
-	{
-		acceleration = a, direction = d;
-	}
-
-	int ForceAcceleration::getDirection() const
-	{
-		return direction;
-	}
-
-	int ForceAcceleration::setDirectionForZ(float z) const
-	{
-		if(z > 0)
-			return 1;
-		else if(z < 0)
-			return -1;
-		return 0;
-	}
-
-	void ForceAcceleration::update(float a, int d)
-	{
-		acceleration = a, direction = d;
-	}
-
-	float ForceAcceleration::getMultCoefficient() const
-	{
-		if(direction < 0)
-		{
-			if(acceleration < 0)
-				return 0.75;
-			if(acceleration > 0)
-				return 1.25;
-			return 1;
-		}
-		if(direction > 0)
-		{
-			if(acceleration < 0)
-				return 1.25;
-			if(acceleration > 0)
-				return 0.75;
-			return 1;
-		}
-
-		return 1;
-	}
-
 	Agent::Agent(SFSimulator* sim) : 
 			id_(0), 
 			maxNeighbors_(0), 
@@ -68,7 +22,6 @@ namespace SF
 			timeHorizonObst_(0.0f), 
 			obstaclePressure_(), 
 			agentPressure_(), 
-			forceAcceleration_(0, 0),
 			newVelocity_(), 
 			position_(), 
 			prefVelocity_(),
@@ -83,7 +36,7 @@ namespace SF
 	  setNullSpeed(id_); 
 
 	  // attraction section
-	  for (auto i = 0; i < sim->attractivePointList_.size(); i++)
+	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
 	  {
 		  attractiveTimeList_.push_back(0);
 		  isUsedAttractivePoint_.push_back(false);
@@ -147,7 +100,7 @@ namespace SF
     auto correction = Vector2();
 
     // <F2>
-	for (auto i = 0; i < agentNeighbors_.size(); i++)
+	for (size_t i = 0; i < agentNeighbors_.size(); i++)
     {
         setNullSpeed(agentNeighbors_[i].second->id_);
 	    auto pos = agentNeighbors_[i].second->position_;
@@ -172,7 +125,7 @@ namespace SF
 	auto minDiff = Vector2();
 	repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
-	for (auto i = 0; i < obstacleNeighbors_.size(); i++)
+	for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
     {
 		setNullSpeed(id_);
 
@@ -213,98 +166,16 @@ namespace SF
 				isUsedAttractivePoint_[i] = true;
 			}
 
-			if (attractiveTimeList_[i] <= sim_->attractiveTime_ && attractiveTimeList_[i] > 0)
+			if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
 			{
 				auto add = getAttractiveForce(position_, attractionPointList[i]);
 				correction += add;
 			}
-			if (attractiveTimeList_[i] > sim_->attractiveTime_)
+			if (attractiveTimeList_[i] > time)
 				isUsedAttractivePoint_[i] = true;
 		}
 	}
 	// </F4>
-
-	// <F5>
-	//Vector3 pv = sim_->getPlatformVelocity();
-
-	/*!
-	 *	@brief	2D Roration section
-	 */
-	// rotation center
-	/*Vector3 center = sim_->getRotationDegreeSet().getCenter();	
-	
-	// relative values	
-	float 
-		diffX = position_.x() - center.x(),
-		diffY = position_.y() - center.y(),
-		diffZ = -center.z();
-
-	// rotation radius
-	float 
-		radiusXOY = sqrt(pow(diffX, 2) + pow(diffY, 2)),
-		radiusYOZ = sqrt(pow(diffY, 2) + pow(diffZ, 2)),
-		radiusXOZ = sqrt(pow(diffX, 2) + pow(diffZ, 2));			
-
-	float mult = 20;
-
-	// rotaion degree set
-	float 
-		angleX = sim_->getRotationDegreeSet().getRotationOX() * sim_->timeStep_,
-		angleY = sim_->getRotationDegreeSet().getRotationOY() * sim_->timeStep_,
-		angleZ = sim_->getRotationDegreeSet().getRotationOZ() * sim_->timeStep_;
-
-	// angle projection
-	float 
-		angleXY, 
-		angleXZ, 
-		angleYZ;
-
-	float 
-		currentAngleBySin,
-		currentAngleByCos;
-	
-	Vector3
-		newPosition,
-		rotationVector;
-
-	// angleXY
-	if(angleZ != 0)
-	{
-		currentAngleBySin = asin(diffY / radiusXOY),
-		currentAngleByCos = acos(diffX / radiusXOY);
-
-		if (diffX < 0 && !(diffX < 0 && diffY < 0))
-			angleXY = currentAngleByCos;
-		else if(diffX < 0 && diffY < 0)
-			angleXY = M_PI - currentAngleBySin;
-		else
-			angleXY = currentAngleBySin;
-
-		// relative positions X
-		newPosition += Vector3(radiusXOY * cos(angleZ + angleXY) + center.x(), radiusXOY * sin(angleZ + angleXY) + center.y(), center.z());
-		rotationVector = Vector3(position_.x(), position_.y(), 0) - newPosition;
-	}
-
-	correction += Vector2(rotationVector.x(), rotationVector.y());*/
-
-	/*!
-	 *	@brief	Forvard section
-	 */
-	/*if(isNotPlaneCase(pv))
-	{
-		Vector2 totalFieldProjection = getVectorProjectionXY(pv);
-		float inclineAngle = fabs(getInclineAngle(pv));
-		float rotationAngle = fabs(getRotationAngle(pv));
-		float criticalCorrection = getCriticalAnglesCorrection(inclineAngle, rotationAngle);
-		float verticalShiftDirection = (pv.z() >= 0) ? -1 : 1;
-
-		Vector2 total = totalFieldProjection * criticalCorrection * verticalShiftDirection / friction_; 
-
-		correction += total;
-	}
-	
-	oldPlatformVelocity_ = pv;*/
-	// </F5>
 
 	// <F5>
 	if(sim_->rotationFuture_ != Vector3())
@@ -382,7 +253,7 @@ namespace SF
 
 		auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
-		if(difference > 0)	// positive difference
+		if(difference > 0)	
 			result = result * (1 + fabs(difference));
 		else
 			result = result * (1 - fabs(difference));
@@ -456,7 +327,7 @@ namespace SF
       }
   }
 
-	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point)
+	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
 		auto relativeEndPoint = *end - *start;
 		auto relativePoint = *point - *start;
@@ -473,50 +344,6 @@ namespace SF
 	inline float getMinFloat(float a, float b)
 	{
 		return a < b ? a : b;
-	}
-
-	float Agent::getCriticalAnglesCorrection(float a, float b) const
-	{	
-		return 1 / getMinFloat(a, b);
-	}
-
-	bool Agent::isNotPlaneCase(Vector3 s) const
-	{
-		return !(s.x() == 0 && s.y() == 0 && s.z() == 0);
-	}
-
-	float Agent::getInclineAngle(Vector3 s) const
-	{
-		if(s.x() != 0)
-			return getCos(Vector2(1, 0), getVectorProjectionXZ(s));	
-		else if(s.y() != 0)
-			return getCos(Vector2(0, 1), getVectorProjectionXZ(s));	
-		else
-			return 1;
-	}
-
-	float Agent::getRotationAngle(Vector3 s) const
-	{
-		if(s.x() != 0)
-			return getCos(Vector2(1, 0), getVectorProjectionXY(s));
-		else if(s.y() != 0)
-			return getCos(Vector2(0, 1), getVectorProjectionXY(s));
-		else return 1;
-	}
-
-	Vector2 Agent::getVectorProjectionXY(Vector3 s) const
-	{
-		return Vector2(s.x(), s.y());
-	}
-
-	Vector2 Agent::getVectorProjectionXZ(Vector3 s) const
-	{
-		return Vector2(s.x(), s.z());
-	}
-
-	Vector2 Agent::getVectorProjectionYZ(Vector3 s) const
-	{
-		return Vector2(s.y(), s.z());
 	}
 
   void Agent::update()
@@ -569,12 +396,12 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
-	float Agent::degreesToRadians(float degree) const
+	double Agent::degreesToRadians(float degree) const
 	{
         return degree * (M_PI / 180.0f);
     }
 
-	float Agent::radiansToDegrees(float radian) const
+	double Agent::radiansToDegrees(float radian) const
 	{
         return radian * (180.0f / M_PI);
     }
