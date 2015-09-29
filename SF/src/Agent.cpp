@@ -77,14 +77,17 @@ namespace SF
 			oldPlatformVelocity_(),
 			obstacleNeighbors_(),
 			agentNeighbors_(),
-			attractionTimeList_(),
+			attractiveTimeList_(),
 			sim_(sim)
 	{ 
 	  setNullSpeed(id_); 
 
 	  // attraction section
 	  for (auto i = 0; i < sim->attractivePointList_.size(); i++)
-		  attractionTimeList_.push_back(0);
+	  {
+		  attractiveTimeList_.push_back(0);
+		  isUsedAttractivePoint_.push_back(false);
+	  }
 	}
 
   Agent::~Agent() { }
@@ -196,13 +199,28 @@ namespace SF
     // </F3>
 	
 	// <F4>
-	auto time = sim_->attractionTime_;
+	auto time = sim_->attractiveTime_;
 	auto attractionPointList = sim_->attractivePointList_;
 	for (size_t i = 0; i < attractionPointList.size(); i++)
 	{
-		auto add = getAttractiveForce(position_, attractionPointList[i]);
+		if (!isUsedAttractivePoint_[i])
+		{
+			if (getLength(attractionPointList[i] - position_) <= 1)
+				attractiveTimeList_[i] += sim_->timeStep_;
+			else
+			{
+				attractiveTimeList_[i] = 0;
+				isUsedAttractivePoint_[i] = true;
+			}
 
-		correction += add;
+			if (attractiveTimeList_[i] <= sim_->attractiveTime_ && attractiveTimeList_[i] > 0)
+			{
+				auto add = getAttractiveForce(position_, attractionPointList[i]);
+				correction += add;
+			}
+			if (attractiveTimeList_[i] > sim_->attractiveTime_)
+				isUsedAttractivePoint_[i] = true;
+		}
 	}
 	// </F4>
 

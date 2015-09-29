@@ -225,7 +225,8 @@ namespace SF
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
-	std::vector<float> attractionTimeList_;
+	std::vector<float> attractiveTimeList_;
+	std::vector<bool> isUsedAttractivePoint_;
     std::map<int, float> speedList_;
 	SFSimulator* sim_;
     
