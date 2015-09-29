@@ -360,7 +360,7 @@ namespace SF
      *  @note       Obstacles added to the simulation after this function has 
      *              been called are not accounted for in the simulation.
      */
-    void processObstacles();
+    void processObstacles() const;
 
     /*!
      *  @brief      Performs a visibility query between the two specified
@@ -521,9 +521,9 @@ namespace SF
 	void addPlatformRotationXZ(float value);
 	void addPlatformRotationYZ(float value);
 
-	float getPlatformRotationXY();
-	float getPlatformRotationXZ();
-	float getPlatformRotationYZ();
+	float getPlatformRotationXY() const;
+	float getPlatformRotationXZ() const;
+	float getPlatformRotationYZ() const;
 
 	double getAgentPressure(size_t index);
 	double getObstaclePressure(size_t index);

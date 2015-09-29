@@ -25,10 +25,10 @@ namespace SF
 	{
 	public:
 		ForceAcceleration(float a, int d);
-		int getDirection();
-		int setDirectionForZ(float z);
+		int getDirection() const;
+		int setDirectionForZ(float z) const;
 		void update(float a, int d);
-		float getMultCoefficient();
+		float getMultCoefficient() const;
 		
 		float acceleration;	
 		int direction;
@@ -107,14 +107,14 @@ namespace SF
 	*	@param		arg1		Position of agent
 	*	@param		arg2		Position of percepted point
 	*/
-	float getPerception(Vector2 *arg1, Vector2 *arg2);
+	float getPerception(Vector2 *arg1, Vector2 *arg2) const;
 
 	 /*!
      *  @brief      Normalizing the velocity
      *  @param      currentSpeed	Current speed
      *  @param      maxSpeed		Max speed
      */
-	float getNormalizedSpeed(float currentSpeed, float maxSpeed);
+	float getNormalizedSpeed(float currentSpeed, float maxSpeed) const;
 		
 	/*
 	*	@brief		Gets point on line nearest to selected position 
@@ -129,44 +129,44 @@ namespace SF
 	*	@param		a		cos of first angle
 	*	@param		b		cos of second angle
 	*/
-	float getCriticalAnglesCorrection(float a, float b);
+	float getCriticalAnglesCorrection(float a, float b) const;
 
 	/*
 	*	@brief		Checks if case is simple
 	*	@param		s		Vector
 	*/
-	bool isNotPlaneCase(Vector3 s);
+	bool isNotPlaneCase(Vector3 s) const;
 
 	/*
 	*	@brief		Returns cos of incline angle
 	*	@param		s		Vector
 	*/
-	float getInclineAngle(Vector3 s);
+	float getInclineAngle(Vector3 s) const;
 
 	/*
 	*	@brief		Returns cos of rotation angle
 	*	@param		s		Vector
 	*/
-	float getRotationAngle(Vector3 s);
+	float getRotationAngle(Vector3 s) const;
 
 	/*
 	*	@brief		Returns projection for XOY plane
 	*	@param		s		Vector
 	*/
-	Vector2 getVectorProjectionXY(Vector3 s);
+	Vector2 getVectorProjectionXY(Vector3 s) const;
 
 	/*
 	*	@brief		Returns projection for XOZ plane
 	*	@param		s		Vector
 	*/
-	Vector2 getVectorProjectionXZ(Vector3 s);
+	Vector2 getVectorProjectionXZ(Vector3 s) const;
 
 	/*
 	*	@brief		Returns projection for YOZ plane
 	*	@param		s		Vector
 	*/
 
-	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2);
+	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2) const;
 	    
 	typedef enum
 	{
@@ -185,11 +185,11 @@ namespace SF
 	}
 	TimeType;
 
-	Vector2 getVectorProjectionYZ(Vector3 s);
-	Vector3 getCross(Vector3 left, Vector3 right);
-	float degreesToRadians(float degree);
-	float radiansToDegrees(float degree);
-	Vector3 getRoll(ParameterType pt, TimeType tt);
+	Vector2 getVectorProjectionYZ(Vector3 s) const;
+	Vector3 getCross(Vector3 left, Vector3 right) const;
+	float degreesToRadians(float degree) const;
+	float radiansToDegrees(float degree) const;
+	Vector3 getRoll(ParameterType pt, TimeType tt) const;
 	Vector3 getOmega(ParameterType pt, TimeType tt);
 	Vector3 getDOmega(ParameterType pt, TimeType tt);
 
