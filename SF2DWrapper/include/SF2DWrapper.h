@@ -3,12 +3,15 @@
 #pragma once
 
 #include "../../SF/include/SFSimulator.h"
+#include "../../SF/include/AgentPropertyConfig.h"
+#include "SFVector2.h"
+//#include "SFVector3.h"
+#include "SFRotationDegreeSet.h"
 
 using namespace System;
 
 namespace SF2D {
 
-	
 	public ref class AgentProperty
 	{
 	public:
@@ -27,7 +30,7 @@ namespace SF2D {
 		float PlatformFactor;
 		float Perception;
 		float Friction;
-		Microsoft::Xna::Framework::Vector2 Velocity;
+		SFVector2 Velocity;
 
 		AgentProperty();
 
@@ -38,16 +41,16 @@ namespace SF2D {
 			float obsHorizon,
 			float radius, 
 			float maxSpeed, 
-			float accelerationCoefficient, 
+			float accelerationCoefficient,
 			float relaxationTime,
 			float repulsiveAgent, 
 			float repulsiveAgentFactor, 
 			float repulsiveObstacle, 
 			float repulsiveObstacleFactor,
 			float platformFactor,
-			float perception, 
+			float perception,
 			float friction,
-			Microsoft::Xna::Framework::Vector2 velocity
+			SFVector2 velocity
 		);
 	
 	private:
@@ -66,7 +69,7 @@ namespace SF2D {
 		float _platformFactor;
 		float _perception;
 		float _friction;
-		Microsoft::Xna::Framework::Vector2 _velocity;
+		SFVector2 _velocity;
 	};
 
 
@@ -78,15 +81,15 @@ namespace SF2D {
 				SFSimulator();	
 				~SFSimulator();
 
-				int addAgent(Microsoft::Xna::Framework::Vector2 position);
-
+				int addAgent(SFVector2 position);
+				
 				int addAgent(
-					Microsoft::Xna::Framework::Vector2 position, 
+					SFVector2 position, 
 					float neighborDist, 
 					int maxNeighbors, 
 					float timeHorizon,
 					float timeHorizonObst, 
-					float radius,
+					float radius, 
 					float maxSpeed, 
 					float accelerationCoefficient, 
 					float relaxationTime,
@@ -97,22 +100,21 @@ namespace SF2D {
 					float platformFactor,
 					float perception, 
 					float friction,
-					Microsoft::Xna::Framework::Vector2 velocity 
+					SFVector2 velocity 
 				);
 				
 				void doStep();
-
 				int getAgentAgentNeighbor(int agentNo, int neighborNo) ;
 				int getAgentMaxNeighbors(int agentNo) ;
 				float getAgentMaxSpeed(int agentNo) ;
 				float getAgentNeighborDist(int agentNo) ;
 				int getAgentNumAgentNeighbors(int agentNo) ;
-				Microsoft::Xna::Framework::Vector2  getAgentPosition(int agentNo) ;
-				Microsoft::Xna::Framework::Vector2  getAgentPrefVelocity(int agentNo) ;
-				void getAgentPositions(array<int>^ agentNos, array<Microsoft::Xna::Framework::Vector2>^ positions) ;
-				void getAgentPrefVelocities(array<int>^ agentNos, array<Microsoft::Xna::Framework::Vector2>^ prefVelocities) ;
+				SFVector2  getAgentPosition(int agentNo) ;
+				SFVector2  getAgentPrefVelocity(int agentNo) ;
+				void getAgentPositions(array<int>^ agentNos, array<SFVector2>^ positions) ;
+				void getAgentPrefVelocities(array<int>^ agentNos, array<SFVector2>^ prefVelocities) ;
 				float getAgentRadius(int agentNo) ;
-				Microsoft::Xna::Framework::Vector2 getAgentVelocity(int agentNo) ;
+				SFVector2 getAgentVelocity(int agentNo) ;
 				float getGlobalTime() ;
 				int getNumAgents() ;
 				float getTimeStep() ;
@@ -120,20 +122,32 @@ namespace SF2D {
 				void setAgentMaxNeighbors(int agentNo, int maxNeighbors);
 				void setAgentMaxSpeed(int agentNo, float maxSpeed);
 				void setAgentNeighborDist(int agentNo, float neighborDist);
-				void setAgentPosition(int agentNo,  Microsoft::Xna::Framework::Vector2 position);
-				void setAgentPrefVelocity(int agentNo,  Microsoft::Xna::Framework::Vector2 prefVelocity);
-				void setAgentPrefVelocity(array<int>^ agentNo,  array<Microsoft::Xna::Framework::Vector2>^ prefVelocity);
+				void setAgentPosition(int agentNo,  SFVector2 position);
+				void setAgentPrefVelocity(int agentNo,  SFVector2 prefVelocity);
+				void setAgentPrefVelocity(array<int>^ agentNo,  array<SFVector2>^ prefVelocity);
 				void setAgentRadius(int agentNo, float radius);
-				void setAgentVelocity(int agentNo,  Microsoft::Xna::Framework::Vector2 velocity);
-				void setAgentVelocity(array<int>^ agentNo,  array<Microsoft::Xna::Framework::Vector2>^ velocity);
+				void setAgentVelocity(int agentNo,  SFVector2 velocity);
+				void setAgentVelocity(array<int>^ agentNo,  array<SFVector2>^ velocity);
 				void setTimeStep(float timeStep);	
-				int addObstacle(array<Microsoft::Xna::Framework::Vector2>^ vertices);
-				int addObstacle(System::Collections::Generic::List<Microsoft::Xna::Framework::Vector2>^ vertices);
+				void setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationDegreeSet set);
+				void setAttractionForce(System::Collections::Generic::List<SFVector2>^ pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractionTime_);
+				void setPlatformVelocity(SF3D::SFVector3 velocity);
+				SF3D::SFVector3 getPlatformVelocity();
+				float getAgentFriction(int agentNo);
+				void setAgentFriction(int agentNo, float friction);
+				void setRotationDegreeSet(SF3D::SFRotationDegreeSet set);
+				SF3D::SFRotationDegreeSet getRotationDegreeSet();
+				int addObstacle(array<SFVector2>^ vertices);
+				int addObstacle(System::Collections::Generic::List<SFVector2>^ vertices);
 				void processObstacles();
-				bool queryVisibility(Microsoft::Xna::Framework::Vector2 point1, Microsoft::Xna::Framework::Vector2 point2, float radius) ;
+				bool queryVisibility(SFVector2 point1, SFVector2 point2, float radius) ;
 				float getAgentTimeHorizonObst(int agentNo) ;
-				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);
-				double getAgentPressure(int index);
+				void setAgentTimeHorizonObst(int agentNo, float timeHorizonObst);			
+				System::Collections::Generic::List<int>^ getAgentNeighboursIndexList(int agentNo, float radius);
 				double getObstaclePressure(int index);
+				double getAgentPressure(int index);
+				System::Collections::Generic::List<double>^ getAgentPressureList();
+				System::Collections::Generic::List<double>^ getObstaclePressureList();
+				System::Collections::Generic::List<SFVector2>^ getPositionList();
 	};
 }
