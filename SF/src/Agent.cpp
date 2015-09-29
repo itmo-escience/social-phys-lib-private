@@ -16,77 +16,74 @@ namespace SF
 		acceleration = a, direction = d;
 	}
 
-	int ForceAcceleration::getDirection()
+	int ForceAcceleration::getDirection() const
 	{
 		return direction;
 	}
 
-	int ForceAcceleration::setDirectionForZ(float z)
+	int ForceAcceleration::setDirectionForZ(float z) const
 	{
 		if(z > 0)
 			return 1;
 		else if(z < 0)
 			return -1;
+		return 0;
 	}
-		
+
 	void ForceAcceleration::update(float a, int d)
 	{
 		acceleration = a, direction = d;
 	}
 
-	float ForceAcceleration::getMultCoefficient()
+	float ForceAcceleration::getMultCoefficient() const
 	{
 		if(direction < 0)
 		{
 			if(acceleration < 0)
 				return 0.75;
-			else if(acceleration > 0)
+			if(acceleration > 0)
 				return 1.25;
-			else
-				return 1;
+			return 1;
 		}
-		else if(direction > 0)
+		if(direction > 0)
 		{
 			if(acceleration < 0)
 				return 1.25;
-			else if(acceleration > 0)
+			if(acceleration > 0)
 				return 0.75;
-			else
-				return 1;
-		}
-		else
-		{
 			return 1;
 		}
+
+		return 1;
 	}
 
 	Agent::Agent(SFSimulator* sim) : 
-			agentNeighbors_(), 
+			id_(0), 
 			maxNeighbors_(0), 
-			maxSpeed_(0.0f), 
+			direction_(1), 
+			accelerationBuffer_(0.0f), 
+			maxSpeed_(0.0f),
 			neighborDist_(0.0f), 
-			newVelocity_(),
-			obstacleNeighbors_(), 
-			position_(),
-			prefVelocity_(), 
-			radius_(0.0f), 
-			sim_(sim), 
-			direction_(1),
+			radius_(0.0f),
 			timeHorizonObst_(0.0f), 
-			velocity_(), 
-			accelerationBuffer_(0.0f),
-			previosPosition_(INT_MIN, INT_MIN), 
+			obstaclePressure_(), 
+			agentPressure_(), 
 			forceAcceleration_(0, 0),
+			newVelocity_(), 
+			position_(), 
+			prefVelocity_(),
+			previosPosition_(INT_MIN, INT_MIN), 
+			velocity_(),
 			oldPlatformVelocity_(),
-			obstaclePressure_(),
-			agentPressure_(),
+			obstacleNeighbors_(),
+			agentNeighbors_(),
 			attractionTimeList_(),
-			id_(0)
+			sim_(sim)
 	{ 
 	  setNullSpeed(id_); 
 
 	  // attraction section
-	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
+	  for (auto i = 0; i < sim->attractivePointList_.size(); i++)
 		  attractionTimeList_.push_back(0);
 	}
 
@@ -119,7 +116,7 @@ namespace SF
 		  setSpeedList(id, 0.0f);
   }
 
-  float Agent::getPerception(Vector2 *arg1, Vector2 *arg2)
+  float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
   {
 	  if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
          return 1;
@@ -128,8 +125,8 @@ namespace SF
   }
 
 
-  float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed)
-    {
+  float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
+  {
         if (currentSpeed <= maxSpeed)
             return 1;
 
@@ -144,23 +141,23 @@ namespace SF
     else
 		newVelocity_ = prefVelocity_;
 
-    Vector2 correction = Vector2();
+    auto correction = Vector2();
 
     // <F2>
-	for (int i = 0; i < agentNeighbors_.size(); i++)
+	for (auto i = 0; i < agentNeighbors_.size(); i++)
     {
         setNullSpeed(agentNeighbors_[i].second->id_);
-        Vector2 pos = agentNeighbors_[i].second->position_;
-        Vector2 velocity = agentNeighbors_[i].second->velocity_;
+	    auto pos = agentNeighbors_[i].second->position_;
+		auto velocity = agentNeighbors_[i].second->velocity_;
 
-		Vector2 y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-		Vector2 d = position_ - pos;
-		float radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-		float b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-		float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-		float ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-		Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
-		Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+		auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+		auto d = position_ - pos;
+		auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+		auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+		auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+		auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+		auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
+		auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
 		agentPressure_ = getLength(force);
 
 		correction += force;
@@ -169,20 +166,20 @@ namespace SF
 	
     // <F3>
 	float minDistanceSquared = INT_MAX;
-	Vector2 minDiff = Vector2();
+	auto minDiff = Vector2();
 	repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
-	for (int i = 0; i < obstacleNeighbors_.size(); i++)
+	for (auto i = 0; i < obstacleNeighbors_.size(); i++)
     {
 		setNullSpeed(id_);
 
-		Vector2 start = obstacleNeighbors_[i].second->point_;
-		Vector2 end = obstacleNeighbors_[i].second->nextObstacle->point_;
-        Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
+		auto start = obstacleNeighbors_[i].second->point_;
+		auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+		auto closestPoint = getNearestPoint(&start, &end, &position_);
 
-        Vector2 diff = position_ - closestPoint;
+		auto diff = position_ - closestPoint;
 
-        float distanceSquared = diff.GetLengthSquared();
+		auto distanceSquared = diff.GetLengthSquared();
         if (distanceSquared < minDistanceSquared)
         {
             minDistanceSquared = distanceSquared;
@@ -190,22 +187,22 @@ namespace SF
         }
     }
 
-	float distance = sqrt(minDistanceSquared) - radius_;
-	float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-	Vector2 force = forceAmount * minDiff.normalized();
+	auto distance = sqrt(minDistanceSquared) - radius_;
+	auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+	auto force = forceAmount * minDiff.normalized();
 	obstaclePressure_ = getLength(force);
 
 	correction += force;
     // </F3>
 	
 	// <F4>
-	float time = sim_->attractionTime_;
-	std::vector<Vector2> attractionPointList = sim_->attractivePointList_;
+	auto time = sim_->attractionTime_;
+	auto attractionPointList = sim_->attractivePointList_;
 	for (size_t i = 0; i < attractionPointList.size(); i++)
 	{
-		Vector2 force = getAttractiveForce(position_, attractionPointList[i]);
+		auto add = getAttractiveForce(position_, attractionPointList[i]);
 
-		correction += force;
+		correction += add;
 	}
 	// </F4>
 
@@ -300,18 +297,17 @@ namespace SF
 			R = Vector3(position_.x(), position_.y(), 0),
 			V = Vector3(velocity_.x(), velocity_.y(), 0),
 			A,
-			fixedOmega,
 			fixedR, 
 			fixedV,
 			fixedA;
 
-		Vector2
+		auto
 			newVX = Vector2(),
 			newVY = Vector2();
 
 		if(fabs(sim_->rotationNow_.x()) > 0.001f)
 		{
-			ParameterType parameterType = X;
+			auto parameterType = X;
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
 
@@ -334,7 +330,7 @@ namespace SF
 
 		if(fabs(sim_->rotationNow_.y()) > 0.001f)
 		{
-			ParameterType parameterType = Y;
+			auto parameterType = Y;
 			omega = getOmega(parameterType, NOW);
 			dOmega = getDOmega(parameterType, NOW);
 	
@@ -358,15 +354,15 @@ namespace SF
 			newVY = Vector2(A.x(), A.y());
 		}
 
-		Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+		auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
 
-		Vector3 platformVeclocity = sim_->getPlatformVelocity();
-		float 
+		auto platformVeclocity = sim_->getPlatformVelocity();
+		auto
 			accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
 			oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
 
-		float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+		auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
 		if(difference > 0)	// positive difference
 			result = result * (1 + fabs(difference));
@@ -386,13 +382,13 @@ namespace SF
   void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
   {
     if (this != agent) {
-      const float distSq = absSq(position_ - agent->position_);
+      const auto distSq = absSq(position_ - agent->position_);
 
       if (distSq < rangeSq) {
         if (agentNeighbors_.size() < maxNeighbors_) {
           agentNeighbors_.push_back(std::make_pair(distSq,agent));
         }
-        size_t i = agentNeighbors_.size() - 1;
+		auto i = agentNeighbors_.size() - 1;
         while (i != 0 && distSq < agentNeighbors_[i-1].first) {
           agentNeighbors_[i] = agentNeighbors_[i-1];
           --i;
@@ -415,7 +411,7 @@ namespace SF
     if (distSq < rangeSq) {
       obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
       
-      size_t i = obstacleNeighbors_.size() - 1;
+	  auto i = obstacleNeighbors_.size() - 1;
       while (i != 0 && distSq < obstacleNeighbors_[i-1].first) {
         obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
         --i;
@@ -426,11 +422,11 @@ namespace SF
 
   void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
   {if (this != agent) {
-      const float distSq = absSq(position_ - agent->position_);
+      const auto distSq = absSq(position_ - agent->position_);
 
       if (distSq < rangeSq) {
 		agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
-		size_t i = agentNeighborsIndexList_.size() - 1;
+		auto i = agentNeighborsIndexList_.size() - 1;
         
 		while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) {
           agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
@@ -444,8 +440,8 @@ namespace SF
 
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point)
 	{
-		Vector2 relativeEndPoint = *end - *start;
-		Vector2 relativePoint = *point - *start;
+		auto relativeEndPoint = *end - *start;
+		auto relativePoint = *point - *start;
 		double lambda = relativePoint * relativeEndPoint / relativeEndPoint.GetLengthSquared();
 
 		if(lambda <= 0)
@@ -453,7 +449,7 @@ namespace SF
 		else if(lambda >= 1)
 			return *end;
 		else
-			return *start + (float)lambda * relativeEndPoint;
+			return *start + static_cast<float>(lambda) * relativeEndPoint;
 	}
 
 	inline float getMinFloat(float a, float b)
@@ -461,17 +457,17 @@ namespace SF
 		return a < b ? a : b;
 	}
 
-	float Agent::getCriticalAnglesCorrection(float a, float b)
+	float Agent::getCriticalAnglesCorrection(float a, float b) const
 	{	
 		return 1 / getMinFloat(a, b);
 	}
 
-	bool Agent::isNotPlaneCase(Vector3 s)
+	bool Agent::isNotPlaneCase(Vector3 s) const
 	{
 		return !(s.x() == 0 && s.y() == 0 && s.z() == 0);
 	}
 
-	float Agent::getInclineAngle(Vector3 s)
+	float Agent::getInclineAngle(Vector3 s) const
 	{
 		if(s.x() != 0)
 			return getCos(Vector2(1, 0), getVectorProjectionXZ(s));	
@@ -481,7 +477,7 @@ namespace SF
 			return 1;
 	}
 
-	float Agent::getRotationAngle(Vector3 s)
+	float Agent::getRotationAngle(Vector3 s) const
 	{
 		if(s.x() != 0)
 			return getCos(Vector2(1, 0), getVectorProjectionXY(s));
@@ -490,17 +486,17 @@ namespace SF
 		else return 1;
 	}
 
-	Vector2 Agent::getVectorProjectionXY(Vector3 s)
+	Vector2 Agent::getVectorProjectionXY(Vector3 s) const
 	{
 		return Vector2(s.x(), s.y());
 	}
 
-	Vector2 Agent::getVectorProjectionXZ(Vector3 s)
+	Vector2 Agent::getVectorProjectionXZ(Vector3 s) const
 	{
 		return Vector2(s.x(), s.z());
 	}
 
-	Vector2 Agent::getVectorProjectionYZ(Vector3 s)
+	Vector2 Agent::getVectorProjectionYZ(Vector3 s) const
 	{
 		return Vector2(s.y(), s.z());
 	}
@@ -520,8 +516,8 @@ namespace SF
         setSpeedList(id_, 0.0f);
     }
 
-    float mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-    float tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+	auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+	auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
 
     if (!isForced_)
     {
@@ -534,17 +530,15 @@ namespace SF
 		acceleration_ += accelerationBuffer_ * accelerationCoefficient_;
         accelerationBuffer_ = 0;
     }
-	
-	float diff = 0;
 
 	position_ += velocity_ * sim_->timeStep_ * acceleration_;
 
-    setSpeedList(id_, (float) sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2)) / sim_->timeStep_);
+    setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
     previosPosition_ = position_;
   }
 
-	Vector3 Agent::getCross(Vector3 left, Vector3 right)
+	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
 	{
 		float X,
 			Y,
@@ -557,20 +551,20 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
-	float Agent::degreesToRadians(float degree)
-    {
+	float Agent::degreesToRadians(float degree) const
+	{
         return degree * (M_PI / 180.0f);
     }
 
-	float Agent::radiansToDegrees(float radian)
-    {
+	float Agent::radiansToDegrees(float radian) const
+	{
         return radian * (180.0f / M_PI);
     }
 
-	Vector3 Agent::getRoll(ParameterType pt, TimeType tt)
+	Vector3 Agent::getRoll(ParameterType pt, TimeType tt) const
 	{
 		Vector3 rotation;
-		float value;
+		float value = 0;
 
 		if(tt == PAST)
 			rotation = sim_->rotationPast_;
@@ -594,7 +588,7 @@ namespace SF
 
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
-		float value;
+		float value = 0;
 		
 		if(tt == NOW)
 			value = (getRoll(pt, NOW2FUTURE).x() - getRoll(pt, PAST2NOW).x()) / sim_->timeStep_;
@@ -608,11 +602,13 @@ namespace SF
 		
 		if(pt == Y)
 			return Vector3(0, value, 0);
+
+		return Vector3();
 	}
 
 	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
-		float value;
+		float value = 0;
 
 		if(tt == NOW)
 			value = (getOmega(pt, NOW2FUTURE).x() - getOmega(pt, PAST2NOW).x()) / sim_->timeStep_;
@@ -622,14 +618,16 @@ namespace SF
 		
 		if(pt == Y)
 			return Vector3(0, value, 0);
+
+		return Vector3();
 	}
 
-	Vector2 Agent::getAttractiveForce(Vector2 arg1, Vector2 arg2)
+	Vector2 Agent::getAttractiveForce(Vector2 arg1, Vector2 arg2) const
 	{
-		Vector2 difference = normalize(arg1 - arg2);
+		auto difference = normalize(arg1 - arg2);
 		
-		float first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
-		float second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
+		auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
+		auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
 
 		return (first - second) * getPerception(&arg1, &arg2) * difference;
 	}
