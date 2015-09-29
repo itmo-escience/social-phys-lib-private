@@ -28,7 +28,7 @@ namespace ConsoleApplication1
         }
 
             /* Store the goals of the agents. */
-            static List<Vector2> goals= new  List<Vector2>();
+            static List<Vector2> goals = new  List<Vector2>();
 
             static void setupScenario(SFSimulator sim)
             {
