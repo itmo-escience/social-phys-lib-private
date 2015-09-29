@@ -94,7 +94,7 @@ namespace SF
 
 	SFSimulator::~SFSimulator()
 	{
-		if (defaultAgent_ != 0) 
+		if (defaultAgent_ != nullptr) 
 			delete defaultAgent_;
 
 		for (size_t i = 0; i < agents_.size(); ++i) 
@@ -522,17 +522,17 @@ namespace SF
 	}
 
 
-	float SFSimulator::getPlatformRotationXY() const
+	double SFSimulator::getPlatformRotationXY() const
 	{
 		return platformRotationXY_;
 	}
 
-	float SFSimulator::getPlatformRotationXZ() const
+	double SFSimulator::getPlatformRotationXZ() const
 	{
 		return platformRotationXZ_;
 	}
 
-	float SFSimulator::getPlatformRotationYZ() const
+	double SFSimulator::getPlatformRotationYZ() const
 	{
 		return platformRotationYZ_;
 	}
@@ -552,7 +552,7 @@ namespace SF
 				agent->agentNeighborsIndexList_.clear();
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
-				for(auto i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+				for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
 					result.push_back(agent->agentNeighborsIndexList_[i].first);
 			}
 		}
