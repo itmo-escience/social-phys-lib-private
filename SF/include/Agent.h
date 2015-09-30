@@ -116,7 +116,8 @@ namespace SF
 	typedef enum
 	{
 		X = 1,
-		Y
+		Y,
+		Z
 	}
 	ParameterType;
 
