@@ -353,14 +353,14 @@ void SFSimulator::setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationD
 	setRotationDegreeSet(set);
 }
 
-void SFSimulator::setAttractionForce(System::Collections::Generic::List<SFVector2>^ pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractionTime_)
+void SFSimulator::setAttractiveForce(System::Collections::Generic::List<SFVector2>^ pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime_)
 {
 	std::vector<SF::Vector2> to;
 
 	for (size_t i = 0; i < pointList->Count; i++)
 		to.push_back(SF::Vector2(pointList[i].X, pointList[i].Y));
 	
-	_sim->setAttractionForce(to, attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractionTime_);
+	_sim->setAttractiveForce(to, attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime_);
 }
 
 void SFSimulator::setRotationDegreeSet(SF3D::SFRotationDegreeSet set)
