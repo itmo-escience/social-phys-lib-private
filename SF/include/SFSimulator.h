@@ -528,7 +528,15 @@ namespace SF
 	void setAdditionalForce(Vector3 velocity, RotationDegreeSet set);
 
 	 
-	void setAttractionForce(std::vector<Vector2> pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime);
+	void setAttractiveForce(
+		std::vector<Vector2> pointList, 
+		float attractiveStrength, 
+		float repulsiveStrength, 
+		float attractiveRange, 
+		float repulsiveRange, 
+		float attractiveTime, 
+		float length
+	);
 
 
 	/*!
@@ -591,6 +599,7 @@ namespace SF
 	float attractiveRange_;
 	float repulsiveStrength_;
 	float repulsiveRange_;
+	float attractiveLength_;
 	std::vector<Vector2> attractivePointList_;
 
   private:

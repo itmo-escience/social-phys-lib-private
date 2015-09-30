@@ -35,7 +35,7 @@ namespace SF
 	{ 
 	  setNullSpeed(id_); 
 
-	  // attraction section
+	  // attractive section
 	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
 	  {
 		  attractiveTimeList_.push_back(0);
@@ -153,17 +153,17 @@ namespace SF
 	
 	// <F4>
 	auto time = sim_->attractiveTime_;
-	auto attractionPointList = sim_->attractivePointList_;
-	for (size_t i = 0; i < attractionPointList.size(); i++)
+	auto attractivePointList = sim_->attractivePointList_;
+	for (size_t i = 0; i < attractivePointList.size(); i++)
 	{
 		if (!isUsedAttractivePoint_[i])
 		{
-			if (getLength(attractionPointList[i] - position_) <= 5)
+			if (getLength(attractivePointList[i] - position_) <= sim_->attractiveLength_)
 				attractiveTimeList_[i] += sim_->timeStep_;
 			
 			if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
 			{
-				auto add = getAttractiveForce(position_, attractionPointList[i]);
+				auto add = getAttractiveForce(position_, attractivePointList[i]);
 				correction += add;
 			}
 			if (attractiveTimeList_[i] > time)
