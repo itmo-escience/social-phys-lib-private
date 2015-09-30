@@ -188,6 +188,7 @@ namespace SF
 
 		auto newVX = Vector2();
 		auto newVY = Vector2();
+		auto newVZ = Vector2();
 
 		if(fabs(sim_->rotationNow_.x()) > 0.001f)
 		{
@@ -238,7 +239,36 @@ namespace SF
 			newVY = Vector2(A.x(), A.y());
 		}
 
-		auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+		if(fabs(sim_->rotationNow_.z()) > 0.001f)
+		{
+			auto parameterType = Z;
+			omega = getOmega(parameterType, NOW);
+			dOmega = getDOmega(parameterType, NOW);
+
+			fixedR = Vector3(
+				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+				R.x() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y())
+			);
+
+			fixedV = Vector3(
+				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y())
+			);
+
+			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+
+			A = Vector3(
+				fixedA.x() / cos(omega.x()),
+				fixedA.y() / cos(omega.y()),
+				0
+			);
+
+			newVZ = Vector2(A.x(), A.y());
+		}
+
+		auto result = (velocity_ + (newVX + newVY + newVZ) * sim_->timeStep_);
 
 		auto platformVeclocity = sim_->getPlatformVelocity();
 		auto accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2);
