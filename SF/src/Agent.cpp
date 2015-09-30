@@ -158,7 +158,7 @@ namespace SF
 	{
 		if (!isUsedAttractivePoint_[i])
 		{
-			if (getLength(attractivePointList[i] - position_) <= 5)
+			if (getLength(attractivePointList[i] - position_) <= sim_->attractiveLength_)
 				attractiveTimeList_[i] += sim_->timeStep_;
 			
 			if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
