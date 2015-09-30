@@ -51,8 +51,8 @@ SFSimulator::SFSimulator()
 
 int SFSimulator::addAgent(SFVector2 position)
 {
-		 SF::Vector2 pos = SF::Vector2(position.X,position.Y);	
-		 return _sim->addAgent(pos);
+	SF::Vector2 pos = SF::Vector2(position.X,position.Y);	
+	return _sim->addAgent(pos);
 }
 
 

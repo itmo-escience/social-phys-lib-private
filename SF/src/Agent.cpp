@@ -48,11 +48,12 @@ namespace SF
   void Agent::computeNeighbors()
   {
     obstacleNeighbors_.clear();
-    float rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+    auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
     sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
     agentNeighbors_.clear();
-    if (maxNeighbors_ > 0) {
+    if (maxNeighbors_ > 0) 
+	{
       rangeSq = sqr(neighborDist_);
       sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
     }
@@ -185,9 +186,8 @@ namespace SF
 			fixedV,
 			fixedA;
 
-		auto
-			newVX = Vector2(),
-			newVY = Vector2();
+		auto newVX = Vector2();
+		auto newVY = Vector2();
 
 		if(fabs(sim_->rotationNow_.x()) > 0.001f)
 		{
@@ -240,11 +240,9 @@ namespace SF
 
 		auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
-
 		auto platformVeclocity = sim_->getPlatformVelocity();
-		auto
-			accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
-			oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
+		auto accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2);
+		auto oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
 
 		auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
@@ -290,7 +288,7 @@ namespace SF
   {
     const Obstacle* const nextObstacle = obstacle->nextObstacle;
 
-    const float distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+    const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
     if (distSq < rangeSq) {
       obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
@@ -380,7 +378,8 @@ namespace SF
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
 	{
-		float X,
+		float 
+			X,
 			Y,
 			Z;
 
