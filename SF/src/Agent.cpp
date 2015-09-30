@@ -158,14 +158,9 @@ namespace SF
 	{
 		if (!isUsedAttractivePoint_[i])
 		{
-			if (getLength(attractionPointList[i] - position_) <= 1)
+			if (getLength(attractionPointList[i] - position_) <= 5)
 				attractiveTimeList_[i] += sim_->timeStep_;
-			else
-			{
-				attractiveTimeList_[i] = 0;
-				isUsedAttractivePoint_[i] = true;
-			}
-
+			
 			if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
 			{
 				auto add = getAttractiveForce(position_, attractionPointList[i]);
