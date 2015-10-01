@@ -159,6 +159,7 @@ namespace SF
 	float friction_;
 	double obstaclePressure_;
 	double agentPressure_;
+	Vector2 correction;
     Vector2 newVelocity_;
     Vector2 position_;
     Vector2 prefVelocity_;

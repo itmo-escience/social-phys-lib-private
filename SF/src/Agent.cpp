@@ -30,6 +30,7 @@ namespace SF
 			obstacleNeighbors_(),
 			agentNeighbors_(),
 			attractiveTimeList_(),
+			correction(),
 			sim_(sim)
 	{ 
 	  setNullSpeed(id_); 
@@ -97,7 +98,7 @@ namespace SF
     else
 		newVelocity_ = prefVelocity_;
 
-    auto correction = Vector2();
+    correction = Vector2();
 
     // <F2>
 	for (size_t i = 0; i < agentNeighbors_.size(); i++)
