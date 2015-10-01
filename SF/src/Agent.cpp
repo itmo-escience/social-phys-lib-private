@@ -30,6 +30,7 @@ namespace SF
 			obstacleNeighbors_(),
 			agentNeighbors_(),
 			attractiveTimeList_(),
+			correction(),
 			sim_(sim)
 	{ 
 	  setNullSpeed(id_); 
@@ -89,206 +90,252 @@ namespace SF
         return maxSpeed / currentSpeed;
     }
 
-  /* Search for the best new velocity. */
-  void Agent::computeNewVelocity()
-  {
-	if (prefVelocity_ * prefVelocity_ > sqr(radius_))
-	    newVelocity_ = normalize(prefVelocity_) * radius_;
-    else
-		newVelocity_ = prefVelocity_;
+	void Agent::getAccelerationTerm()
+	{
+		setNullSpeed(id_);
 
-    auto correction = Vector2();
+		if (previosPosition_.x() == INT_MIN && previosPosition_.y() == INT_MIN)
+			previosPosition_ = position_;
 
-    // <F2>
-	for (size_t i = 0; i < agentNeighbors_.size(); i++)
-    {
-        setNullSpeed(agentNeighbors_[i].second->id_);
-	    auto pos = agentNeighbors_[i].second->position_;
-		auto velocity = agentNeighbors_[i].second->velocity_;
+		velocity_ = newVelocity_;
 
-		auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-		auto d = position_ - pos;
-		auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-		auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-		auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-		auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-		auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
-		auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
-		agentPressure_ = getLength(force);
+		if (fabs(prefVelocity_.x()) < 0.0001f && fabs(prefVelocity_.y()) < 0.0001f)
+		{
+			acceleration_ = 0.0f;
+			setSpeedList(id_, 0.0f);
+		}
+
+		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+
+		if (!isForced_)
+		{
+			acceleration_ += tempAcceleration;
+			accelerationBuffer_ += tempAcceleration;
+		}
+		else
+		{
+			isForced_ = false;
+			acceleration_ += accelerationBuffer_ * accelerationCoefficient_;
+			accelerationBuffer_ = 0;
+		}
+
+		position_ += velocity_ * sim_->timeStep_ * acceleration_;
+
+		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
+
+		previosPosition_ = position_;
+	}
+
+	void Agent::getRepulsiveAgentForce()
+	{
+		for (size_t i = 0; i < agentNeighbors_.size(); i++)
+		{
+			setNullSpeed(agentNeighbors_[i].second->id_);
+			auto pos = agentNeighbors_[i].second->position_;
+			auto velocity = agentNeighbors_[i].second->velocity_;
+
+			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto d = position_ - pos;
+			auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
+			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+			agentPressure_ = getLength(force);
+
+			correction += force;
+		}
+	}
+
+	void Agent::getRepulsiveObstacleForce()
+	{
+		float minDistanceSquared = INT_MAX;
+		auto minDiff = Vector2();
+		repulsiveObstacle_ = 1 / repulsiveObstacle_;
+
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
+			setNullSpeed(id_);
+
+			auto start = obstacleNeighbors_[i].second->point_;
+			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto closestPoint = getNearestPoint(&start, &end, &position_);
+
+			auto diff = position_ - closestPoint;
+
+			auto distanceSquared = diff.GetLengthSquared();
+			if (distanceSquared < minDistanceSquared)
+			{
+				minDistanceSquared = distanceSquared;
+				minDiff = diff;
+			}
+		}
+
+		auto distance = sqrt(minDistanceSquared) - radius_;
+		auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+		auto force = forceAmount * minDiff.normalized();
+		obstaclePressure_ = getLength(force);
 
 		correction += force;
 	}
-	// </F2>
-	
-    // <F3>
-	float minDistanceSquared = INT_MAX;
-	auto minDiff = Vector2();
-	repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
-	for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-    {
-		setNullSpeed(id_);
-
-		auto start = obstacleNeighbors_[i].second->point_;
-		auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
-		auto closestPoint = getNearestPoint(&start, &end, &position_);
-
-		auto diff = position_ - closestPoint;
-
-		auto distanceSquared = diff.GetLengthSquared();
-        if (distanceSquared < minDistanceSquared)
-        {
-            minDistanceSquared = distanceSquared;
-            minDiff = diff;
-        }
-    }
-
-	auto distance = sqrt(minDistanceSquared) - radius_;
-	auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-	auto force = forceAmount * minDiff.normalized();
-	obstaclePressure_ = getLength(force);
-
-	correction += force;
-    // </F3>
-	
-	// <F4>
-	auto time = sim_->attractiveTime_;
-	auto attractivePointList = sim_->attractivePointList_;
-	for (size_t i = 0; i < attractivePointList.size(); i++)
+	void Agent::getAttractiveForce()
 	{
-		if (!isUsedAttractivePoint_[i])
+		auto time = sim_->attractiveTime_;
+		auto attractivePointList = sim_->attractivePointList_;
+		for (size_t i = 0; i < attractivePointList.size(); i++)
 		{
-			if (getLength(attractivePointList[i] - position_) <= sim_->attractiveLength_)
-				attractiveTimeList_[i] += sim_->timeStep_;
-			
-			if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
+			if (!isUsedAttractivePoint_[i])
 			{
-				auto add = getAttractiveForce(position_, attractivePointList[i]);
-				correction += add;
+				if (getLength(attractivePointList[i] - position_) <= sim_->attractiveLength_)
+					attractiveTimeList_[i] += sim_->timeStep_;
+
+				if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
+				{
+					auto add = getAttractiveForce(position_, attractivePointList[i]);
+					correction += add;
+				}
+				if (attractiveTimeList_[i] > time)
+					isUsedAttractivePoint_[i] = true;
 			}
-			if (attractiveTimeList_[i] > time)
-				isUsedAttractivePoint_[i] = true;
 		}
 	}
-	// </F4>
 
-	// <F5>
-	if(sim_->rotationFuture_ != Vector3())
+	void Agent::getMovingPlatformForce()
 	{
-		Vector3 
-			omega,
-			dOmega,
-			R = Vector3(position_.x(), position_.y(), 0),
-			V = Vector3(velocity_.x(), velocity_.y(), 0),
-			A,
-			fixedR, 
-			fixedV,
-			fixedA;
-
-		auto newVX = Vector2();
-		auto newVY = Vector2();
-		auto newVZ = Vector2();
-
-		if(fabs(sim_->rotationNow_.x()) > 0.001f)
+		if (sim_->rotationFuture_ != Vector3())
 		{
-			auto parameterType = X;
-			omega = getOmega(parameterType, NOW);
-			dOmega = getDOmega(parameterType, NOW);
+			Vector3
+				omega,
+				dOmega,
+				R = Vector3(position_.x(), position_.y(), 0),
+				V = Vector3(velocity_.x(), velocity_.y(), 0),
+				A,
+				fixedR,
+				fixedV,
+				fixedA;
 
-			fixedR = Vector3(
-				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+			auto newVX = Vector2();
+			auto newVY = Vector2();
+			auto newVZ = Vector2();
 
-			fixedV = Vector3(
-				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+			if (fabs(sim_->rotationNow_.x()) > 0.001f)
+			{
+				auto parameterType = X;
+				omega = getOmega(parameterType, NOW);
+				dOmega = getDOmega(parameterType, NOW);
 
-			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
-	
-			A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
+				fixedR = Vector3(
+					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
 
-			newVX = Vector2(A.x(), A.y());
+				fixedV = Vector3(
+					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+
+				A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
+
+				newVX = Vector2(A.x(), A.y());
+			}
+
+			if (fabs(sim_->rotationNow_.y()) > 0.001f)
+			{
+				auto parameterType = Y;
+				omega = getOmega(parameterType, NOW);
+				dOmega = getDOmega(parameterType, NOW);
+
+				fixedR = Vector3(
+					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+
+				fixedV = Vector3(
+					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+
+				A = Vector3(
+					fixedA.x() / cos(omega.x()),
+					fixedA.y() / cos(omega.y()),
+					0);
+
+				newVY = Vector2(A.x(), A.y());
+			}
+
+			if (fabs(sim_->rotationNow_.z()) > 0.001f)
+			{
+				auto parameterType = Z;
+				omega = getOmega(parameterType, NOW);
+				dOmega = getDOmega(parameterType, NOW);
+
+				fixedR = Vector3(
+					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+					R.x() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y())
+					);
+
+				fixedV = Vector3(
+					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y())
+					);
+
+				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+
+				A = Vector3(
+					fixedA.x() / cos(omega.x()),
+					fixedA.y() / cos(omega.y()),
+					0
+					);
+
+				newVZ = Vector2(A.x(), A.y());
+			}
+
+			auto result = (velocity_ + (newVX + newVY + newVZ) * sim_->timeStep_);
+
+			auto platformVeclocity = sim_->getPlatformVelocity();
+			auto accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2);
+			auto oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
+
+			auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+
+			if (difference > 0)
+				result = result * (1 + fabs(difference));
+			else
+				result = result * (1 - fabs(difference));
+
+			oldPlatformVelocity_ = platformVeclocity;
+
+			correction += result * platformFactor_;
 		}
-
-		if(fabs(sim_->rotationNow_.y()) > 0.001f)
-		{
-			auto parameterType = Y;
-			omega = getOmega(parameterType, NOW);
-			dOmega = getDOmega(parameterType, NOW);
-	
-			fixedR = Vector3(
-				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-				R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
-
-			fixedV = Vector3(
-				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
-
-			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
-	
-			A = Vector3(
-				fixedA.x() / cos(omega.x()),
-				fixedA.y() / cos(omega.y()),
-				0);
-
-			newVY = Vector2(A.x(), A.y());
-		}
-
-		if(fabs(sim_->rotationNow_.z()) > 0.001f)
-		{
-			auto parameterType = Z;
-			omega = getOmega(parameterType, NOW);
-			dOmega = getDOmega(parameterType, NOW);
-
-			fixedR = Vector3(
-				R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-				R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-				R.x() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y())
-			);
-
-			fixedV = Vector3(
-				V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-				V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-				V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y())
-			);
-
-			fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
-
-			A = Vector3(
-				fixedA.x() / cos(omega.x()),
-				fixedA.y() / cos(omega.y()),
-				0
-			);
-
-			newVZ = Vector2(A.x(), A.y());
-		}
-
-		auto result = (velocity_ + (newVX + newVY + newVZ) * sim_->timeStep_);
-
-		auto platformVeclocity = sim_->getPlatformVelocity();
-		auto accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2);
-		auto oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
-
-		auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
-
-		if(difference > 0)	
-			result = result * (1 + fabs(difference));
-		else
-			result = result * (1 - fabs(difference));
-
-		oldPlatformVelocity_ = platformVeclocity;
-
-		correction += result * platformFactor_;
 	}
-	// </F5>
-	
+
+
+	/* Search for the best new velocity. */
+	void Agent::computeNewVelocity()
+	{
+		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
+			newVelocity_ = normalize(prefVelocity_) * radius_;
+		else
+			newVelocity_ = prefVelocity_;
+
+		correction = Vector2();
+
+		getRepulsiveAgentForce();
+		getRepulsiveObstacleForce();
+		getAttractiveForce();
+		getMovingPlatformForce();
     
-    newVelocity_ += correction;
-  }
+		newVelocity_ += correction;
+	}
 
   void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
   {
@@ -368,42 +415,10 @@ namespace SF
 		return a < b ? a : b;
 	}
 
-  void Agent::update()
-  {
-	setNullSpeed(id_);
-
-	if (previosPosition_.x() == INT_MIN && previosPosition_.y() == INT_MIN)
-      previosPosition_ = position_;
-
-	velocity_ = newVelocity_;
-
-	if (fabs(prefVelocity_.x()) < 0.0001f && fabs(prefVelocity_.y()) < 0.0001f)
-    {
-		acceleration_ = 0.0f;
-        setSpeedList(id_, 0.0f);
-    }
-
-	auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-	auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
-
-    if (!isForced_)
-    {
-		acceleration_ += tempAcceleration;
-        accelerationBuffer_ += tempAcceleration;
-    }
-    else
-    {
-        isForced_ = false;
-		acceleration_ += accelerationBuffer_ * accelerationCoefficient_;
-        accelerationBuffer_ = 0;
-    }
-
-	position_ += velocity_ * sim_->timeStep_ * acceleration_;
-
-    setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
-
-    previosPosition_ = position_;
-  }
+	void Agent::update()
+	{
+		getAccelerationTerm();
+	}
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
 	{

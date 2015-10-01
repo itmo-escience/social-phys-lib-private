@@ -113,6 +113,12 @@ namespace SF
 	*/
 	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2) const;
 	    
+	void getAccelerationTerm();
+	void getRepulsiveAgentForce();
+	void getRepulsiveObstacleForce();
+	void getAttractiveForce();
+	void getMovingPlatformForce();
+
 	typedef enum
 	{
 		X = 1,
@@ -159,6 +165,7 @@ namespace SF
 	float friction_;
 	double obstaclePressure_;
 	double agentPressure_;
+	Vector2 correction;
     Vector2 newVelocity_;
     Vector2 position_;
     Vector2 prefVelocity_;
