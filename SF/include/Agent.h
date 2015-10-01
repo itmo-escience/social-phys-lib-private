@@ -113,6 +113,12 @@ namespace SF
 	*/
 	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2) const;
 	    
+	void getAccelerationTerm();
+	void getRepulsiveAgentForce();
+	void getRepulsiveObstacleForce();
+	void getAttractiveForce();
+	void getMovingPlatformForce();
+
 	typedef enum
 	{
 		X = 1,
