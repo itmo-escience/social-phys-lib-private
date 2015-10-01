@@ -14,7 +14,6 @@ namespace SF
 	Agent::Agent(SFSimulator* sim) : 
 			id_(0), 
 			maxNeighbors_(0), 
-			direction_(1), 
 			accelerationBuffer_(0.0f), 
 			maxSpeed_(0.0f),
 			neighborDist_(0.0f), 
