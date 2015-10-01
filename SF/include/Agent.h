@@ -142,7 +142,6 @@ namespace SF
 	bool isForced_;
 	size_t id_;
 	size_t maxNeighbors_;
-	int direction_;
 	float acceleration_;
     float accelerationBuffer_;
     float relaxationTime_;
