@@ -99,7 +99,7 @@ namespace SF
 
 		velocity_ = newVelocity_;
 
-		if (fabs(prefVelocity_.x()) < 0.0001f && fabs(prefVelocity_.y()) < 0.0001f)
+		if (fabs(prefVelocity_.x()) < TOLERANCE && fabs(prefVelocity_.y()) < TOLERANCE)
 		{
 			acceleration_ = 0.0f;
 			setSpeedList(id_, 0.0f);
@@ -194,7 +194,13 @@ namespace SF
 
 				if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
 				{
-					auto add = getAttractiveForce(position_, attractivePointList[i]);
+					auto difference = normalize(position_ - attractivePointList[i]);
+
+					auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
+					auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
+
+					auto add =  (first - second) * getPerception(&position_, &attractivePointList[i]) * difference;
+
 					correction += add;
 				}
 				if (attractiveTimeList_[i] > time)
@@ -221,7 +227,7 @@ namespace SF
 			auto newVY = Vector2();
 			auto newVZ = Vector2();
 
-			if (fabs(sim_->rotationNow_.x()) > 0.001f)
+			if (fabs(sim_->rotationNow_.x()) > TOLERANCE)
 			{
 				auto parameterType = X;
 				omega = getOmega(parameterType, NOW);
@@ -244,7 +250,7 @@ namespace SF
 				newVX = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.y()) > 0.001f)
+			if (fabs(sim_->rotationNow_.y()) > TOLERANCE)
 			{
 				auto parameterType = Y;
 				omega = getOmega(parameterType, NOW);
@@ -270,7 +276,7 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.z()) > 0.001f)
+			if (fabs(sim_->rotationNow_.z()) > TOLERANCE)
 			{
 				auto parameterType = Z;
 				omega = getOmega(parameterType, NOW);
@@ -503,15 +509,5 @@ namespace SF
 			return Vector3(0, value, 0);
 
 		return Vector3();
-	}
-
-	Vector2 Agent::getAttractiveForce(Vector2 arg1, Vector2 arg2) const
-	{
-		auto difference = normalize(arg1 - arg2);
-		
-		auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
-		auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
-
-		return (first - second) * getPerception(&arg1, &arg2) * difference;
 	}
 }

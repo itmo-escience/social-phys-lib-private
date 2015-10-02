@@ -106,13 +106,7 @@ namespace SF
 	*	@param		point		Selected point
 	*/
 	Vector2 getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const;
-
-	/*
-	*	@brief		Returns projection for YOZ plane
-	*	@param		s		Vector
-	*/
-	Vector2 getAttractiveForce(Vector2 arg1, Vector2 arg2) const;
-	    
+    
 	void getAccelerationTerm();
 	void getRepulsiveAgentForce();
 	void getRepulsiveObstacleForce();
@@ -144,6 +138,7 @@ namespace SF
 	Vector3 getOmega(ParameterType pt, TimeType tt);
 	Vector3 getDOmega(ParameterType pt, TimeType tt);
 
+	const double TOLERANCE = 0.0001f;
 
 	bool isForced_;
 	size_t id_;
