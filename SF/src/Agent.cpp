@@ -495,6 +495,9 @@ namespace SF
 		if(pt == Y)
 			return Vector3(0, value, 0);
 
+		if (pt == Z)
+			return Vector3(0, 0, value);
+
 		return Vector3();
 	}
 
