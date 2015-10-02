@@ -227,7 +227,7 @@ namespace SF
 			auto newVY = Vector2();
 			auto newVZ = Vector2();
 
-			if (fabs(sim_->rotationNow_.x()) > TOLERANCE)
+			if (fabs(sim_->rotationNow_.x() - 30) > TOLERANCE)
 			{
 				auto parameterType = X;
 				omega = getOmega(parameterType, NOW);
@@ -250,7 +250,7 @@ namespace SF
 				newVX = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.y()) > TOLERANCE)
+			if (fabs(sim_->rotationNow_.y() - 30) > TOLERANCE)
 			{
 				auto parameterType = Y;
 				omega = getOmega(parameterType, NOW);
@@ -276,7 +276,7 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.z()) > TOLERANCE)
+			if (fabs(sim_->rotationNow_.z() - 30) > TOLERANCE)
 			{
 				auto parameterType = Z;
 				omega = getOmega(parameterType, NOW);
@@ -472,7 +472,10 @@ namespace SF
 		if(pt == Y)
 			value = rotation.y();
 
-		return Vector3(value, value, 0);
+		if (pt == Z)
+			value = rotation.z();
+
+		return Vector3(value, value, value);
 	}
 
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
