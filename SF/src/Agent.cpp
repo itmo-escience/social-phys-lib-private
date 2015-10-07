@@ -340,7 +340,9 @@ namespace SF
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
 		getAttractiveForce();
-		getMovingPlatformForce();
+
+		if(sim_->IsMovingPlatform)
+			getMovingPlatformForce();
     
 		newVelocity_ += correction;
 	}
