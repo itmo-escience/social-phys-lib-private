@@ -140,6 +140,7 @@ namespace SF
 
 	const double TOLERANCE = 0.0001f;
 	const size_t MULT = 1000000;
+	const size_t SHIFT = 30;
 
 	bool isForced_;
 	size_t id_;

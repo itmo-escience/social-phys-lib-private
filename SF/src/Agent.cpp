@@ -227,7 +227,12 @@ namespace SF
 			auto newVY = Vector2();
 			auto newVZ = Vector2();
 
-			if (fabs(sim_->rotationNow_.x() - 30) > TOLERANCE)
+			float
+				rotationX = sim_->rotationNow_.x() - SHIFT,
+				rotationY = sim_->rotationNow_.y() - SHIFT,
+				rotationZ = sim_->rotationNow_.z() - SHIFT;
+
+			if (fabs(rotationX) > TOLERANCE)
 			{
 				auto parameterType = X;
 				omega = getOmega(parameterType, NOW);
@@ -250,7 +255,7 @@ namespace SF
 				newVX = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.y() - 30) > TOLERANCE)
+			if (fabs(rotationY) > TOLERANCE)
 			{
 				auto parameterType = Y;
 				omega = getOmega(parameterType, NOW);
@@ -276,7 +281,7 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(sim_->rotationNow_.z() - 30) > TOLERANCE)
+			if (fabs(rotationZ) > TOLERANCE)
 			{
 				float
 					diffX = position_.x(),
@@ -297,7 +302,7 @@ namespace SF
 				else
 					angleXY = currentAngleBySin;
 
-				auto newPosition = Vector3(radiusXOY * cos(sim_->rotationNow_.z() - 30 + angleXY), radiusXOY * sin(sim_->rotationNow_.z() - 30 + angleXY), 0);
+				auto newPosition = Vector3(radiusXOY * cos(rotationZ + angleXY), radiusXOY * sin(rotationZ - 30 + angleXY), 0);
 				newVZ = (position_ - Vector2(newPosition.x(), newPosition.y())) * MULT;
 			}
 
