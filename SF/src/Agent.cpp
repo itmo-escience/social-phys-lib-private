@@ -278,18 +278,12 @@ namespace SF
 
 			if (fabs(sim_->rotationNow_.z() - 30) > TOLERANCE)
 			{
-				auto center = Vector3();
-
 				float
-					diffX = position_.x() - center.x(),
-					diffY = position_.y() - center.y(),
-					diffZ = -center.z();
+					diffX = position_.x(),
+					diffY = position_.y();
 
-				float
-					radiusXOY = sqrt(pow(diffX, 2) + pow(diffY, 2)),
-					radiusYOZ = sqrt(pow(diffY, 2) + pow(diffZ, 2)),
-					radiusXOZ = sqrt(pow(diffX, 2) + pow(diffZ, 2));
-
+				auto radiusXOY = sqrt(pow(diffX, 2) + pow(diffY, 2));
+					
 				float 
 					currentAngleBySin = asin(diffY / radiusXOY),
 					currentAngleByCos = acos(diffX / radiusXOY);
@@ -303,8 +297,7 @@ namespace SF
 				else
 					angleXY = currentAngleBySin;
 
-				Vector3 newPosition;
-				newPosition	+= Vector3(radiusXOY * cos(sim_->rotationNow_.z() - 30 + angleXY) + center.x(), radiusXOY * sin(sim_->rotationNow_.z() - 30 + angleXY) + center.y(), center.z());
+				auto newPosition = Vector3(radiusXOY * cos(sim_->rotationNow_.z() - 30 + angleXY), radiusXOY * sin(sim_->rotationNow_.z() - 30 + angleXY), 0);
 				newVZ = (position_ - Vector2(newPosition.x(), newPosition.y())) * MULT;
 			}
 
