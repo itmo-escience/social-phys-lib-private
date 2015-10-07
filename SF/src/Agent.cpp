@@ -278,28 +278,36 @@ namespace SF
 
 			if (fabs(sim_->rotationNow_.z() - 30) > TOLERANCE)
 			{
-				auto parameterType = Z;
-				omega = getOmega(parameterType, NOW);
-				dOmega = getDOmega(parameterType, NOW);
+				Vector3 center = Vector3();
 
-				fixedR = Vector3(
-					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+				float
+					diffX = position_.x() - center.x(),
+					diffY = position_.y() - center.y(),
+					diffZ = -center.z();
 
-				fixedV = Vector3(
-					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+				float
+					radiusXOY = sqrt(pow(diffX, 2) + pow(diffY, 2)),
+					radiusYOZ = sqrt(pow(diffY, 2) + pow(diffZ, 2)),
+					radiusXOZ = sqrt(pow(diffX, 2) + pow(diffZ, 2));
 
-				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+				float currentAngleBySin = asin(diffY / radiusXOY);
+				float currentAngleByCos = acos(diffX / radiusXOY);
 
-				A = Vector3(
-					fixedA.x() / cos(omega.x()),
-					fixedA.y() / cos(omega.y()),
-					0);
+				float
+					angleXY,
+					angleXZ,
+					angleYZ;
 
-				newVZ = Vector2(A.x(), A.y());
+				if (diffX < 0 && !(diffX < 0 && diffY < 0))
+					angleXY = currentAngleByCos;
+				else if (diffX < 0 && diffY < 0)
+					angleXY = M_PI - currentAngleBySin;
+				else
+					angleXY = currentAngleBySin;
+
+				Vector3 newPosition, rotationVector;
+				newPosition	+= Vector3(radiusXOY * cos(sim_->rotationNow_.z() - 30 + angleXY) + center.x(), radiusXOY * sin(sim_->rotationNow_.z() - 30 + angleXY) + center.y(), center.z());
+				newVZ = (position_ - Vector2(newPosition.x(), newPosition.y())) * 1000000;
 			}
 
 			auto result = (velocity_ + (newVX + newVY + newVZ) * sim_->timeStep_);
