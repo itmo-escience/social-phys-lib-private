@@ -602,6 +602,8 @@ namespace SF
 	float attractiveLength_;
 	std::vector<Vector2> attractivePointList_;
 
+	bool IsMovingPlatform;
+
   private:
     std::vector<Agent*> agents_;
     Agent* defaultAgent_;
