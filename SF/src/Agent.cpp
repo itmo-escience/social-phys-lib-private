@@ -302,7 +302,7 @@ namespace SF
 				else
 					angleXY = currentAngleBySin;
 
-				auto newPosition = Vector3(radiusXOY * cos(rotationZ + angleXY), radiusXOY * sin(rotationZ - 30 + angleXY), 0);
+				auto newPosition = Vector3(radiusXOY * cos(rotationZ + angleXY), radiusXOY * sin(rotationZ + angleXY), 0);
 				newVZ = (position_ - Vector2(newPosition.x(), newPosition.y())) * MULT;
 			}
 
