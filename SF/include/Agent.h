@@ -107,6 +107,9 @@ namespace SF
 	*/
 	Vector2 getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const;
     
+	bool isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const;
+	Vector2 getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d);
+
 	void getAccelerationTerm();
 	void getRepulsiveAgentForce();
 	void getRepulsiveObstacleForce();

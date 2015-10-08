@@ -121,6 +121,15 @@ namespace SF
 		}
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
+		
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+			if (isIntersect(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_))
+			{
+				position_ = getIntersection(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_);
+				position_ = previosPosition_ + (position_ - previosPosition_) * (getLength(position_ - previosPosition_) - 0.1) / getLength(position_ - previosPosition_);
+
+				break;
+			}
 
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
@@ -148,6 +157,35 @@ namespace SF
 			correction += force;
 		}
 	}
+
+	/*void Agent::getRepulsiveObstacleForce()
+	{
+		float minDistanceSquared = INT_MAX;
+		auto minDiff = Vector2();
+		repulsiveObstacle_ = 1 / repulsiveObstacle_;
+		auto force = Vector2();
+
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
+			setNullSpeed(id_);
+
+			auto start = obstacleNeighbors_[i].second->point_;
+			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto closestPoint = getNearestPoint(&start, &end, &position_);
+
+			auto diff = position_ - closestPoint;
+
+			auto distanceSquared = diff.GetLengthSquared();
+			auto distance = sqrt(distanceSquared) - radius_;
+			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+
+			force += forceAmount * diff.normalized();
+		}
+
+		obstaclePressure_ = getLength(force);
+
+		correction += force;
+	}*/
 
 	void Agent::getRepulsiveObstacleForce()
 	{
@@ -522,5 +560,33 @@ namespace SF
 			return Vector3(0, 0, value);
 
 		return Vector3();
+	}
+
+	bool Agent::isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
+	{
+		auto v1 = (d.x() - c.x())*(a.y() - c.y()) - (d.y() - c.y())*(a.x() - c.x());
+		auto v2 = (d.x() - c.x())*(b.y() - c.y()) - (d.y() - c.y())*(b.x() - c.x());
+		auto v3 = (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
+		auto v4 = (b.x() - a.x())*(d.y() - a.y()) - (b.y() - a.y())*(d.x() - a.x());
+		
+		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
+	}
+
+	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+	{
+		float 
+			x1 = a.x(), 
+			x2 = b.x(), 
+			x3 = c.x(), 
+			x4 = d.x(), 
+			y1 = a.y(), 
+			y2 = b.y(), 
+			y3 = c.y(), 
+			y4 = d.y();
+		
+		float x = -((x1*y2 - x2*y1)*(x4 - x3) - (x3*y4 - x4*y3)*(x2 - x1)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
+		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
+
+		return Vector2(x, y);
 	}
 }
