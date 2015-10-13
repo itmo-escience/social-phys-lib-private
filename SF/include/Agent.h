@@ -160,6 +160,7 @@ namespace SF
     float repulsiveAgentFactor_;
     float repulsiveObstacle_;
 	float repulsiveObstacleFactor_;
+	float obstacleRadius_;
 	float platformFactor_;
     float perception_;
 	float friction_;

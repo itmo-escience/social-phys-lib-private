@@ -32,6 +32,7 @@ namespace SF
 			attractiveTimeList_(),
 			correction(),
 			sim_(sim)
+
 	{ 
 	  setNullSpeed(id_); 
 
@@ -122,16 +123,54 @@ namespace SF
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
 		
+		auto minLength = DBL_MAX;
+		auto p = Vector2();
+		auto hasIntersection = false;
+
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
 			if (isIntersect(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_))
 			{
-				position_ = getIntersection(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_);
-				position_ = previosPosition_ + (position_ - previosPosition_) * (getLength(position_ - previosPosition_) - 0.1) / getLength(position_ - previosPosition_);
+				if (!hasIntersection)
+					hasIntersection = true;
 
-				break;
+				auto intersection = getIntersection(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_);
+				auto l = getLength(intersection - previosPosition_);
+
+				p = intersection;
+
+				if (l < minLength)
+				{
+					minLength = l;
+					p = intersection;
+				}
 			}
 
+		}
+
+		if (hasIntersection)
+		{
+			auto difference = p - previosPosition_;
+
+			float m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+	
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= 2)
+			//if (getLength(difference) > obstacleRadius_)
+			{
+				if (m >= 0 && m <= 1)
+					position_ = previosPosition_ + difference * m;
+				else
+					position_ = previosPosition_;
+			}
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2) position_ = previosPosition_;
+			if (getLength(difference) <= obstacleRadius_) position_ = previosPosition_;
+
+		}
+
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
+
+		if (fabs(getLength(position_) - getLength(previosPosition_)) > 10)
+			id_ = id_;
 
 		previosPosition_ = position_;
 	}
@@ -157,35 +196,6 @@ namespace SF
 			correction += force;
 		}
 	}
-
-	/*void Agent::getRepulsiveObstacleForce()
-	{
-		float minDistanceSquared = INT_MAX;
-		auto minDiff = Vector2();
-		repulsiveObstacle_ = 1 / repulsiveObstacle_;
-		auto force = Vector2();
-
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			setNullSpeed(id_);
-
-			auto start = obstacleNeighbors_[i].second->point_;
-			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
-			auto closestPoint = getNearestPoint(&start, &end, &position_);
-
-			auto diff = position_ - closestPoint;
-
-			auto distanceSquared = diff.GetLengthSquared();
-			auto distance = sqrt(distanceSquared) - radius_;
-			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-
-			force += forceAmount * diff.normalized();
-		}
-
-		obstaclePressure_ = getLength(force);
-
-		correction += force;
-	}*/
 
 	void Agent::getRepulsiveObstacleForce()
 	{
@@ -569,7 +579,24 @@ namespace SF
 		auto v3 = (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
 		auto v4 = (b.x() - a.x())*(d.y() - a.y()) - (b.y() - a.y())*(d.x() - a.x());
 		
+		//bool isIntersectLines;
+
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
+
+		/*float x1, y1, x2, y2, x3, y3, x4, y4;
+
+		if (a.x() >= b.x()){ x2 = a.x(); y2 = a.y(); x1 = b.x(); y1 = b.y(); }
+		else { x1 = a.x(); y1 = a.y(); x2 = b.x(); y2 = b.y(); }
+
+		if (c.x() >= d.x()) { x4 = a.x(); y4 = a.y(); x3 = b.x(); y3 = b.y(); }
+		else { x3 = a.x(); y3 = a.y(); x4 = b.x(); y4 = b.y(); }*/
+
+		//if ((x1 <= x4 && x4 <= x2) || (x1 <= x3 && x3 <= x2))
+		//return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0) && ((x1 <= x4 && x4 <= x2) || (x1 <= x3 && x3 <= x2));
+		//else
+			//return false;
+
+		
 	}
 
 	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
@@ -583,9 +610,18 @@ namespace SF
 			y2 = b.y(), 
 			y3 = c.y(), 
 			y4 = d.y();
+
+		/*float x1, y1, x2, y2, x3, y3, x4, y4;
+
+		if (a.x() >= b.x()){ x2 = a.x(); y2 = a.y(); x1 = b.x(); y1 = b.y(); }
+		else { x1 = a.x(); y1 = a.y(); x2 = b.x(); y2 = b.y(); }
+
+		if (c.x() >= d.x()) { x4 = a.x(); y4 = a.y(); x3 = b.x(); y3 = b.y(); }
+		else { x3 = a.x(); y3 = a.y(); x4 = b.x(); y4 = b.y(); }*/
 		
-		float x = -((x1*y2 - x2*y1)*(x4 - x3) - (x3*y4 - x4*y3)*(x2 - x1)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
+		float x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
 		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
+		//float y = ((y3 - y4)*(x1*y2 - x2*y1) - (y1 - y2)*(x3*y4 - x4*y3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x2));
 
 		return Vector2(x, y);
 	}

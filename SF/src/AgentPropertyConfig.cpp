@@ -4,23 +4,24 @@ namespace SF
 {
 
 	AgentPropertyConfig::AgentPropertyConfig(
-		float neighborDist, 
-		int maxNeighbors, 
+		float neighborDist,
+		int maxNeighbors,
 		float timeHorizon,
 		float obsHorizon,
-		float radius, 
-		float maxSpeed, 
-		float accelerationCoefficient, 
+		float radius,
+		float maxSpeed,
+		float accelerationCoefficient,
 		float relaxationTime,
-		float repulsiveAgent, 
-		float repulsiveAgentFactor, 
-		float repulsiveObstacle, 
+		float repulsiveAgent,
+		float repulsiveAgentFactor,
+		float repulsiveObstacle,
 		float repulsiveObstacleFactor,
+		float obstacleRadius,
 		float platformFactor,
-		float perception, 
+		float perception,
 		float friction,
 		Vector2 velocity
-	) :
+		) :
 		_neighborDist(neighborDist),
 		_maxNeighbors(maxNeighbors),
 		_timeHorizon(timeHorizon),
@@ -33,6 +34,7 @@ namespace SF
 		_repulsiveAgentFactor(repulsiveAgentFactor),
 		_repulsiveObstacle(repulsiveObstacle),
 		_repulsiveObstacleFactor(repulsiveObstacleFactor),
+		_obstacleRadius(obstacleRadius),
 		_platformFactor(platformFactor),
 		_perception(perception),
 		_friction(friction),
