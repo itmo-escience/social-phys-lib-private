@@ -21,16 +21,16 @@ namespace SF
 			timeHorizonObst_(0.0f), 
 			obstaclePressure_(), 
 			agentPressure_(), 
+			correction(), 
 			newVelocity_(), 
-			position_(), 
-			prefVelocity_(),
-			previosPosition_(INT_MIN, INT_MIN), 
+			position_(),
+			prefVelocity_(), 
+			previosPosition_(INT_MIN, INT_MIN),
 			velocity_(),
 			oldPlatformVelocity_(),
 			obstacleNeighbors_(),
 			agentNeighbors_(),
 			attractiveTimeList_(),
-			correction(),
 			sim_(sim)
 
 	{ 
@@ -129,14 +129,24 @@ namespace SF
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			if (isIntersect(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_))
+			if (isIntersect(
+				position_, 
+				previosPosition_, 
+				obstacleNeighbors_[i].second->point_, 
+				obstacleNeighbors_[i].second->nextObstacle->point_
+			))
 			{
 				if (!hasIntersection)
 					hasIntersection = true;
 
-				auto intersection = getIntersection(position_, previosPosition_, obstacleNeighbors_[i].second->point_, obstacleNeighbors_[i].second->nextObstacle->point_);
-				auto l = getLength(intersection - previosPosition_);
+				auto intersection = getIntersection(
+					position_, 
+					previosPosition_, 
+					obstacleNeighbors_[i].second->point_, 
+					obstacleNeighbors_[i].second->nextObstacle->point_
+				);
 
+				auto l = getLength(intersection - previosPosition_);
 				p = intersection;
 
 				if (l < minLength)
@@ -145,32 +155,29 @@ namespace SF
 					p = intersection;
 				}
 			}
-
 		}
 
 		if (hasIntersection)
 		{
 			auto difference = p - previosPosition_;
-
-			float m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
 	
 			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= 2)
-			//if (getLength(difference) > obstacleRadius_)
 			{
 				if (m >= 0 && m <= 1)
 					position_ = previosPosition_ + difference * m;
 				else
 					position_ = previosPosition_;
 			}
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2) position_ = previosPosition_;
-			if (getLength(difference) <= obstacleRadius_) position_ = previosPosition_;
 
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2) 
+				position_ = previosPosition_;
+			
+			if (getLength(difference) <= obstacleRadius_) 
+				position_ = previosPosition_;
 		}
 
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
-
-		if (fabs(getLength(position_) - getLength(previosPosition_)) > 10)
-			id_ = id_;
 
 		previosPosition_ = position_;
 	}
@@ -215,9 +222,9 @@ namespace SF
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
 			auto diff = position_ - closestPoint;
-
 			auto distanceSquared = diff.GetLengthSquared();
 			auto distance = sqrt(distanceSquared) - radius_;
+			
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
@@ -282,6 +289,7 @@ namespace SF
 	{
 		auto time = sim_->attractiveTime_;
 		auto attractivePointList = sim_->attractivePointList_;
+
 		for (size_t i = 0; i < attractivePointList.size(); i++)
 		{
 			if (!isUsedAttractivePoint_[i])
@@ -300,6 +308,7 @@ namespace SF
 
 					correction += add;
 				}
+
 				if (attractiveTimeList_[i] > time)
 					isUsedAttractivePoint_[i] = true;
 			}
@@ -331,20 +340,15 @@ namespace SF
 				determinantCoriolisForceX = 0,
 				determinantCoriolisForceY = 0;
 
-			SimpleMatrix
-				xForm = SimpleMatrix(),
-				yForm = SimpleMatrix();
-
 			Vector2
 				newVX = Vector2(),
 				newVY = Vector2();
 
 			if (fabs(sim_->rotationNow_.x()) > 0.001f)
 			{
-				ParameterType parameterType = X;
+				auto parameterType = X;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
-				xForm = getRotationX(getRoll(parameterType, NOW).x());
 
 				Vector3
 					prefixCentralForce = Vector3(),
@@ -395,11 +399,10 @@ namespace SF
 
 			if (fabs(sim_->rotationNow_.y()) > 0.001f)
 			{
-				ParameterType parameterType = Y;
+				auto parameterType = Y;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
-				yForm = getRotationY(getRoll(parameterType, NOW).y());
-
+				
 				Vector3
 					prefixCentralForce = Vector3(),
 					centralForce = Vector3(),
@@ -450,17 +453,18 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+			auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
-
-			Vector3 platformVeclocity = sim_->getPlatformVelocity();
+			// heave
+			auto platformVeclocity = sim_->getPlatformVelocity();
+			
 			float
 				accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
 				oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
 
-			float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+			auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
-			if (difference > 0)	// positive difference
+			if (difference > 0)	
 				result = result * (1 + fabs(difference));
 			else
 				result = result * (1 - fabs(difference));
@@ -675,24 +679,7 @@ namespace SF
 		auto v3 = (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
 		auto v4 = (b.x() - a.x())*(d.y() - a.y()) - (b.y() - a.y())*(d.x() - a.x());
 		
-		//bool isIntersectLines;
-
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
-
-		/*float x1, y1, x2, y2, x3, y3, x4, y4;
-
-		if (a.x() >= b.x()){ x2 = a.x(); y2 = a.y(); x1 = b.x(); y1 = b.y(); }
-		else { x1 = a.x(); y1 = a.y(); x2 = b.x(); y2 = b.y(); }
-
-		if (c.x() >= d.x()) { x4 = a.x(); y4 = a.y(); x3 = b.x(); y3 = b.y(); }
-		else { x3 = a.x(); y3 = a.y(); x4 = b.x(); y4 = b.y(); }*/
-
-		//if ((x1 <= x4 && x4 <= x2) || (x1 <= x3 && x3 <= x2))
-		//return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0) && ((x1 <= x4 && x4 <= x2) || (x1 <= x3 && x3 <= x2));
-		//else
-			//return false;
-
-		
 	}
 
 	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
@@ -707,27 +694,18 @@ namespace SF
 			y3 = c.y(), 
 			y4 = d.y();
 
-		/*float x1, y1, x2, y2, x3, y3, x4, y4;
-
-		if (a.x() >= b.x()){ x2 = a.x(); y2 = a.y(); x1 = b.x(); y1 = b.y(); }
-		else { x1 = a.x(); y1 = a.y(); x2 = b.x(); y2 = b.y(); }
-
-		if (c.x() >= d.x()) { x4 = a.x(); y4 = a.y(); x3 = b.x(); y3 = b.y(); }
-		else { x3 = a.x(); y3 = a.y(); x4 = b.x(); y4 = b.y(); }*/
-		
 		float x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
 		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
-		//float y = ((y3 - y4)*(x1*y2 - x2*y1) - (y1 - y2)*(x3*y4 - x4*y3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x2));
 
 		return Vector2(x, y);
 	}
 
 	SimpleMatrix Agent::getRotationX(float angle)
 	{
-		SimpleMatrix result = SimpleMatrix();	// identity
+		auto result = SimpleMatrix();	// identity
 
-		float c = cos(angle);
-		float s = sin(angle);
+		auto c = cos(angle);
+		auto s = sin(angle);
 
 		result.m22 = c;
 		result.m23 = s;
@@ -739,10 +717,10 @@ namespace SF
 
 	SimpleMatrix Agent::getRotationY(float angle)
 	{
-		SimpleMatrix result = SimpleMatrix();	// identity
+		auto result = SimpleMatrix();	// identity
 
-		float c = cos(angle);
-		float s = sin(angle);
+		auto c = cos(angle);
+		auto s = sin(angle);
 
 		result.m11 = c;
 		result.m13 = -s;
@@ -754,10 +732,10 @@ namespace SF
 
 	SimpleMatrix Agent::getRotationZ(float angle)
 	{
-		SimpleMatrix result = SimpleMatrix();	// identity
+		auto result = SimpleMatrix();	// identity
 
-		float c = cos(angle);
-		float s = sin(angle);
+		auto c = cos(angle);
+		auto s = sin(angle);
 
 		result.m11 = c;
 		result.m12 = s;
