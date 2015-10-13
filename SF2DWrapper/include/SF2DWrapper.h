@@ -27,6 +27,7 @@ namespace SF2D {
 		float RepulsiveAgentFactor;
 		float RepulsiveObstacle;
 		float RepulsiveObstacleFactor;
+		float ObstacleRadius;
 		float PlatformFactor;
 		float Perception;
 		float Friction;
@@ -47,6 +48,7 @@ namespace SF2D {
 			float repulsiveAgentFactor, 
 			float repulsiveObstacle, 
 			float repulsiveObstacleFactor,
+			float obstacleRadius,
 			float platformFactor,
 			float perception,
 			float friction,
@@ -66,6 +68,7 @@ namespace SF2D {
 		float _repulsiveAgentFactor;
 		float _repulsiveObstacle;
 		float _repulsiveObstacleFactor;
+		float _obstacleRadius;
 		float _platformFactor;
 		float _perception;
 		float _friction;
@@ -97,6 +100,7 @@ namespace SF2D {
 					float repulsiveAgentFactor, 
 					float repulsiveObstacle, 
 					float repulsiveObstacleFactor,
+					float obstacleRadius,
 					float platformFactor,
 					float perception, 
 					float friction,

@@ -87,7 +87,8 @@ namespace SF
 		platformVelocity_(),
 		platformRotationXY_(0),
 		platformRotationXZ_(0),
-		platformRotationYZ_(0)
+		platformRotationYZ_(0),
+		IsMovingPlatform(false)
 	{
 		kdTree_ = new KdTree(this);
 	}
@@ -146,6 +147,7 @@ namespace SF
 		agent->repulsiveAgentFactor_ = defaultAgent_->repulsiveAgentFactor_;
 		agent->repulsiveObstacle_ = defaultAgent_->repulsiveObstacle_;
 		agent->repulsiveObstacleFactor_ = defaultAgent_->repulsiveObstacleFactor_;
+		agent->obstacleRadius_ = defaultAgent_->obstacleRadius_;
 		agent->platformFactor_ = defaultAgent_->platformFactor_;
 		agent->perception_ = defaultAgent_->perception_;
 		agent->friction_ = defaultAgent_->friction_;
@@ -171,6 +173,7 @@ namespace SF
 		float repulsiveAgentFactor, 
 		float repulsiveObstacle, 
 		float repulsiveObstacleFactor,
+		float obstacleRadius,
 		float platformFactor,
 		float perception, 
 		float friction,
@@ -192,6 +195,7 @@ namespace SF
 		agent->repulsiveAgentFactor_ = repulsiveAgentFactor;
 		agent->repulsiveObstacle_ = repulsiveObstacle;
 		agent->repulsiveObstacleFactor_ = repulsiveObstacleFactor;
+		agent->obstacleRadius_ = obstacleRadius;
 		agent->platformFactor_ = platformFactor;
 		agent->perception_ = perception;
 		agent->friction_ = friction;
@@ -368,6 +372,7 @@ namespace SF
 		defaultAgent_->repulsiveAgentFactor_ = apc._repulsiveAgentFactor;
 		defaultAgent_->repulsiveObstacle_ = apc._repulsiveObstacle;
 		defaultAgent_->repulsiveObstacleFactor_ = apc._repulsiveObstacleFactor;
+		defaultAgent_->obstacleRadius_ = apc._obstacleRadius;
 		defaultAgent_->platformFactor_ = apc._platformFactor;
 		defaultAgent_->perception_ = apc._perception;
 		defaultAgent_->friction_ = apc._friction;
