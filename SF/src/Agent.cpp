@@ -199,9 +199,12 @@ namespace SF
 
 	void Agent::getRepulsiveObstacleForce()
 	{
-		float minDistanceSquared = INT_MAX;
-		auto minDiff = Vector2();
 		repulsiveObstacle_ = 1 / repulsiveObstacle_;
+
+		Vector2
+			forceSum = Vector2(),
+			maxForce = Vector2();
+
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -214,20 +217,66 @@ namespace SF
 			auto diff = position_ - closestPoint;
 
 			auto distanceSquared = diff.GetLengthSquared();
-			if (distanceSquared < minDistanceSquared)
-			{
-				minDistanceSquared = distanceSquared;
-				minDiff = diff;
-			}
+			auto distance = sqrt(distanceSquared) - radius_;
+			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+			auto force = forceAmount * diff.normalized();
+
+			forceSum += force;
+
+			if (getLength(maxForce) < getLength(force))
+				maxForce = force;
 		}
 
-		auto distance = sqrt(minDistanceSquared) - radius_;
-		auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-		auto force = forceAmount * minDiff.normalized();
-		obstaclePressure_ = getLength(force);
+		auto forceSumLength = getLength(forceSum);
+		auto maxForceLength = getLength(maxForce);
 
-		correction += force;
+		if (forceSumLength > maxForceLength)
+		{
+			auto coeff = pow(maxForceLength / forceSumLength, 2);
+			forceSum *= coeff;
+		}
+
+		obstaclePressure_ = forceSumLength;
+		correction += forceSum;
 	}
+
+	/*void Agent::getRepulsiveObstacleForce()
+	{
+		repulsiveObstacle_ = 1 / repulsiveObstacle_;
+
+		Vector2
+			forceSum = Vector2();
+
+		float
+			x = 0,
+			y = 0;
+
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
+			setNullSpeed(id_);
+
+			auto start = obstacleNeighbors_[i].second->point_;
+			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto closestPoint = getNearestPoint(&start, &end, &position_);
+
+			auto diff = position_ - closestPoint;
+
+			auto distanceSquared = diff.GetLengthSquared();
+			auto distance = sqrt(distanceSquared) - radius_;
+			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+			auto force = forceAmount * diff.normalized();
+
+			x += force.x();
+			y += force.y();
+		}
+
+		auto count = obstacleNeighbors_.size();
+
+		forceSum = Vector2(x / count, y / count);
+
+		obstaclePressure_ = getLength(forceSum);
+		correction += forceSum;
+	}*/
 
 	void Agent::getAttractiveForce()
 	{
