@@ -27,6 +27,7 @@
     <ClInclude Include="include\RotationDegreeSet.h" />
     <ClInclude Include="include\SF.h" />
     <ClInclude Include="include\SFSimulator.h" />
+    <ClInclude Include="include\SimpleMatrix.h" />
     <ClInclude Include="include\Vector2.h" />
     <ClInclude Include="include\Vector3.h" />
   </ItemGroup>
@@ -36,6 +37,7 @@
     <ClCompile Include="src\KdTree.cpp" />
     <ClCompile Include="src\Obstacle.cpp" />
     <ClCompile Include="src\SFSimulator.cpp" />
+    <ClCompile Include="src\SimpleMatrix.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{31E38DAC-CA22-4C3B-8C14-5A14D3290443}</ProjectGuid>

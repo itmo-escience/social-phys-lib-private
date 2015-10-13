@@ -15,6 +15,7 @@
 #include "Definitions.h"
 #include "SFSimulator.h"
 #include "Vector3.h"
+#include "SimpleMatrix.h"
 
 namespace SF
 {
@@ -140,6 +141,9 @@ namespace SF
 	Vector3 getRoll(ParameterType pt, TimeType tt) const;
 	Vector3 getOmega(ParameterType pt, TimeType tt);
 	Vector3 getDOmega(ParameterType pt, TimeType tt);
+	SimpleMatrix getRotationX(float angle);
+	SimpleMatrix getRotationY(float angle);
+	SimpleMatrix getRotationZ(float angle);
 
 	const double TOLERANCE = 0.0001f;
 	const size_t MULT = 1000000;
