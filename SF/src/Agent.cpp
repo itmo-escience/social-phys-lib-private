@@ -266,25 +266,42 @@ namespace SF
 				dOmega,
 				R = Vector3(position_.x(), position_.y(), 0),
 				V = Vector3(velocity_.x(), velocity_.y(), 0),
-				A,
-				fixedR,
-				fixedV,
-				fixedA;
-
-			auto newVX = Vector2();
-			auto newVY = Vector2();
-			auto newVZ = Vector2();
+				A = Vector3(),
+				fixedOmega = Vector3(),
+				fixedR = Vector3(),
+				fixedV = Vector3(),
+				fixedA = Vector3();
 
 			float
-				rotationX = sim_->rotationNow_.x() - SHIFT,
-				rotationY = sim_->rotationNow_.y() - SHIFT,
-				rotationZ = sim_->rotationNow_.z() - SHIFT;
+				determinantPrefixCentralForceX = 0,
+				determinantPrefixCentralForceY = 0,
+				determinantCentralForceX = 0,
+				determinantCentralForceY = 0,
+				determinantTangentialForceX = 0,
+				determinantTangentialForceY = 0,
+				determinantCoriolisForceX = 0,
+				determinantCoriolisForceY = 0;
 
-			if (fabs(rotationX) > TOLERANCE)
+			SimpleMatrix
+				xForm = SimpleMatrix(),
+				yForm = SimpleMatrix();
+
+			Vector2
+				newVX = Vector2(),
+				newVY = Vector2();
+
+			if (fabs(sim_->rotationNow_.x()) > 0.001f)
 			{
-				auto parameterType = X;
+				ParameterType parameterType = X;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
+				xForm = getRotationX(getRoll(parameterType, NOW).x());
+
+				Vector3
+					prefixCentralForce = Vector3(),
+					centralForce = Vector3(),
+					tangentialForce = Vector3(),
+					CoriolisForce = Vector3();
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -296,30 +313,85 @@ namespace SF
 					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
 					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
 
-				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+				determinantPrefixCentralForceX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+				prefixCentralForce =
+					(determinantPrefixCentralForceX > 0) ?
+					getCross(omega, R) :
+					getCross(R, omega);
+
+				determinantCentralForceX = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+				centralForce =
+					(determinantCentralForceX > 0) ?
+					getCross(omega, prefixCentralForce) :
+					getCross(prefixCentralForce, omega);
+
+				determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+				tangentialForce =
+					(determinantCentralForceX > 0) ?
+					getCross(dOmega, R) :
+					getCross(R, dOmega);
+
+				determinantCoriolisForceX = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+				CoriolisForce =
+					(determinantCoriolisForceX > 0) ?
+					2 * getCross(omega, V) :
+					2 * getCross(V, omega);
+
+				fixedA = centralForce + tangentialForce - CoriolisForce;
 
 				A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
 
 				newVX = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(rotationY) > TOLERANCE)
+			if (fabs(sim_->rotationNow_.y()) > 0.001f)
 			{
-				auto parameterType = Y;
+				ParameterType parameterType = Y;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
+				yForm = getRotationY(getRoll(parameterType, NOW).y());
+
+				Vector3
+					prefixCentralForce = Vector3(),
+					centralForce = Vector3(),
+					tangentialForce = Vector3(),
+					CoriolisForce = Vector3();
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
 					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) - R.x() * sin(omega.y()));
 
 				fixedV = Vector3(
 					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
 					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
 
-				fixedA = getCross(omega, getCross(omega, fixedR)) + getCross(dOmega, fixedR) - 2 * getCross(omega, fixedV);
+				determinantPrefixCentralForceY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+				prefixCentralForce =
+					(determinantPrefixCentralForceY > 0) ?
+					getCross(omega, R) :
+					getCross(R, omega);
+
+				determinantCentralForceY = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+				centralForce =
+					(determinantCentralForceY > 0) ?
+					getCross(omega, prefixCentralForce) :
+					getCross(prefixCentralForce, omega);
+
+				determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+				tangentialForce =
+					(determinantCentralForceY > 0) ?
+					getCross(dOmega, R) :
+					getCross(R, dOmega);
+
+				determinantCoriolisForceY = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+				CoriolisForce =
+					(determinantCoriolisForceY > 0) ?
+					2 * getCross(omega, V) :
+					2 * getCross(V, omega);
+
+				fixedA = centralForce + tangentialForce - CoriolisForce;
 
 				A = Vector3(
 					fixedA.x() / cos(omega.x()),
@@ -329,51 +401,26 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			if (fabs(rotationZ) > TOLERANCE)
-			{
-				float
-					diffX = position_.x(),
-					diffY = position_.y();
+			Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
-				auto radiusXOY = sqrt(pow(diffX, 2) + pow(diffY, 2));
-					
-				float 
-					currentAngleBySin = asin(diffY / radiusXOY),
-					currentAngleByCos = acos(diffX / radiusXOY);
 
-				float angleXY;
-					
-				if (diffX < 0 && !(diffX < 0 && diffY < 0))
-					angleXY = currentAngleByCos;
-				else if (diffX < 0 && diffY < 0)
-					angleXY = M_PI - currentAngleBySin;
-				else
-					angleXY = currentAngleBySin;
+			Vector3 platformVeclocity = sim_->getPlatformVelocity();
+			float
+				accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
+				oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
 
-				auto newPosition = Vector3(radiusXOY * cos(rotationZ + angleXY), radiusXOY * sin(rotationZ + angleXY), 0);
-				newVZ = (position_ - Vector2(newPosition.x(), newPosition.y())) * MULT;
-			}
+			float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
-			auto result = (velocity_ + (newVX + newVY + newVZ) * sim_->timeStep_);
-
-			auto platformVeclocity = sim_->getPlatformVelocity();
-			auto accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2);
-			auto oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
-
-			auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
-
-			if (difference > 0)
+			if (difference > 0)	// positive difference
 				result = result * (1 + fabs(difference));
 			else
 				result = result * (1 - fabs(difference));
 
 			oldPlatformVelocity_ = platformVeclocity;
 
-			auto r = result * platformFactor_;
-			correction += r;
+			correction += result * platformFactor_;
 		}
 	}
-
 
 	/* Search for the best new velocity. */
 	void Agent::computeNewVelocity()
@@ -624,5 +671,50 @@ namespace SF
 		//float y = ((y3 - y4)*(x1*y2 - x2*y1) - (y1 - y2)*(x3*y4 - x4*y3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x2));
 
 		return Vector2(x, y);
+	}
+
+	SimpleMatrix Agent::getRotationX(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m22 = c;
+		result.m23 = s;
+		result.m32 = -s;
+		result.m33 = c;
+
+		return result;
+	}
+
+	SimpleMatrix Agent::getRotationY(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m11 = c;
+		result.m13 = -s;
+		result.m31 = s;
+		result.m33 = c;
+
+		return result;
+	}
+
+	SimpleMatrix Agent::getRotationZ(float angle)
+	{
+		SimpleMatrix result = SimpleMatrix();	// identity
+
+		float c = cos(angle);
+		float s = sin(angle);
+
+		result.m11 = c;
+		result.m12 = s;
+		result.m21 = -s;
+		result.m22 = c;
+
+		return result;
 	}
 }
