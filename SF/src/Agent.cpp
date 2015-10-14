@@ -122,60 +122,6 @@ namespace SF
 		}
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
-		
-		auto minLength = DBL_MAX;
-		auto p = Vector2();
-		auto hasIntersection = false;
-
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			if (isIntersect(
-				position_, 
-				previosPosition_, 
-				obstacleNeighbors_[i].second->point_, 
-				obstacleNeighbors_[i].second->nextObstacle->point_
-			))
-			{
-				if (!hasIntersection)
-					hasIntersection = true;
-
-				auto intersection = getIntersection(
-					position_, 
-					previosPosition_, 
-					obstacleNeighbors_[i].second->point_, 
-					obstacleNeighbors_[i].second->nextObstacle->point_
-				);
-
-				auto l = getLength(intersection - previosPosition_);
-				p = intersection;
-
-				if (l < minLength)
-				{
-					minLength = l;
-					p = intersection;
-				}
-			}
-		}
-
-		if (hasIntersection)
-		{
-			auto difference = p - previosPosition_;
-			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
-	
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= 2)
-			{
-				if (m >= 0 && m <= 1)
-					position_ = previosPosition_ + difference * m;
-				else
-					position_ = previosPosition_;
-			}
-
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2) 
-				position_ = previosPosition_;
-			
-			if (getLength(difference) <= obstacleRadius_) 
-				position_ = previosPosition_;
-		}
 
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
@@ -246,44 +192,6 @@ namespace SF
 		obstaclePressure_ = forceSumLength;
 		correction += forceSum;
 	}
-
-	/*void Agent::getRepulsiveObstacleForce()
-	{
-		repulsiveObstacle_ = 1 / repulsiveObstacle_;
-
-		Vector2
-			forceSum = Vector2();
-
-		float
-			x = 0,
-			y = 0;
-
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			setNullSpeed(id_);
-
-			auto start = obstacleNeighbors_[i].second->point_;
-			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
-			auto closestPoint = getNearestPoint(&start, &end, &position_);
-
-			auto diff = position_ - closestPoint;
-
-			auto distanceSquared = diff.GetLengthSquared();
-			auto distance = sqrt(distanceSquared) - radius_;
-			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-			auto force = forceAmount * diff.normalized();
-
-			x += force.x();
-			y += force.y();
-		}
-
-		auto count = obstacleNeighbors_.size();
-
-		forceSum = Vector2(x / count, y / count);
-
-		obstaclePressure_ = getLength(forceSum);
-		correction += forceSum;
-	}*/
 
 	void Agent::getAttractiveForce()
 	{
