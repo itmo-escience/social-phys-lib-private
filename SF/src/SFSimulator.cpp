@@ -551,7 +551,7 @@ namespace SF
 		if(agents_.size() > 0)
 		{
 			if(index >= agents_.size())
-				result.push_back(-1);
+				result.push_back(0);
 			else 
 			{
 				auto agent = agents_[index];
@@ -565,7 +565,7 @@ namespace SF
 			}
 		}
 		else
-			result.push_back(-1);
+			result.push_back(0);
 
 		return result;
 	}
