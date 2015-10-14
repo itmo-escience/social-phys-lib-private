@@ -183,7 +183,7 @@ namespace SF
 
 		if (forceSumLength > maxForceLength)
 		{
-			auto coeff = pow(maxForceLength / forceSumLength, 2);
+			auto coeff = maxForceLength / forceSumLength;
 			forceSum *= coeff;
 		}
 
