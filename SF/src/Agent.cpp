@@ -154,10 +154,8 @@ namespace SF
 	{
 		repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
-		Vector2
-			forceSum = Vector2(),
-			maxForce = Vector2();
-
+		auto forceSum = Vector2();
+		auto maxForceLength = FLT_MIN;
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -175,13 +173,13 @@ namespace SF
 			auto force = forceAmount * diff.normalized();
 
 			forceSum += force;
+			auto length = getLength(force);
 
-			if (getLength(maxForce) < getLength(force))
-				maxForce = force;
+			if (maxForceLength < length)
+				maxForceLength = length;
 		}
 
 		auto forceSumLength = getLength(forceSum);
-		auto maxForceLength = getLength(maxForce);
 
 		if (forceSumLength > maxForceLength)
 		{
