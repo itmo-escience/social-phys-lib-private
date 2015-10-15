@@ -180,15 +180,16 @@ namespace SF
 		}
 
 		auto forceSumLength = getLength(forceSum);
-		float coeff = 1;
 
 		if (forceSumLength > maxForceLength)
 		{
-			coeff = maxForceLength / forceSumLength;
+			auto coeff = maxForceLength / forceSumLength;
 			forceSum *= coeff;
+			obstaclePressure_ = forceSumLength * coeff;
 		}
+		else
+			obstaclePressure_ = forceSumLength;
 
-		obstaclePressure_ = forceSumLength * coeff;
 		correction += forceSum;
 	}
 
