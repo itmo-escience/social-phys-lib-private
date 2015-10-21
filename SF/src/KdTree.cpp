@@ -144,133 +144,120 @@ namespace SF
     }
   }
 
-  void KdTree::buildObstacleTree()
-  {
-    deleteObstacleTree(obstacleTree_);
+	void KdTree::buildObstacleTree()
+	{
+		deleteObstacleTree(obstacleTree_);
 
-    std::vector<Obstacle*> obstacles(sim_->obstacles_.size());
+		std::vector<Obstacle*> obstacles(sim_->obstacles_.size());
 
-    for (size_t i = 0; i < sim_->obstacles_.size(); ++i) {
-      obstacles[i] = sim_->obstacles_[i];
-    }
+		for (size_t i = 0; i < sim_->obstacles_.size(); ++i)
+			obstacles[i] = sim_->obstacles_[i];
 
-    obstacleTree_ = buildObstacleTreeRecursive(obstacles);
-  }
+		obstacleTree_ = buildObstacleTreeRecursive(obstacles);
+	}
 
 
-  KdTree::ObstacleTreeNode* KdTree::buildObstacleTreeRecursive(const std::vector<Obstacle*>& obstacles)
-  {
-    if (obstacles.empty()) {
-      return nullptr;
-    } else {
-	    const auto node = new ObstacleTreeNode;
+	KdTree::ObstacleTreeNode* KdTree::buildObstacleTreeRecursive(const std::vector<Obstacle*>& obstacles)
+	{
+		if (obstacles.empty())
+			return nullptr;
+		else 
+		{
+			const auto node = new ObstacleTreeNode;
 
-		auto optimalSplit = 0;
-	    auto minLeft = obstacles.size();
-		auto minRight = obstacles.size();
+			auto optimalSplit = 0;
+			auto minLeft = obstacles.size();
+			auto minRight = obstacles.size();
 
-      for (size_t i = 0; i < obstacles.size(); ++i) {
-        size_t leftSize = 0;
-        size_t rightSize = 0;
+			for (size_t i = 0; i < obstacles.size(); ++i) 
+			{
+				size_t leftSize = 0;
+				size_t rightSize = 0;
 
-        const Obstacle* const obstacleI1 = obstacles[i];
-        const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
+				const Obstacle* const obstacleI1 = obstacles[i];
+				const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
 
-        /* Compute optimal split node. */
-        for (size_t j = 0; j < obstacles.size(); ++j) {
-          if (i == j) {
-            continue;
-          }
+				/* Compute optimal split node. */
+				for (size_t j = 0; j < obstacles.size(); ++j) 
+				{
+					if (i == j)
+						continue;
+					
+					const Obstacle* const obstacleJ1 = obstacles[j];
+					const Obstacle* const obstacleJ2 = obstacleJ1->nextObstacle;
 
-          const Obstacle* const obstacleJ1 = obstacles[j];
-          const Obstacle* const obstacleJ2 = obstacleJ1->nextObstacle;
+					const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
+					const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
 
-          const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
-          const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
+					if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) 
+						++leftSize;
+					else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) 
+						++rightSize;
+					else 
+					{
+						++leftSize;
+						++rightSize;
+					}
 
-          if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) {
-            ++leftSize;
-          } else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) {
-            ++rightSize;
-          } else {
-            ++leftSize;
-            ++rightSize;
-          }
+					if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) >= std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
+						break;
+				}
 
-          if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) >= std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) {
-            break;
-          }
-        }
+				if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) < std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
+				{
+					minLeft = leftSize;
+					minRight = rightSize;
+					optimalSplit = i;
+				}
+			}
 
-        if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) < std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) {
-          minLeft = leftSize;
-          minRight = rightSize;
-          optimalSplit = i;
-        }
-      }
+			std::vector<Obstacle*> leftObstacles(minLeft);
+			std::vector<Obstacle*> rightObstacles(minRight);
 
-      /* Build split node. */
-      std::vector<Obstacle*> leftObstacles(minLeft);
-      std::vector<Obstacle*> rightObstacles(minRight);
+			size_t leftCounter = 0;
+			size_t rightCounter = 0;
 
-      size_t leftCounter = 0;
-      size_t rightCounter = 0;
-      const size_t i = optimalSplit;
+			const size_t i = optimalSplit;
+			const Obstacle* const obstacleI1 = obstacles[i];
+			const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
 
-      const Obstacle* const obstacleI1 = obstacles[i];
-      const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
+			for (size_t j = 0; j < obstacles.size(); ++j) 
+			{
+				if (i == j)
+					continue;
 
-      for (size_t j = 0; j < obstacles.size(); ++j) {
-        if (i == j) {
-          continue;
-        }
+				const auto obstacleJ1 = obstacles[j];
+				const auto obstacleJ2 = obstacleJ1->nextObstacle;
 
-	      const auto obstacleJ1 = obstacles[j];
-	      const auto obstacleJ2 = obstacleJ1->nextObstacle;
+				const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
+				const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
 
-        const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
-        const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
+				if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON)
+					leftObstacles[leftCounter++] = obstacleJ1;
+				else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) 
+					rightObstacles[rightCounter++] = obstacleJ1;
+				else 
+				{
+					if(j1LeftOfI + j2LeftOfI > 0)
+					{
+						leftObstacles[leftCounter++] = obstacleJ1;
+						rightObstacles[rightCounter++] = obstacleJ2;
+					}
+					else
+					{
+						leftObstacles[leftCounter++] = obstacleJ2;
+						rightObstacles[rightCounter++] = obstacleJ1;
+					}
+				}
+			}
 
-        if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) {
-          leftObstacles[leftCounter++] = obstacles[j];
-        } else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) {
-          rightObstacles[rightCounter++] = obstacles[j];
-        } else {
-          /* Split obstacle j. */
-          const auto t = det(obstacleI2->point_ - obstacleI1->point_, obstacleJ1->point_ - obstacleI1->point_) / det(obstacleI2->point_ - obstacleI1->point_, obstacleJ1->point_ - obstacleJ2->point_);
+			node->obstacle = obstacleI1;
+			node->left = buildObstacleTreeRecursive(leftObstacles);
+			node->right = buildObstacleTreeRecursive(rightObstacles);
 
-          const auto splitpoint = obstacleJ1->point_ + t * (obstacleJ2->point_ - obstacleJ1->point_);
-
-	        const auto newObstacle = new Obstacle();
-          newObstacle->point_ = splitpoint;
-          newObstacle->prevObstacle = obstacleJ1;
-          newObstacle->nextObstacle = obstacleJ2;
-          newObstacle->isConvex_ = true;
-          newObstacle->unitDir_ = obstacleJ1->unitDir_;
-
-          newObstacle->id_ = sim_->obstacles_.size();
-
-          sim_->obstacles_.push_back(newObstacle);
-
-          obstacleJ1->nextObstacle = newObstacle;
-          obstacleJ2->prevObstacle = newObstacle;
-
-          if (j1LeftOfI > 0.0f) {
-            leftObstacles[leftCounter++] = obstacleJ1;
-            rightObstacles[rightCounter++] = newObstacle;
-          } else {
-            rightObstacles[rightCounter++] = obstacleJ1;
-            leftObstacles[leftCounter++] = newObstacle;
-          }
-        }
-      }
-
-      node->obstacle = obstacleI1;
-      node->left = buildObstacleTreeRecursive(leftObstacles);
-      node->right = buildObstacleTreeRecursive(rightObstacles);
-      return node;
-    }
-  }
+			return node;
+		}
+	}
 
   void KdTree::computeAgentNeighbors(Agent* agent, float& rangeSq) const
   {
