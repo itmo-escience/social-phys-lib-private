@@ -156,7 +156,6 @@ namespace SF
 		obstacleTree_ = buildObstacleTreeRecursive(obstacles);
 	}
 
-
 	KdTree::ObstacleTreeNode* KdTree::buildObstacleTreeRecursive(const std::vector<Obstacle*>& obstacles)
 	{
 		if (obstacles.empty())
@@ -177,7 +176,6 @@ namespace SF
 				const Obstacle* const obstacleI1 = obstacles[i];
 				const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
 
-				/* Compute optimal split node. */
 				for (size_t j = 0; j < obstacles.size(); ++j) 
 				{
 					if (i == j)
@@ -347,35 +345,34 @@ namespace SF
     }
   }
 
-  void KdTree::queryObstacleTreeRecursive(Agent* agent, float rangeSq, const ObstacleTreeNode* node) const
-  {
-    if (node == nullptr) {
-      return;
-    } else {
-      const auto obstacle1 = node->obstacle;
-      const auto obstacle2 = obstacle1->nextObstacle;
+	void KdTree::queryObstacleTreeRecursive(Agent* agent, float rangeSq, const ObstacleTreeNode* node) const
+	{
+		if (node == nullptr)
+			return;
+		else 
+		{
+			const auto obstacle1 = node->obstacle;
+			const auto obstacle2 = obstacle1->nextObstacle;
 
-      const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
+			auto relative4end = obstacle2->point_ - obstacle1->point_;
+			auto relative4point = agent->position_ - obstacle1->point_;
+			double lambda = relative4point * relative4end / relative4end.GetLengthSquared();
+			
+			const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
 
-      queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
+			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
 
-      const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
+			const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
 
-      if (distSqLine < rangeSq) {
-        if (agentLeftOfLine < 0.0f) {
-          /*
-           * Try obstacle at this node only if agent is on right side of
-           * obstacle (and can see obstacle).
-           */
-          agent->insertObstacleNeighbor(node->obstacle, rangeSq);
-        }
+			if (distSqLine < rangeSq) 
+			{
+				if (agentLeftOfLine < 0.0f && lambda > 0 && lambda < 1)
+					agent->insertObstacleNeighbor(node->obstacle, rangeSq);
 
-        /* Try other side of line. */
-        queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
-
-      }
-    }
-  }
+				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
+			}
+		}
+	}
 
   bool KdTree::queryVisibility(const Vector2& q1, const Vector2& q2, float radius) const
   {
