@@ -257,7 +257,8 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (auto i = 0; i < static_cast<int>(agents_.size()); ++i) {
+		for (auto i = 0; i < static_cast<int>(agents_.size()); ++i) 
+		{
 			agents_[i]->computeNeighbors();
 			agents_[i]->computeNewVelocity();
 		}
