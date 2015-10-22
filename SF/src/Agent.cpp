@@ -12,53 +12,52 @@
 namespace SF
 {
 	Agent::Agent(SFSimulator* sim) : 
-			id_(0), 
-			maxNeighbors_(0), 
-			accelerationBuffer_(0.0f), 
-			maxSpeed_(0.0f),
-			neighborDist_(0.0f), 
-			radius_(0.0f),
-			timeHorizonObst_(0.0f), 
-			obstaclePressure_(), 
-			agentPressure_(), 
-			correction(), 
-			newVelocity_(), 
-			position_(),
-			prefVelocity_(), 
-			previosPosition_(INT_MIN, INT_MIN),
-			velocity_(),
-			oldPlatformVelocity_(),
-			obstacleNeighbors_(),
-			agentNeighbors_(),
-			attractiveTimeList_(),
-			sim_(sim)
-
+		id_(0), 
+		maxNeighbors_(0), 
+		accelerationBuffer_(0.0f), 
+		maxSpeed_(0.0f),
+		neighborDist_(0.0f), 
+		radius_(0.0f),
+		timeHorizonObst_(0.0f), 
+		obstaclePressure_(), 
+		agentPressure_(), 
+		correction(), 
+		newVelocity_(), 
+		position_(),
+		prefVelocity_(), 
+		previosPosition_(INT_MIN, INT_MIN),
+		velocity_(),
+		oldPlatformVelocity_(),
+		obstacleNeighbors_(),
+		agentNeighbors_(),
+		attractiveTimeList_(),
+		sim_(sim)
 	{ 
-	  setNullSpeed(id_); 
+		setNullSpeed(id_); 
 
-	  // attractive section
-	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
-	  {
-		  attractiveTimeList_.push_back(0);
-		  isUsedAttractivePoint_.push_back(false);
-	  }
+		// attractive section
+		for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
+		{
+			attractiveTimeList_.push_back(0);
+			isUsedAttractivePoint_.push_back(false);
+		}
 	}
 
   Agent::~Agent() { }
 
-  void Agent::computeNeighbors()
-  {
-    obstacleNeighbors_.clear();
-    auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-    sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
-
-    agentNeighbors_.clear();
-    if (maxNeighbors_ > 0) 
+	void Agent::computeNeighbors()
 	{
-      rangeSq = sqr(neighborDist_);
-      sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
-    }
-  }
+		obstacleNeighbors_.clear();
+		auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
+
+		agentNeighbors_.clear();
+		if (maxNeighbors_ > 0) 
+		{
+			rangeSq = sqr(neighborDist_);
+			sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+		}
+	}
 
   void Agent::setSpeedList(int index, float value)
   {
@@ -150,6 +149,7 @@ namespace SF
 		}
 	}
 
+	//TODO: complete the sum of vectors
 	void Agent::getRepulsiveObstacleForce()
 	{
 		repulsiveObstacle_ = 1 / repulsiveObstacle_;
@@ -426,41 +426,45 @@ namespace SF
     }
   }
 
-  void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
-  {
-    const Obstacle* const nextObstacle = obstacle->nextObstacle;
+	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
+	{
+		const Obstacle* const nextObstacle = obstacle->nextObstacle;
 
-    const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+		const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
-    if (distSq < rangeSq) {
-      obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
+		if (distSq < rangeSq) {
+			obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
       
-	  auto i = obstacleNeighbors_.size() - 1;
-      while (i != 0 && distSq < obstacleNeighbors_[i-1].first) {
-        obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
-        --i;
-      }
-      obstacleNeighbors_[i] = std::make_pair(distSq, obstacle);
-    }
-  }
+			auto i = obstacleNeighbors_.size() - 1;
+			while (i != 0 && distSq < obstacleNeighbors_[i-1].first) {
+				obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
+				--i;
+			}
 
-  void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
-  {if (this != agent) {
-      const auto distSq = absSq(position_ - agent->position_);
+			obstacleNeighbors_[i] = std::make_pair(distSq, obstacle);
+		}
+	}
 
-      if (distSq < rangeSq) {
-		agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
-		auto i = agentNeighborsIndexList_.size() - 1;
-        
-		while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) {
-          agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
-          --i;
-        }
+	void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
+  	{
+		if (this != agent) 
+		{
+			const auto distSq = absSq(position_ - agent->position_);
 
-		agentNeighborsIndexList_[i] = std::make_pair(agent->id_, distSq);
-       }
-      }
-  }
+			if (distSq < rangeSq) 
+			{
+				agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
+		
+				auto i = agentNeighborsIndexList_.size() - 1;
+        		while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) {
+					agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
+					--i;
+				}
+
+				agentNeighborsIndexList_[i] = std::make_pair(agent->id_, distSq);
+			}
+		}
+	}
 
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
