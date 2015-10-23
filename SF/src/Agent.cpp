@@ -157,6 +157,10 @@ namespace SF
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
+		std::vector<double> distances;
+		Vector2 p[12];
+		float d[12];
+
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			setNullSpeed(id_);
@@ -169,6 +173,12 @@ namespace SF
 			auto distanceSquared = diff.GetLengthSquared();
 			auto distance = sqrt(distanceSquared) - radius_;
 			
+			if(distance > 0)
+				distances.push_back(distance);
+
+			d[i] = distance;
+			p[i] = obstacleNeighbors_[i].second->point_;
+
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
@@ -178,6 +188,16 @@ namespace SF
 			if (maxForceLength < length)
 				maxForceLength = length;
 		}
+
+		double sum = 0;
+		for (size_t i = 0; i < distances.size(); i++)
+			sum += distances[i];
+
+		double pressure;
+		if (sum == 0)
+			pressure = 0;
+		else
+			pressure = sum / distances.size();
 
 		auto forceSumLength = getLength(forceSum);
 
@@ -189,6 +209,11 @@ namespace SF
 		}
 		else
 			obstaclePressure_ = forceSumLength;
+
+		obstaclePressure_ = pressure;
+
+		if (id_ == 1)
+			position_ = position_;
 
 		correction += forceSum;
 	}
@@ -442,11 +467,15 @@ namespace SF
 
 		if (!hasObstacle)
 		{
+			int coeff = 1;
+			if (rangeSq < 0)
+				coeff = -1;
+
 			const Obstacle* const nextObstacle = obstacle->nextObstacle;
 
 			const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
-			obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
+			obstacleNeighbors_.push_back(std::make_pair(distSq * coeff, obstacle));
 
 			auto i = obstacleNeighbors_.size() - 1;
 			while (i != 0 && distSq < obstacleNeighbors_[i - 1].first)
@@ -455,7 +484,7 @@ namespace SF
 				--i;
 			}
 
-			obstacleNeighbors_[i] = std::make_pair(distSq, obstacle);
+			obstacleNeighbors_[i] = std::make_pair(distSq * coeff, obstacle);
 		}
 	}
 
