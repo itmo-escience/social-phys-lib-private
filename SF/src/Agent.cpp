@@ -428,16 +428,30 @@ namespace SF
 
 	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
 	{
-		const Obstacle* const nextObstacle = obstacle->nextObstacle;
+		// check for containing the item
+		bool hasObstacle = false;
 
-		const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+		std::vector<const SF::Obstacle*> obstacles;
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+			obstacles.push_back(obstacleNeighbors_[i].second);
 
-		if (distSq < rangeSq) {
-			obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
-      
+		if (std::find(obstacles.begin(), obstacles.end(), obstacle) != obstacles.end())
+			hasObstacle = true;
+		//!
+
+
+		if (!hasObstacle)
+		{
+			const Obstacle* const nextObstacle = obstacle->nextObstacle;
+
+			const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+
+			obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
+
 			auto i = obstacleNeighbors_.size() - 1;
-			while (i != 0 && distSq < obstacleNeighbors_[i-1].first) {
-				obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
+			while (i != 0 && distSq < obstacleNeighbors_[i - 1].first)
+			{
+				obstacleNeighbors_[i] = obstacleNeighbors_[i - 1];
 				--i;
 			}
 
