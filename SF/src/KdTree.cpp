@@ -270,11 +270,30 @@ namespace SF
   void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
   {
     queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
+	
+	bool isGoodCase = false;
+	for (size_t i = 0; i < agent->obstacleNeighbors_.size(); i++)
+		if (agent->obstacleNeighbors_[i].first > 0)
+		{
+			isGoodCase = true;
+			break;
+		}
+	
+	std::vector<std::pair<float, const SF::Obstacle*>> obstaclesList;
+
+	if(isGoodCase)
+	{
+		for (size_t i = 0; i < agent->obstacleNeighbors_.size(); i++)
+			if (agent->obstacleNeighbors_[i].first > 0)
+				obstaclesList.push_back(std::make_pair(agent->obstacleNeighbors_[i].first, agent->obstacleNeighbors_[i].second));
+		
+		agent->obstacleNeighbors_ = obstaclesList;
+	}
   }
 
   void KdTree::deleteObstacleTree(ObstacleTreeNode* node) const
   {
-    if (node != 0) {
+    if (node != nullptr) {
       deleteObstacleTree(node->left);
       deleteObstacleTree(node->right);
       delete node;
@@ -366,8 +385,13 @@ namespace SF
 
 			if (distSqLine < rangeSq) 
 			{
-				if (agentLeftOfLine < 0.0f && lambda > 0 && lambda < 1)
-					agent->insertObstacleNeighbor(node->obstacle, rangeSq);
+				if (agentLeftOfLine < 0.0f)
+				{
+					if (lambda > 0 && lambda < 1)
+						agent->insertObstacleNeighbor(node->obstacle, rangeSq);
+					else
+						agent->insertObstacleNeighbor(node->obstacle, -rangeSq);
+				}
 
 				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
 			}
