@@ -159,9 +159,7 @@ namespace SF
 
 		std::vector<double> distances;
 		std::vector<Vector2> closest;
-		Vector2 p[12], cp[12];
-		float d[12];
-
+		
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			setNullSpeed(id_);
@@ -185,7 +183,6 @@ namespace SF
 			if (hasSuchClosestPoint)
 				continue;
 			
-			cp[i] = closestPoint;
 			closest.push_back(closestPoint);
 			
 			auto diff = position_ - closestPoint;
@@ -195,9 +192,6 @@ namespace SF
 			if(distance > 0)
 				distances.push_back(distance);
 
-			d[i] = distance;
-			p[i] = obstacleNeighbors_[i].second->point_;
-
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
@@ -206,9 +200,6 @@ namespace SF
 
 			if (maxForceLength < length)
 				maxForceLength = length;
-
-			if (id_ == 1)
-				position_ = position_;
 		}
 
 		auto forceSumLength = getLength(forceSum);
@@ -221,9 +212,6 @@ namespace SF
 		}
 		else
 			obstaclePressure_ = forceSumLength;
-
-		if (id_ == 1)
-			position_ = position_;
 
 		correction += forceSum;
 	}
