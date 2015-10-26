@@ -157,8 +157,7 @@ namespace SF
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
-		std::vector<double> distances;
-		std::vector<Vector2> closest;
+		std::vector<Vector2> closestPointList;
 		
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -168,30 +167,25 @@ namespace SF
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
-			bool hasSuchClosestPoint = false;
+			auto hasPoint = false;
 
-			for (size_t j = 0; j < closest.size(); j++)
-			{
-				auto d = closest[j] - closestPoint;
-				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
+			for (size_t j = 0; j < closestPointList.size(); j++)
+				if (fabsf((closestPointList[j] - closestPoint).GetLengthSquared()) < TOLERANCE)
 				{
-					hasSuchClosestPoint = true;
+					hasPoint = true;
+
 					break;
 				}
-			}
-
-			if (hasSuchClosestPoint)
+			
+			if (hasPoint)
 				continue;
 			
-			closest.push_back(closestPoint);
+			closestPointList.push_back(closestPoint);
 			
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
 			auto distance = sqrt(distanceSquared) - radius_;
 			
-			if(distance > 0)
-				distances.push_back(distance);
-
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
@@ -452,7 +446,7 @@ namespace SF
 	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
 	{
 		// check for containing the item
-		bool hasObstacle = false;
+		auto hasObstacle = false;
 
 		std::vector<const SF::Obstacle*> obstacles;
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
@@ -465,7 +459,7 @@ namespace SF
 
 		if (!hasObstacle)
 		{
-			int coeff = 1;
+			auto coeff = 1;
 			if (rangeSq < 0)
 				coeff = -1;
 
