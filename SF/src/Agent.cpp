@@ -158,7 +158,8 @@ namespace SF
 		auto maxForceLength = FLT_MIN;
 
 		std::vector<double> distances;
-		Vector2 p[12];
+		std::vector<Vector2> closest;
+		Vector2 p[12], cp[12];
 		float d[12];
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
@@ -169,6 +170,24 @@ namespace SF
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
+			bool hasSuchClosestPoint = false;
+
+			for (size_t j = 0; j < closest.size(); j++)
+			{
+				auto d = closest[j] - closestPoint;
+				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
+				{
+					hasSuchClosestPoint = true;
+					break;
+				}
+			}
+
+			if (hasSuchClosestPoint)
+				continue;
+			
+			cp[i] = closestPoint;
+			closest.push_back(closestPoint);
+			
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
 			auto distance = sqrt(distanceSquared) - radius_;
@@ -187,17 +206,10 @@ namespace SF
 
 			if (maxForceLength < length)
 				maxForceLength = length;
+
+			if (id_ == 1)
+				position_ = position_;
 		}
-
-		double sum = 0;
-		for (size_t i = 0; i < distances.size(); i++)
-			sum += distances[i];
-
-		double pressure;
-		if (sum == 0)
-			pressure = 0;
-		else
-			pressure = sum / distances.size();
 
 		auto forceSumLength = getLength(forceSum);
 
@@ -209,8 +221,6 @@ namespace SF
 		}
 		else
 			obstaclePressure_ = forceSumLength;
-
-		obstaclePressure_ = pressure;
 
 		if (id_ == 1)
 			position_ = position_;
@@ -513,7 +523,7 @@ namespace SF
 	{
 		auto relativeEndPoint = *end - *start;
 		auto relativePoint = *point - *start;
-		double lambda = relativePoint * relativeEndPoint / relativeEndPoint.GetLengthSquared();
+		float lambda = relativePoint * relativeEndPoint / relativeEndPoint.GetLengthSquared();
 
 		if(lambda <= 0)
 			return *start;
