@@ -35,6 +35,8 @@ namespace SF
 	{ 
 		setNullSpeed(id_); 
 
+		repulsiveObstacle_ = 1 / repulsiveObstacle_;
+
 		// attractive section
 		for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
 		{
@@ -149,11 +151,8 @@ namespace SF
 		}
 	}
 
-	//TODO: complete the sum of vectors
 	void Agent::getRepulsiveObstacleForce()
 	{
-		repulsiveObstacle_ = 1 / repulsiveObstacle_;
-
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
