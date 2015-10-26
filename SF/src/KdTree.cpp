@@ -271,17 +271,18 @@ namespace SF
   {
     queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
 	
-	bool isGoodCase = false;
+	auto isWall = false;
 	for (size_t i = 0; i < agent->obstacleNeighbors_.size(); i++)
 		if (agent->obstacleNeighbors_[i].first > 0)
 		{
-			isGoodCase = true;
+			isWall = true;
+		
 			break;
 		}
 	
 	std::vector<std::pair<float, const SF::Obstacle*>> obstaclesList;
 
-	if(isGoodCase)
+	if(isWall)
 	{
 		for (size_t i = 0; i < agent->obstacleNeighbors_.size(); i++)
 			if (agent->obstacleNeighbors_[i].first > 0)
@@ -386,12 +387,7 @@ namespace SF
 			if (distSqLine < rangeSq) 
 			{
 				if (agentLeftOfLine < 0.0f)
-				{
-					if (lambda > 0 && lambda < 1)
-						agent->insertObstacleNeighbor(node->obstacle, rangeSq);
-					else
-						agent->insertObstacleNeighbor(node->obstacle, -rangeSq);
-				}
+					agent->insertObstacleNeighbor(node->obstacle, (lambda > 0 && lambda < 1) ? rangeSq : -rangeSq);
 
 				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
 			}
