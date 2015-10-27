@@ -170,13 +170,15 @@ namespace SF
 			auto hasSuchClosestPoint = false;
 
 			for (size_t j = 0; j < closest.size(); j++)
+			{
 				auto d = closest[j] - closestPoint;
 				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
 				{
 					hasSuchClosestPoint = true;
 					break;
 				}
-			
+			}
+
 			if (hasSuchClosestPoint)
 				continue;
 
