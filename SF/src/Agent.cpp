@@ -157,6 +157,8 @@ namespace SF
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
+		std::vector<Vector2> closest;
+
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			setNullSpeed(id_);
@@ -165,10 +167,25 @@ namespace SF
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
+			auto hasSuchClosestPoint = false;
+
+			for (size_t j = 0; j < closest.size(); j++)
+				auto d = closest[j] - closestPoint;
+				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
+				{
+					hasSuchClosestPoint = true;
+					break;
+				}
+			
+			if (hasSuchClosestPoint)
+				continue;
+
+			closest.push_back(closestPoint);
+
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
 			auto distance = sqrt(distanceSquared) - radius_;
-			
+
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
