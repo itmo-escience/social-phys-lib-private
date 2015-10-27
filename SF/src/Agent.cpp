@@ -46,47 +46,49 @@ namespace SF
 	  }
 	}
 
-  Agent::~Agent() { }
+	Agent::~Agent() { }
 
-  void Agent::computeNeighbors()
-  {
-    obstacleNeighbors_.clear();
-    auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-    sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
-
-    agentNeighbors_.clear();
-    if (maxNeighbors_ > 0) 
+	void Agent::computeNeighbors()
 	{
-      rangeSq = sqr(neighborDist_);
-      sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
-    }
-  }
+		// obstacle section
+		obstacleNeighbors_.clear();
+		auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
-  void Agent::setSpeedList(int index, float value)
-  {
-	  if (speedList_.count(index) < 1)
-		  speedList_.insert(std::make_pair(index, value));
-	  else
-		  speedList_[index] = value;
-  }
+		// agent section
+		agentNeighbors_.clear();
+		if (maxNeighbors_ > 0) 
+		{
+			rangeSq = sqr(neighborDist_);
+			sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+		}
+	}
 
-  void Agent::setNullSpeed(int id)
-  {
-	  if (speedList_.count(id) < 1)
-		  setSpeedList(id, 0.0f);
-  }
+	void Agent::setSpeedList(int index, float value)
+	{
+		if (speedList_.count(index) < 1)
+			speedList_.insert(std::make_pair(index, value));
+		else
+			speedList_[index] = value;
+	}
 
-  float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
-  {
-	  if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
-         return 1;
+	void Agent::setNullSpeed(int id)
+	{
+		if (speedList_.count(id) < 1)
+			setSpeedList(id, 0.0f);
+	}
 
-	  return perception_;
-  }
+	float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
+	{
+		if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
+			return 1;
+
+		return perception_;
+	}
 
 
-  float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
-  {
+	float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
+	{
         if (currentSpeed <= maxSpeed)
             return 1;
 
@@ -621,8 +623,8 @@ namespace SF
 			y3 = c.y(), 
 			y4 = d.y();
 
-		float x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
-		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
+		auto x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
+		auto y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
 
 		return Vector2(x, y);
 	}
