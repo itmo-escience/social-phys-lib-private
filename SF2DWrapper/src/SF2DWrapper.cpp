@@ -405,6 +405,13 @@ double SFSimulator::getObstaclePressure(int index)
 	return _sim->getObstaclePressure(index);
 }
 
+SF2D::SFVector2 SFSimulator::getObstacleTrajectory(int index)
+{
+	SF::Vector2 ot = _sim->getObstacleTrajectory(index);
+
+	return SF2D::SFVector2(ot.x(), ot.y());
+}
+
 System::Collections::Generic::List<double>^ SFSimulator::getAgentPressureList()
 {
 	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();

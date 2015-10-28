@@ -579,4 +579,9 @@ namespace SF
 	{
 		return agents_[index]->obstaclePressure_;
 	}
+
+	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
+	{
+		return agents_[index]->obstacleTrajectory_;
+	}
 }
