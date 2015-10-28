@@ -46,47 +46,49 @@ namespace SF
 	  }
 	}
 
-  Agent::~Agent() { }
+	Agent::~Agent() { }
 
-  void Agent::computeNeighbors()
-  {
-    obstacleNeighbors_.clear();
-    auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-    sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
-
-    agentNeighbors_.clear();
-    if (maxNeighbors_ > 0) 
+	void Agent::computeNeighbors()
 	{
-      rangeSq = sqr(neighborDist_);
-      sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
-    }
-  }
+		// obstacle section
+		obstacleNeighbors_.clear();
+		auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
-  void Agent::setSpeedList(int index, float value)
-  {
-	  if (speedList_.count(index) < 1)
-		  speedList_.insert(std::make_pair(index, value));
-	  else
-		  speedList_[index] = value;
-  }
+		// agent section
+		agentNeighbors_.clear();
+		if (maxNeighbors_ > 0) 
+		{
+			rangeSq = sqr(neighborDist_);
+			sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+		}
+	}
 
-  void Agent::setNullSpeed(int id)
-  {
-	  if (speedList_.count(id) < 1)
-		  setSpeedList(id, 0.0f);
-  }
+	void Agent::setSpeedList(int index, float value)
+	{
+		if (speedList_.count(index) < 1)
+			speedList_.insert(std::make_pair(index, value));
+		else
+			speedList_[index] = value;
+	}
 
-  float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
-  {
-	  if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
-         return 1;
+	void Agent::setNullSpeed(int id)
+	{
+		if (speedList_.count(id) < 1)
+			setSpeedList(id, 0.0f);
+	}
 
-	  return perception_;
-  }
+	float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
+	{
+		if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
+			return 1;
+
+		return perception_;
+	}
 
 
-  float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
-  {
+	float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
+	{
         if (currentSpeed <= maxSpeed)
             return 1;
 
@@ -156,8 +158,14 @@ namespace SF
 	{
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
+		auto minDistanceToObstacle = FLT_MAX;
 
-		std::vector<Vector2> closest;
+		std::vector<Vector2> nearestObstaclePointList;
+
+		Vector2 p[12], np[12], maxForce, sum;
+		float d[12];
+
+		std::vector<Vector2> forces;
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -167,12 +175,14 @@ namespace SF
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
+			p[i] = obstacleNeighbors_[i].second->point_;
+
 			auto hasSuchClosestPoint = false;
 
-			for (size_t j = 0; j < closest.size(); j++)
+			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
 			{
-				auto d = closest[j] - closestPoint;
-				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
+				auto l = nearestObstaclePointList[j] - closestPoint;
+				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
 				{
 					hasSuchClosestPoint = true;
 					break;
@@ -182,34 +192,68 @@ namespace SF
 			if (hasSuchClosestPoint)
 				continue;
 
-			closest.push_back(closestPoint);
+			nearestObstaclePointList.push_back(closestPoint);
 
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
-			auto distance = sqrt(distanceSquared) - radius_;
+			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
+			auto distance = absoluteDistanceToObstacle - radius_;
+			
+			d[i] = distance;
+
+			if (absoluteDistanceToObstacle < minDistanceToObstacle)
+				minDistanceToObstacle = absoluteDistanceToObstacle;
 
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
+			forces.push_back(force);
 			forceSum += force;
+			
 			auto length = getLength(force);
 
 			if (maxForceLength < length)
+			{
 				maxForceLength = length;
+				maxForce = force;
+			}
 		}
 
-		auto forceSumLength = getLength(forceSum);
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+			np[i] = nearestObstaclePointList[i];
 
-		if (forceSumLength > maxForceLength)
+		auto forceSumLength = getLength(forceSum);
+		sum = forceSum;
+
+		float lengthSum = 0;
+		for (size_t i = 0; i < forces.size(); i++)
+			lengthSum += getLength(forces[i]);
+		
+		std::vector<float> forceWeightList;
+		for (size_t i = 0; i < forces.size(); i++)
+			forceWeightList.push_back(getLength(forces[i]) / lengthSum);
+		
+		Vector2 total = Vector2();
+		for (size_t i = 0; i < forces.size(); i++)
+			total += forces[i] * forceWeightList[i];
+
+		/*if (forceSumLength > maxForceLength)
 		{
 			auto coeff = maxForceLength / forceSumLength;
 			forceSum *= coeff;
 			obstaclePressure_ = forceSumLength * coeff;
 		}
 		else
-			obstaclePressure_ = forceSumLength;
+			obstaclePressure_ = forceSumLength;*/
 
-		correction += forceSum;
+		obstaclePressure_ = getLength(total);
+
+		correction += total;
+
+		if (id_ == 1)
+			position_ = position_;
+
+		obstacleTrajectory_ = position_ + total;
 	}
 
 	void Agent::getAttractiveForce()
@@ -621,8 +665,8 @@ namespace SF
 			y3 = c.y(), 
 			y4 = d.y();
 
-		float x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
-		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
+		auto x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
+		auto y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
 
 		return Vector2(x, y);
 	}
