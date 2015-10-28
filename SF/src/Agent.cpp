@@ -158,8 +158,14 @@ namespace SF
 	{
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
+		auto minDistanceToObstacle = FLT_MAX;
 
-		std::vector<Vector2> closest;
+		std::vector<Vector2> nearestObstaclePointList;
+
+		Vector2 p[12], np[12], maxForce, sum;
+		float d[12];
+
+		std::vector<Vector2> forces;
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -169,12 +175,14 @@ namespace SF
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
+			p[i] = obstacleNeighbors_[i].second->point_;
+
 			auto hasSuchClosestPoint = false;
 
-			for (size_t j = 0; j < closest.size(); j++)
+			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
 			{
-				auto d = closest[j] - closestPoint;
-				if (fabsf(d.GetLengthSquared()) < TOLERANCE)
+				auto l = nearestObstaclePointList[j] - closestPoint;
+				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
 				{
 					hasSuchClosestPoint = true;
 					break;
@@ -184,34 +192,68 @@ namespace SF
 			if (hasSuchClosestPoint)
 				continue;
 
-			closest.push_back(closestPoint);
+			nearestObstaclePointList.push_back(closestPoint);
 
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
-			auto distance = sqrt(distanceSquared) - radius_;
+			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
+			auto distance = absoluteDistanceToObstacle - radius_;
+			
+			d[i] = distance;
+
+			if (absoluteDistanceToObstacle < minDistanceToObstacle)
+				minDistanceToObstacle = absoluteDistanceToObstacle;
 
 			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			auto force = forceAmount * diff.normalized();
 
+			forces.push_back(force);
 			forceSum += force;
+			
 			auto length = getLength(force);
 
 			if (maxForceLength < length)
+			{
 				maxForceLength = length;
+				maxForce = force;
+			}
 		}
 
-		auto forceSumLength = getLength(forceSum);
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+			np[i] = nearestObstaclePointList[i];
 
-		if (forceSumLength > maxForceLength)
+		auto forceSumLength = getLength(forceSum);
+		sum = forceSum;
+
+		float lengthSum = 0;
+		for (size_t i = 0; i < forces.size(); i++)
+			lengthSum += getLength(forces[i]);
+		
+		std::vector<float> forceWeightList;
+		for (size_t i = 0; i < forces.size(); i++)
+			forceWeightList.push_back(getLength(forces[i]) / lengthSum);
+		
+		Vector2 total = Vector2();
+		for (size_t i = 0; i < forces.size(); i++)
+			total += forces[i] * forceWeightList[i];
+
+		/*if (forceSumLength > maxForceLength)
 		{
 			auto coeff = maxForceLength / forceSumLength;
 			forceSum *= coeff;
 			obstaclePressure_ = forceSumLength * coeff;
 		}
 		else
-			obstaclePressure_ = forceSumLength;
+			obstaclePressure_ = forceSumLength;*/
 
-		correction += forceSum;
+		obstaclePressure_ = getLength(total);
+
+		correction += total;
+
+		if (id_ == 1)
+			position_ = position_;
+
+		obstacleTrajectory_ = position_ + total;
 	}
 
 	void Agent::getAttractiveForce()
