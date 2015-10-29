@@ -253,7 +253,7 @@ namespace SF
 		if (id_ == 1)
 			position_ = position_;
 
-		obstacleTrajectory_ = position_ + total;
+		obstacleTrajectory_ = position_ + total * 10;
 	}
 
 	void Agent::getAttractiveForce()
