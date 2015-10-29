@@ -162,8 +162,8 @@ namespace SF
 
 		std::vector<Vector2> nearestObstaclePointList;
 
-		Vector2 p[12], np[12], maxForce, sum;
-		float d[12];
+		Vector2 p[50], np[50], maxForce, sum;
+		float d[50];
 
 		std::vector<Vector2> forces;
 
@@ -193,6 +193,37 @@ namespace SF
 				continue;
 
 			nearestObstaclePointList.push_back(closestPoint);
+		}
+
+		Vector2 v[50], vv[50];
+
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+			v[i] = nearestObstaclePointList[i];
+
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
+			auto start = obstacleNeighbors_[i].second->point_;
+			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto closestPoint = getNearestPoint(&start, &end, &position_);
+
+			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
+			{
+				auto n = nearestObstaclePointList[j];
+				auto l = n - closestPoint;
+				if (l.GetLengthSquared() > TOLERANCE)
+				{
+					if ((nearestObstaclePointList[j] - start).GetLengthSquared() < TOLERANCE || (nearestObstaclePointList[j] - end).GetLengthSquared() < TOLERANCE)
+						nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
+				}
+			}
+		}
+
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+			vv[i] = nearestObstaclePointList[i];
+
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+		{
+			auto closestPoint = nearestObstaclePointList[i];
 
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
