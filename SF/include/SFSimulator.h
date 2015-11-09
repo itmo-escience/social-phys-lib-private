@@ -586,6 +586,7 @@ namespace SF
 
 	double getAgentPressure(size_t index);
 	double getObstaclePressure(size_t index);
+	Vector2 getObstacleTrajectory(size_t index);
 
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 

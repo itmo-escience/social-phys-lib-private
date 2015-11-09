@@ -176,6 +176,7 @@ namespace SF
     Vector2 prefVelocity_;
 	Vector2 previosPosition_;
     Vector2 velocity_;
+	Vector2 obstacleTrajectory_;
 	Vector3 oldPlatformVelocity_;
 	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
     std::vector<std::pair<float, const Agent*> > agentNeighbors_;
