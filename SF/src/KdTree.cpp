@@ -354,19 +354,19 @@ namespace SF
 			const auto obstacle1 = node->obstacle;
 			const auto obstacle2 = obstacle1->nextObstacle;
 
-			auto relative4end = obstacle2->point_ - obstacle1->point_;
+			/*auto relative4end = obstacle2->point_ - obstacle1->point_;
 			auto relative4point = agent->position_ - obstacle1->point_;
-			double lambda = relative4point * relative4end / relative4end.GetLengthSquared();
+			double lambda = relative4point * relative4end / relative4end.GetLengthSquared();*/
 			
 			const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
 
 			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
-
+			
 			const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
 
 			if (distSqLine < rangeSq) 
 			{
-				if (agentLeftOfLine < 0.0f && lambda > 0 && lambda < 1)
+				if (agentLeftOfLine < 0.0f/* && lambda > 0 && lambda < 1*/)
 					agent->insertObstacleNeighbor(node->obstacle, rangeSq);
 
 				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
