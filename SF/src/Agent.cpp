@@ -162,9 +162,8 @@ namespace SF
 
 		std::vector<Vector2> nearestObstaclePointList;
 
-		Vector2 p[50], np[50], maxForce, sum;
-		float d[50];
-
+		Vector2 maxForce, sum;
+		
 		std::vector<Vector2> forces;
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
@@ -174,8 +173,6 @@ namespace SF
 			auto start = obstacleNeighbors_[i].second->point_;
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
-
-			p[i] = obstacleNeighbors_[i].second->point_;
 
 			auto hasSuchClosestPoint = false;
 
@@ -194,11 +191,6 @@ namespace SF
 
 			nearestObstaclePointList.push_back(closestPoint);
 		}
-
-		Vector2 v[50], vv[50];
-
-		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
-			v[i] = nearestObstaclePointList[i];
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -219,9 +211,6 @@ namespace SF
 		}
 
 		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
-			vv[i] = nearestObstaclePointList[i];
-
-		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 		{
 			auto closestPoint = nearestObstaclePointList[i];
 
@@ -229,9 +218,7 @@ namespace SF
 			auto distanceSquared = diff.GetLengthSquared();
 			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
 			auto distance = absoluteDistanceToObstacle - radius_;
-			
-			d[i] = distance;
-
+		
 			if (absoluteDistanceToObstacle < minDistanceToObstacle)
 				minDistanceToObstacle = absoluteDistanceToObstacle;
 
@@ -250,11 +237,11 @@ namespace SF
 			}
 		}
 
-		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
-			np[i] = nearestObstaclePointList[i];
-
+		// old force sum section
+		/* 
 		auto forceSumLength = getLength(forceSum);
 		sum = forceSum;
+		*/
 
 		float lengthSum = 0;
 		for (size_t i = 0; i < forces.size(); i++)
@@ -264,7 +251,7 @@ namespace SF
 		for (size_t i = 0; i < forces.size(); i++)
 			forceWeightList.push_back(getLength(forces[i]) / lengthSum);
 		
-		Vector2 total = Vector2();
+		auto total = Vector2();
 		for (size_t i = 0; i < forces.size(); i++)
 			total += forces[i] * forceWeightList[i];
 
@@ -520,41 +507,49 @@ namespace SF
     }
   }
 
-  void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
-  {
-    const Obstacle* const nextObstacle = obstacle->nextObstacle;
+	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
+	{
+		const Obstacle* const nextObstacle = obstacle->nextObstacle;
 
-    const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+		const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
-    if (distSq < rangeSq) {
-      obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
+		if (distSq < rangeSq) 
+		{
+			obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
       
-	  auto i = obstacleNeighbors_.size() - 1;
-      while (i != 0 && distSq < obstacleNeighbors_[i-1].first) {
-        obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
-        --i;
-      }
-      obstacleNeighbors_[i] = std::make_pair(distSq, obstacle);
-    }
-  }
+			auto i = obstacleNeighbors_.size() - 1;
+		
+			while (i != 0 && distSq < obstacleNeighbors_[i-1].first) 
+			{
+				obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
+				--i;
+			}
+			
+			obstacleNeighbors_[i] = std::make_pair(distSq, obstacle);
+		}
+	}
 
-  void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
-  {if (this != agent) {
-      const auto distSq = absSq(position_ - agent->position_);
+	void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
+	{
+		if (this != agent) 
+		{
+			const auto distSq = absSq(position_ - agent->position_);
 
-      if (distSq < rangeSq) {
-		agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
-		auto i = agentNeighborsIndexList_.size() - 1;
+			if (distSq < rangeSq) 
+			{
+				agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
+				auto i = agentNeighborsIndexList_.size() - 1;
         
-		while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) {
-          agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
-          --i;
-        }
+				while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) 
+				{
+					agentNeighborsIndexList_[i] = agentNeighborsIndexList_[i - 1];
+					--i;
+				}
 
-		agentNeighborsIndexList_[i] = std::make_pair(agent->id_, distSq);
-       }
-      }
-  }
+				agentNeighborsIndexList_[i] = std::make_pair(agent->id_, distSq);
+			}
+		}
+	}
 
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
