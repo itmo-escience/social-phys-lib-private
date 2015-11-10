@@ -366,7 +366,7 @@ namespace SF
 
 			if (distSqLine < rangeSq) 
 			{
-				if (agentLeftOfLine < 0.0f && lambda > 0 && lambda < 1)
+				if (agentLeftOfLine < 0.0f/* && lambda > 0 && lambda < 1*/)
 					agent->insertObstacleNeighbor(node->obstacle, rangeSq);
 
 				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
