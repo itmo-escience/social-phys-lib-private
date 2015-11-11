@@ -271,12 +271,7 @@ namespace SF
 			obstaclePressure_ = forceSumLength;*/
 
 		obstaclePressure_ = getLength(total);
-
 		correction += total;
-
-		if (id_ == 1)
-			position_ = position_;
-
 		obstacleTrajectory_ = position_ + total * 10;
 	}
 
