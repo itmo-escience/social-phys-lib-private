@@ -243,17 +243,21 @@ namespace SF
 		sum = forceSum;
 		*/
 
+		// weight section
+		auto size = forces.size();
 		float lengthSum = 0;
-		for (size_t i = 0; i < forces.size(); i++)
+		for (size_t i = 0; i < size; i++)
 			lengthSum += getLength(forces[i]);
 		
 		std::vector<float> forceWeightList;
-		for (size_t i = 0; i < forces.size(); i++)
+		forceWeightList.clear();
+		for (size_t i = 0; i < size; i++)
 			forceWeightList.push_back(getLength(forces[i]) / lengthSum);
 		
 		auto total = Vector2();
-		for (size_t i = 0; i < forces.size(); i++)
+		for (size_t i = 0; i < size; i++)
 			total += forces[i] * forceWeightList[i];
+		//
 
 		/*if (forceSumLength > maxForceLength)
 		{
