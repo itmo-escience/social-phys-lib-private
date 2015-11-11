@@ -194,24 +194,6 @@ namespace SF
 			nearestObstaclePointList.push_back(closestPoint);
 		}
 
-		/*for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			auto start = obstacleNeighbors_[i].second->point_;
-			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
-			auto closestPoint = getNearestPoint(&start, &end, &position_);
-
-			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
-			{
-				
-				auto l = nearestObstaclePointList[j] - closestPoint;
-				if (l.GetLengthSquared() > TOLERANCE)
-				{
-					if ((nearestObstaclePointList[j] - start).GetLengthSquared() < TOLERANCE || (nearestObstaclePointList[j] - end).GetLengthSquared() < TOLERANCE)
-						nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
-				}
-			}
-		}*/
-
 		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 		{
 			auto closestPoint = nearestObstaclePointList[i];
