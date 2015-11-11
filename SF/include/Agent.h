@@ -145,7 +145,7 @@ namespace SF
 	SimpleMatrix getRotationY(float angle);
 	SimpleMatrix getRotationZ(float angle);
 
-	const double TOLERANCE = 0.0001f;
+	const double TOLERANCE = 0.00001f;
 	const size_t MULT = 1000000;
 	const size_t SHIFT = 30;
 
