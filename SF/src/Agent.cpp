@@ -161,10 +161,12 @@ namespace SF
 		auto minDistanceToObstacle = FLT_MAX;
 
 		std::vector<Vector2> nearestObstaclePointList;
+		nearestObstaclePointList.clear();
 
 		Vector2 maxForce, sum;
 		
 		std::vector<Vector2> forces;
+		forces.clear();
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
@@ -192,7 +194,7 @@ namespace SF
 			nearestObstaclePointList.push_back(closestPoint);
 		}
 
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		/*for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			auto start = obstacleNeighbors_[i].second->point_;
 			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
@@ -200,15 +202,15 @@ namespace SF
 
 			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
 			{
-				auto n = nearestObstaclePointList[j];
-				auto l = n - closestPoint;
+				
+				auto l = nearestObstaclePointList[j] - closestPoint;
 				if (l.GetLengthSquared() > TOLERANCE)
 				{
 					if ((nearestObstaclePointList[j] - start).GetLengthSquared() < TOLERANCE || (nearestObstaclePointList[j] - end).GetLengthSquared() < TOLERANCE)
 						nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
 				}
 			}
-		}
+		}*/
 
 		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 		{
@@ -243,17 +245,21 @@ namespace SF
 		sum = forceSum;
 		*/
 
+		// weight section
+		auto size = forces.size();
 		float lengthSum = 0;
-		for (size_t i = 0; i < forces.size(); i++)
+		for (size_t i = 0; i < size; i++)
 			lengthSum += getLength(forces[i]);
 		
 		std::vector<float> forceWeightList;
-		for (size_t i = 0; i < forces.size(); i++)
+		forceWeightList.clear();
+		for (size_t i = 0; i < size; i++)
 			forceWeightList.push_back(getLength(forces[i]) / lengthSum);
 		
 		auto total = Vector2();
-		for (size_t i = 0; i < forces.size(); i++)
+		for (size_t i = 0; i < size; i++)
 			total += forces[i] * forceWeightList[i];
+		//
 
 		/*if (forceSumLength > maxForceLength)
 		{
