@@ -161,10 +161,12 @@ namespace SF
 		auto minDistanceToObstacle = FLT_MAX;
 
 		std::vector<Vector2> nearestObstaclePointList;
+		nearestObstaclePointList.clear();
 
 		Vector2 maxForce, sum;
 		
 		std::vector<Vector2> forces;
+		forces.clear();
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
