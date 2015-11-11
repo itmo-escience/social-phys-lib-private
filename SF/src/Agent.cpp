@@ -237,7 +237,11 @@ namespace SF
 		
 		obstaclePressure_ = getLength(total);
 		correction += total;
-		obstacleTrajectory_ = position_ + total * 10;
+
+		if (size > 0)
+			obstacleTrajectory_ = position_ + total * 10;
+		else
+			obstacleTrajectory_ = Vector2();
 	}
 
 	void Agent::getAttractiveForce()
