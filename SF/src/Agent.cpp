@@ -239,13 +239,6 @@ namespace SF
 			}
 		}
 
-		// old force sum section
-		/* 
-		auto forceSumLength = getLength(forceSum);
-		sum = forceSum;
-		*/
-
-		// weight section
 		auto size = forces.size();
 		float lengthSum = 0;
 		for (size_t i = 0; i < size; i++)
@@ -259,24 +252,9 @@ namespace SF
 		auto total = Vector2();
 		for (size_t i = 0; i < size; i++)
 			total += forces[i] * forceWeightList[i];
-		//
-
-		/*if (forceSumLength > maxForceLength)
-		{
-			auto coeff = maxForceLength / forceSumLength;
-			forceSum *= coeff;
-			obstaclePressure_ = forceSumLength * coeff;
-		}
-		else
-			obstaclePressure_ = forceSumLength;*/
-
+		
 		obstaclePressure_ = getLength(total);
-
 		correction += total;
-
-		if (id_ == 1)
-			position_ = position_;
-
 		obstacleTrajectory_ = position_ + total * 10;
 	}
 
