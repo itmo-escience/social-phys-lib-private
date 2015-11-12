@@ -160,62 +160,18 @@ namespace SF
 	{
 		if (obstacles.empty())
 			return nullptr;
-		else 
+
+		const auto node = new ObstacleTreeNode;
+
+		auto optimalSplit = 0;
+		auto minLeft = obstacles.size();
+		auto minRight = obstacles.size();
+
+		for (size_t i = 0; i < obstacles.size(); ++i) 
 		{
-			const auto node = new ObstacleTreeNode;
+			size_t leftSize = 0;
+			size_t rightSize = 0;
 
-			auto optimalSplit = 0;
-			auto minLeft = obstacles.size();
-			auto minRight = obstacles.size();
-
-			for (size_t i = 0; i < obstacles.size(); ++i) 
-			{
-				size_t leftSize = 0;
-				size_t rightSize = 0;
-
-				const Obstacle* const obstacleI1 = obstacles[i];
-				const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
-
-				for (size_t j = 0; j < obstacles.size(); ++j) 
-				{
-					if (i == j)
-						continue;
-					
-					const Obstacle* const obstacleJ1 = obstacles[j];
-					const Obstacle* const obstacleJ2 = obstacleJ1->nextObstacle;
-
-					const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
-					const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
-
-					if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) 
-						++leftSize;
-					else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) 
-						++rightSize;
-					else 
-					{
-						++leftSize;
-						++rightSize;
-					}
-
-					if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) >= std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
-						break;
-				}
-
-				if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) < std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
-				{
-					minLeft = leftSize;
-					minRight = rightSize;
-					optimalSplit = i;
-				}
-			}
-
-			std::vector<Obstacle*> leftObstacles(minLeft);
-			std::vector<Obstacle*> rightObstacles(minRight);
-
-			size_t leftCounter = 0;
-			size_t rightCounter = 0;
-
-			const size_t i = optimalSplit;
 			const Obstacle* const obstacleI1 = obstacles[i];
 			const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
 
@@ -223,38 +179,80 @@ namespace SF
 			{
 				if (i == j)
 					continue;
-
-				const auto obstacleJ1 = obstacles[j];
-				const auto obstacleJ2 = obstacleJ1->nextObstacle;
+					
+				const Obstacle* const obstacleJ1 = obstacles[j];
+				const Obstacle* const obstacleJ2 = obstacleJ1->nextObstacle;
 
 				const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
 				const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
 
-				if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON)
-					leftObstacles[leftCounter++] = obstacleJ1;
+				if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) 
+					++leftSize;
 				else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) 
-					rightObstacles[rightCounter++] = obstacleJ1;
+					++rightSize;
 				else 
 				{
-					if(j1LeftOfI + j2LeftOfI > 0)
-					{
-						leftObstacles[leftCounter++] = obstacleJ1;
-						rightObstacles[rightCounter++] = obstacleJ2;
-					}
-					else
-					{
-						leftObstacles[leftCounter++] = obstacleJ2;
-						rightObstacles[rightCounter++] = obstacleJ1;
-					}
+					++leftSize;
+					++rightSize;
 				}
+
+				if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) >= std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
+					break;
 			}
 
-			node->obstacle = obstacleI1;
-			node->left = buildObstacleTreeRecursive(leftObstacles);
-			node->right = buildObstacleTreeRecursive(rightObstacles);
-
-			return node;
+			if (std::make_pair(std::max(leftSize, rightSize), std::min(leftSize, rightSize)) < std::make_pair(std::max(minLeft, minRight), std::min(minLeft, minRight))) 
+			{
+				minLeft = leftSize;
+				minRight = rightSize;
+				optimalSplit = i;
+			}
 		}
+
+		std::vector<Obstacle*> leftObstacles(minLeft);
+		std::vector<Obstacle*> rightObstacles(minRight);
+
+		size_t leftCounter = 0;
+		size_t rightCounter = 0;
+
+		const size_t i = optimalSplit;
+		const Obstacle* const obstacleI1 = obstacles[i];
+		const Obstacle* const obstacleI2 = obstacleI1->nextObstacle;
+
+		for (size_t j = 0; j < obstacles.size(); ++j) 
+		{
+			if (i == j)
+				continue;
+
+			const auto obstacleJ1 = obstacles[j];
+			const auto obstacleJ2 = obstacleJ1->nextObstacle;
+
+			const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
+			const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
+
+			if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON)
+				leftObstacles[leftCounter++] = obstacleJ1;
+			else if (j1LeftOfI <= SF_EPSILON && j2LeftOfI <= SF_EPSILON) 
+				rightObstacles[rightCounter++] = obstacleJ1;
+			else 
+			{
+				if(j1LeftOfI + j2LeftOfI > 0)
+				{
+					leftObstacles[leftCounter++] = obstacleJ1;
+					rightObstacles[rightCounter++] = obstacleJ2;
+				}
+				else
+				{
+					leftObstacles[leftCounter++] = obstacleJ2;
+					rightObstacles[rightCounter++] = obstacleJ1;
+				}
+			}
+		}
+
+		node->obstacle = obstacleI1;
+		node->left = buildObstacleTreeRecursive(leftObstacles);
+		node->right = buildObstacleTreeRecursive(rightObstacles);
+
+		return node;
 	}
 
   void KdTree::computeAgentNeighbors(Agent* agent, float& rangeSq) const
@@ -267,19 +265,20 @@ namespace SF
     queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, 0);
   }
 
-  void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
-  {
-    queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
-  }
+	void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
+	{
+		queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
+	}
 
-  void KdTree::deleteObstacleTree(ObstacleTreeNode* node) const
-  {
-    if (node != 0) {
-      deleteObstacleTree(node->left);
-      deleteObstacleTree(node->right);
-      delete node;
-    }
-  }
+	void KdTree::deleteObstacleTree(ObstacleTreeNode* node) const
+	{
+		if (node != nullptr) 
+		{
+			deleteObstacleTree(node->left);
+			deleteObstacleTree(node->right);
+			delete node;
+		}
+	}
 
   void KdTree::queryAgentTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
   {
@@ -349,23 +348,19 @@ namespace SF
 	{
 		if (node == nullptr)
 			return;
-		else 
-		{
-			const auto obstacle1 = node->obstacle;
-			const auto obstacle2 = obstacle1->nextObstacle;
+		
+		const auto obstacle1 = node->obstacle;
+		const auto obstacle2 = obstacle1->nextObstacle;
+		const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
 
-			const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
-
-			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
+		queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
 			
-			const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
+		const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
 
-			if (distSqLine < rangeSq) 
-			{
-				agent->insertObstacleNeighbor(node->obstacle, rangeSq);
-
-				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
-			}
+		if (distSqLine < rangeSq) 
+		{
+			agent->insertObstacleNeighbor(node->obstacle, rangeSq);
+			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
 		}
 	}
 
