@@ -258,7 +258,7 @@ namespace SF
 		if (size > 0)
 			obstacleTrajectory_ = position_ + total * 10;
 		else
-			obstacleTrajectory_ = Vector2();
+			obstacleTrajectory_ = position_;
 	}
 
 	void Agent::getAttractiveForce()

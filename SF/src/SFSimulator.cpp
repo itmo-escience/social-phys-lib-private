@@ -583,11 +583,6 @@ namespace SF
 
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		auto t = agents_[index]->obstacleTrajectory_;
-
-		if (t == Vector2())
-			return agents_[index]->position_;
-
-		return t;
+		return agents_[index]->obstacleTrajectory_;
 	}
 }
