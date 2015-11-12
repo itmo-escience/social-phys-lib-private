@@ -505,7 +505,6 @@ namespace SF
 			obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
       
 			auto i = obstacleNeighbors_.size() - 1;
-		
 			while (i != 0 && distSq < obstacleNeighbors_[i-1].first) 
 			{
 				obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
@@ -666,7 +665,7 @@ namespace SF
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
 	}
 
-	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
 		float 
 			x1 = a.x(), 
@@ -684,7 +683,7 @@ namespace SF
 		return Vector2(x, y);
 	}
 
-	SimpleMatrix Agent::getRotationX(float angle)
+	SimpleMatrix Agent::getRotationX(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
 
@@ -699,7 +698,7 @@ namespace SF
 		return result;
 	}
 
-	SimpleMatrix Agent::getRotationY(float angle)
+	SimpleMatrix Agent::getRotationY(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
 
@@ -714,7 +713,7 @@ namespace SF
 		return result;
 	}
 
-	SimpleMatrix Agent::getRotationZ(float angle)
+	SimpleMatrix Agent::getRotationZ(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
 

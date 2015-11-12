@@ -109,7 +109,7 @@ namespace SF
 	Vector2 getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const;
     
 	bool isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const;
-	Vector2 getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d);
+	Vector2 getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const;
 
 	void getAccelerationTerm();
 	void getRepulsiveAgentForce();
@@ -141,9 +141,9 @@ namespace SF
 	Vector3 getRoll(ParameterType pt, TimeType tt) const;
 	Vector3 getOmega(ParameterType pt, TimeType tt);
 	Vector3 getDOmega(ParameterType pt, TimeType tt);
-	SimpleMatrix getRotationX(float angle);
-	SimpleMatrix getRotationY(float angle);
-	SimpleMatrix getRotationZ(float angle);
+	SimpleMatrix getRotationX(float angle) const;
+	SimpleMatrix getRotationY(float angle) const;
+	SimpleMatrix getRotationZ(float angle) const;
 
 	const double TOLERANCE = 0.00001f;
 	const size_t MULT = 1000000;
