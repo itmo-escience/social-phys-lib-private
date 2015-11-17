@@ -463,7 +463,9 @@ namespace SF
 
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
-		getAttractiveForce();
+
+		if(attractiveTimeList_.size() > 0)
+			getAttractiveForce();
 
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
