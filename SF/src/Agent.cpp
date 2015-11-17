@@ -145,6 +145,10 @@ namespace SF
 		{
 			setNullSpeed(agentNeighbors_[i].second->id_);
 			auto pos = agentNeighbors_[i].second->position_;
+
+			if (position_ == pos)
+				continue;
+
 			auto velocity = agentNeighbors_[i].second->velocity_;
 
 			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
