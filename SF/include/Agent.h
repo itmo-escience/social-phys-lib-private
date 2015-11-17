@@ -112,6 +112,7 @@ namespace SF
 	Vector2 getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const;
 
 	void getAccelerationTerm();
+	void test();
 	void getRepulsiveAgentForce();
 	void getRepulsiveObstacleForce();
 	void getAttractiveForce();
