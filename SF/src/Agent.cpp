@@ -132,6 +132,13 @@ namespace SF
 		previosPosition_ = position_;
 	}
 
+	void Agent::test()
+	{
+		auto force = Vector2(); 
+
+		correction += force;
+	}
+
 	void Agent::getRepulsiveAgentForce()
 	{
 		for (size_t i = 0; i < agentNeighbors_.size(); i++)
@@ -560,7 +567,10 @@ namespace SF
 
 	void Agent::update()
 	{
-		getAccelerationTerm();
+		//velocity_ = newVelocity_;
+		//position_ += velocity_ * sim_->timeStep_;
+
+		getAccelerationTerm();	//TODO delete
 	}
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
