@@ -136,6 +136,14 @@ namespace SF
 	{
 		auto force = Vector2(); 
 
+		auto predictedVelocity = velocity_ + correction;
+		auto predictedPosition = position_ + predictedVelocity * sim_->timeStep_;
+
+		auto speed = getLength(predictedPosition - position_) / sim_->timeStep_;
+		auto difference = maxSpeed_ - speed;
+	
+		force *= 1 / relaxationTime_ * difference;
+
 		correction += force;
 	}
 
@@ -472,7 +480,6 @@ namespace SF
 
 		correction = Vector2();
 
-		test();
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
 
@@ -482,6 +489,8 @@ namespace SF
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
     
+		test();
+
 		newVelocity_ += correction;
 	}
 
