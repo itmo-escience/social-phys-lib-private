@@ -468,6 +468,7 @@ namespace SF
 
 		correction = Vector2();
 
+		test();
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
 
@@ -567,10 +568,10 @@ namespace SF
 
 	void Agent::update()
 	{
-		//velocity_ = newVelocity_;
-		//position_ += velocity_ * sim_->timeStep_;
+		velocity_ = newVelocity_;
+		position_ += velocity_ * sim_->timeStep_;
 
-		getAccelerationTerm();	//TODO delete
+		//getAccelerationTerm();	//TODO delete
 	}
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
