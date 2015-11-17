@@ -132,12 +132,31 @@ namespace SF
 		previosPosition_ = position_;
 	}
 
+	void Agent::test()
+	{
+		auto force = Vector2(); 
+
+		auto predictedVelocity = velocity_ + correction;
+		auto predictedPosition = position_ + predictedVelocity * sim_->timeStep_;
+
+		auto speed = getLength(predictedPosition - position_) / sim_->timeStep_;
+		auto difference = maxSpeed_ - speed;
+	
+		force *= 1 / relaxationTime_ * difference;
+
+		correction += force;
+	}
+
 	void Agent::getRepulsiveAgentForce()
 	{
 		for (size_t i = 0; i < agentNeighbors_.size(); i++)
 		{
 			setNullSpeed(agentNeighbors_[i].second->id_);
 			auto pos = agentNeighbors_[i].second->position_;
+
+			if (position_ == pos)
+				continue;
+
 			auto velocity = agentNeighbors_[i].second->velocity_;
 
 			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
@@ -470,6 +489,8 @@ namespace SF
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
     
+		test();
+
 		newVelocity_ += correction;
 	}
 
@@ -560,7 +581,10 @@ namespace SF
 
 	void Agent::update()
 	{
-		getAccelerationTerm();
+		velocity_ = newVelocity_;
+		position_ += velocity_ * sim_->timeStep_;
+
+		//getAccelerationTerm();	//TODO delete
 	}
 
 	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
