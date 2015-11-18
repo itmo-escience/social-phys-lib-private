@@ -1,12 +1,18 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFWrapper", "SF2DWrapper.vcxproj", "{25BB6D66-3CF0-4819-AB32-770204463B99}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SF", "..\SF\SF.vcxproj", "{31E38DAC-CA22-4C3B-8C14-5A14D3290443}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		Hybrid|Win32 = Hybrid|Win32
+		Hybrid|x64 = Hybrid|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -15,10 +21,26 @@ Global
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Debug|Win32.Build.0 = Debug|Win32
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Debug|x64.ActiveCfg = Debug|x64
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Debug|x64.Build.0 = Debug|x64
+		{25BB6D66-3CF0-4819-AB32-770204463B99}.Hybrid|Win32.ActiveCfg = Hybrid|Win32
+		{25BB6D66-3CF0-4819-AB32-770204463B99}.Hybrid|Win32.Build.0 = Hybrid|Win32
+		{25BB6D66-3CF0-4819-AB32-770204463B99}.Hybrid|x64.ActiveCfg = Hybrid|x64
+		{25BB6D66-3CF0-4819-AB32-770204463B99}.Hybrid|x64.Build.0 = Hybrid|x64
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Release|Win32.ActiveCfg = Release|Win32
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Release|Win32.Build.0 = Release|Win32
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Release|x64.ActiveCfg = Release|x64
 		{25BB6D66-3CF0-4819-AB32-770204463B99}.Release|x64.Build.0 = Release|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Debug|Win32.Build.0 = Debug|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Debug|x64.ActiveCfg = Debug|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Debug|x64.Build.0 = Debug|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Hybrid|Win32.ActiveCfg = Hybrid|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Hybrid|Win32.Build.0 = Hybrid|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Hybrid|x64.ActiveCfg = Hybrid|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Hybrid|x64.Build.0 = Hybrid|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Release|Win32.ActiveCfg = Release|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Release|Win32.Build.0 = Release|Win32
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Release|x64.ActiveCfg = Release|x64
+		{31E38DAC-CA22-4C3B-8C14-5A14D3290443}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
