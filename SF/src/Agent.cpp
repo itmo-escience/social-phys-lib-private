@@ -311,14 +311,14 @@ namespace SF
 				fixedA = Vector3();
 
 			float
-				determinantPrefixCentralForceX = 0,
-				determinantPrefixCentralForceY = 0,
-				determinantCentralForceX = 0,
-				determinantCentralForceY = 0,
-				determinantTangentialForceX = 0,
-				determinantTangentialForceY = 0,
-				determinantCoriolisForceX = 0,
-				determinantCoriolisForceY = 0;
+				determinantPrefixCentralForceX,
+				determinantPrefixCentralForceY,
+				determinantCentralForceX,
+				determinantCentralForceY,
+				determinantTangentialForceX,
+				determinantTangentialForceY,
+				determinantCoriolisForceX,
+				determinantCoriolisForceY;
 
 			Vector2
 				newVX = Vector2(),
