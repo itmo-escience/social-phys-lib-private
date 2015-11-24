@@ -140,7 +140,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)..\SF\$(Platform)\$(Configuration)\SF.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\SF\$(Platform)\$(Configuration)\SF.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Link>
