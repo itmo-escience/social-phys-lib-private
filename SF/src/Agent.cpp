@@ -168,7 +168,7 @@ namespace SF
 		std::vector<Vector2> nearestObstaclePointList;
 		nearestObstaclePointList.clear();
 
-		Vector2 maxForce, sum;
+		Vector2 sum;
 		
 		std::vector<Vector2> forces;
 		forces.clear();
@@ -239,10 +239,7 @@ namespace SF
 			auto length = getLength(force);
 
 			if (maxForceLength < length)
-			{
 				maxForceLength = length;
-				maxForce = force;
-			}
 		}
 
 		auto size = forces.size();
