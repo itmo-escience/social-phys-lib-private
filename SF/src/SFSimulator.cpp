@@ -95,8 +95,7 @@ namespace SF
 
 	SFSimulator::~SFSimulator()
 	{
-		if (defaultAgent_ != nullptr) 
-			delete defaultAgent_;
+		delete defaultAgent_;
 
 		for (size_t i = 0; i < agents_.size(); ++i) 
 			delete agents_[i];
