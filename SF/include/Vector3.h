@@ -31,6 +31,18 @@ public:
 		val_[2] = 0.0f;
 	}
 
+	Vector3& operator=(const Vector3 &right)
+	{
+		if (this == &right)
+			return *this;
+
+		val_[0] = right.val_[0];
+		val_[1] = right.val_[1];
+		val_[2] = right.val_[2];
+
+		return *this;
+	}
+
 	/*!
 	 *  @brief		Constructs and initializes a three-dimensional vector from the specified three-dimensional vector.
 	 *  @param		vector		The three-dimensional vector containing the xyz-coordinates.
