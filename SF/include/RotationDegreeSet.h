@@ -33,6 +33,20 @@ public:
 		center_ = Vector3();
 	}
 
+	RotationDegreeSet& operator=(const RotationDegreeSet &right)
+	{
+		if (this == &right)
+			return *this;
+
+		val_[0] = right.val_[0];
+		val_[1] = right.val_[1];
+		val_[2] = right.val_[2];
+
+		center_ = right.center_;
+
+		return *this;
+	}
+
 	/*!
 	 *  @brief		Constructs and initializes a three-dimensional vector from the specified three-dimensional vector.
 	 *  @param		vector		The three-dimensional vector containing the xyz-coordinates.
