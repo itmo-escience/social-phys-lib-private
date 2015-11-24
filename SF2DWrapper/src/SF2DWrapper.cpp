@@ -142,7 +142,7 @@ int SFSimulator::getAgentNumAgentNeighbors(int agentNo)
 void SFSimulator::getAgentPositions(array<int>^ agentNo, array<SFVector2>^ positions) 
 {
 	positions = gcnew array<SFVector2>(agentNo->Length);
-	for(int i =0 ; i < agentNo->Length; i++)
+	for(size_t i = 0 ; i < agentNo->Length; i++)
 	{
 		SF::Vector2 v = _sim->getAgentPosition(agentNo[i]);
 		positions[i] = SFVector2( v.x(),v.y());		
@@ -152,7 +152,7 @@ void SFSimulator::getAgentPositions(array<int>^ agentNo, array<SFVector2>^ posit
 void SFSimulator::getAgentPrefVelocities(array<int>^ agentNo,array<SFVector2>^ prefVelocities) 
 {
 	prefVelocities = gcnew array<SFVector2>(agentNo->Length);
-	for(int i =0 ; i < agentNo->Length; i++)
+	for(size_t i = 0 ; i < agentNo->Length; i++)
 	{
 		SF::Vector2 v = _sim->getAgentPrefVelocity(agentNo[i]);
 		prefVelocities[i] = SFVector2( v.x(),v.y());		
@@ -254,7 +254,7 @@ void SFSimulator::setAgentPrefVelocity(int agentNo,  SFVector2 velocity)
 
 void SFSimulator::setAgentPrefVelocity(array<int>^ agentNo,  array<SFVector2>^ prefVelocity)
 {
-	for(int i =0 ; i < agentNo->Length; i++)
+	for(size_t i = 0 ; i < agentNo->Length; i++)
 	{
 		SF::Vector2 vel= SF::Vector2(prefVelocity[i].X,prefVelocity[i].Y);	
 		_sim->setAgentPrefVelocity(agentNo[i],vel);
@@ -279,7 +279,7 @@ void SFSimulator::setTimeStep(float timeStep)
 
 void SFSimulator::setAgentVelocity(array<int>^ agentNo,  array<SFVector2>^ velocity)
 {
-	for(int i =0 ; i < agentNo->Length; i++)
+	for(size_t i = 0 ; i < agentNo->Length; i++)
 	{
 		SF::Vector2 vel= SF::Vector2(velocity[i].X,velocity[i].Y);	
 		_sim->setAgentVelocity(agentNo[i],vel);
@@ -289,7 +289,7 @@ void SFSimulator::setAgentVelocity(array<int>^ agentNo,  array<SFVector2>^ veloc
 int SFSimulator::addObstacle(System::Collections::Generic::List<SFVector2>^ vertices)
 {
 	std::vector<SF::Vector2> vert;	
-	for(int i =0 ; i < vertices->Count; i++)
+	for(size_t i = 0 ; i < vertices->Count; i++)
 	{		
 		vert.push_back(SF::Vector2(vertices[i].X,vertices[i].Y));
 	}
@@ -299,7 +299,7 @@ int SFSimulator::addObstacle(System::Collections::Generic::List<SFVector2>^ vert
 int SFSimulator::addObstacle(array<SFVector2>^ vertices)
 {
 	std::vector<SF::Vector2> vert;	
-	for(int i =0 ; i < vertices->Length; i++)
+	for(size_t i = 0 ; i < vertices->Length; i++)
 	{		
 		vert.push_back(SF::Vector2(vertices[i].X,vertices[i].Y));
 	}
@@ -416,7 +416,7 @@ System::Collections::Generic::List<double>^ SFSimulator::getAgentPressureList()
 {
 	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();
 	
-	for (int i = 0; i < getNumAgents(); i++)
+	for (size_t i = 0; i < getNumAgents(); i++)
 		out->Add(getAgentPressure(i));
 	
 	return out;
@@ -426,7 +426,7 @@ System::Collections::Generic::List<double>^ SFSimulator::getObstaclePressureList
 {
 	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();
 
-	for (int i = 0; i < getNumAgents(); i++)
+	for (size_t i = 0; i < getNumAgents(); i++)
 		out->Add(getObstaclePressure(i));
 
 	return out;
@@ -436,7 +436,7 @@ System::Collections::Generic::List<SFVector2>^ SFSimulator::getPositionList()
 {
 	System::Collections::Generic::List<SFVector2>^ out = gcnew System::Collections::Generic::List<SFVector2>();
 
-	for (int i = 0; i < getNumAgents(); i++)
+	for (size_t i = 0; i < getNumAgents(); i++)
 		out->Add(getAgentPosition(i));
 
 	return out;
