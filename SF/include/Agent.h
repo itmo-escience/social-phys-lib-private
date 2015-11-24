@@ -135,7 +135,7 @@ namespace SF
 	}
 	TimeType;
 
-	Vector3 getCross(Vector3 left, Vector3 right) const;
+	Vector3 getCross(const Vector3 &left, const Vector3 &right) const;
 	double degreesToRadians(float degree) const;
 	double radiansToDegrees(float degree) const;
 	Vector3 getRoll(ParameterType pt, TimeType tt) const;
