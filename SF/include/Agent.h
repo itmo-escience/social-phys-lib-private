@@ -78,13 +78,13 @@ namespace SF
 	*	@param		index		Id of agent
 	*	@param		value		Value of agent speed
 	*/
-	void setSpeedList(int index, float value);
+	void setSpeedList(size_t index, float value);
 
 	/*
 	*	@brief		Sets the null values of speed
 	*	@param		id			Isd of agent
 	*/
-	void setNullSpeed(int id);
+	void setNullSpeed(size_t id);
 
 	/*
 	*	@brief		Finds perception of some point by agent
@@ -183,7 +183,7 @@ namespace SF
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
 	std::vector<float> attractiveTimeList_;
 	std::vector<bool> isUsedAttractivePoint_;
-    std::map<int, float> speedList_;
+    std::map<size_t, float> speedList_;
 	SFSimulator* sim_;
     
     friend class KdTree;

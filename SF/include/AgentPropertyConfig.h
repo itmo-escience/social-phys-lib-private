@@ -9,7 +9,7 @@ namespace SF
 	{
 	public:
 		float _neighborDist;
-		int _maxNeighbors;
+		size_t _maxNeighbors;
 		float _timeHorizon;
 		float _obsHorizon;
 		float _radius;
@@ -28,7 +28,7 @@ namespace SF
 
 		AgentPropertyConfig(
 			float neighborDist,
-			int maxNeighbors,
+			size_t maxNeighbors,
 			float timeHorizon,
 			float obsHorizon,
 			float radius,

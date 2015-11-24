@@ -64,7 +64,7 @@ namespace SF
 		}
 	}
 
-	void Agent::setSpeedList(int index, float value)
+	void Agent::setSpeedList(size_t index, float value)
 	{
 		if (speedList_.count(index) < 1)
 			speedList_.insert(std::make_pair(index, value));
@@ -72,7 +72,7 @@ namespace SF
 			speedList_[index] = value;
 	}
 
-	void Agent::setNullSpeed(int id)
+	void Agent::setNullSpeed(size_t id)
 	{
 		if (speedList_.count(id) < 1)
 			setSpeedList(id, 0.0f);
