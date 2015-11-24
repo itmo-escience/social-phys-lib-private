@@ -453,7 +453,7 @@ namespace SF
 	{
 		IsMovingPlatform = true;
 
-		if(set.getRotationOX() != 0 || set.getRotationOY() != 0 || set.getRotationOZ() != 0)
+		if((fabs(set.getRotationOX()) > SF_EPSILON) || (fabs(set.getRotationOY()) > SF_EPSILON) || (fabs(set.getRotationOZ()) > SF_EPSILON))
 		{
 			if(rotationPast_ == Vector3())
 			{
