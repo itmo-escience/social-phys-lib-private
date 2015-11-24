@@ -11,32 +11,33 @@
 
 namespace SF
 {
-	Agent::Agent(SFSimulator* sim) : 
-			id_(0), 
-			maxNeighbors_(0), 
-			accelerationBuffer_(0.0f), 
-			maxSpeed_(0.0f),
-			neighborDist_(0.0f), 
-			radius_(0.0f),
-			timeHorizonObst_(0.0f), 
-			obstaclePressure_(), 
-			agentPressure_(), 
-			correction(), 
-			newVelocity_(), 
-			position_(),
-			prefVelocity_(), 
-			previosPosition_(INT_MIN, INT_MIN),
-			velocity_(),
-			oldPlatformVelocity_(),
-			obstacleNeighbors_(),
-			agentNeighbors_(),
-			attractiveTimeList_(),
-			sim_(sim)
+	Agent::Agent(SFSimulator* sim) :
+		id_(0),
+		maxNeighbors_(0),
+		accelerationBuffer_(0.0f),
+		maxSpeed_(0.0f),
+		neighborDist_(0.0f),
+		radius_(0.0f),
+		timeHorizonObst_(0.0f),
+		obstaclePressure_(),
+		repulsiveObstacle_(1 / repulsiveObstacle_),
+		agentPressure_(),
+		correction(),
+		newVelocity_(),
+		position_(),
+		prefVelocity_(),
+		previosPosition_(INT_MIN, INT_MIN),
+		velocity_(),
+		oldPlatformVelocity_(),
+		obstacleNeighbors_(),
+		agentNeighbors_(),
+		attractiveTimeList_(),
+		obstacleRadius_(0.1f),
+		isForced_(false),
+		sim_(sim)
 
 	{ 
 	  setNullSpeed(id_); 
-
-	  repulsiveObstacle_ = 1 / repulsiveObstacle_;
 
 	  // attractive section
 	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
@@ -110,22 +111,73 @@ namespace SF
 			setSpeedList(id_, 0.0f);
 		}
 
+		auto speed = speedList_[id_];
 		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
 		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
 
 		if (!isForced_)
-		{
 			acceleration_ += tempAcceleration;
-			accelerationBuffer_ += tempAcceleration;
-		}
-		else
-		{
-			isForced_ = false;
-			acceleration_ += accelerationBuffer_ * accelerationCoefficient_;
-			accelerationBuffer_ = 0;
-		}
+		else acceleration_ = 0;
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
+
+		auto minLength = DBL_MAX;
+		auto p = Vector2();
+		auto hasIntersection = false;
+
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		{
+			if (isIntersect(
+				position_,
+				previosPosition_,
+				obstacleNeighbors_[i].second->point_,
+				obstacleNeighbors_[i].second->nextObstacle->point_
+				))
+			{
+				if (!hasIntersection)
+					hasIntersection = true;
+
+				auto intersection = getIntersection(
+					position_,
+					previosPosition_,
+					obstacleNeighbors_[i].second->point_,
+					obstacleNeighbors_[i].second->nextObstacle->point_
+					);
+
+				auto l = getLength(intersection - previosPosition_);
+				p = intersection;
+
+				if (l < minLength)
+				{
+					minLength = l;
+					p = intersection;
+				}
+			}
+		}
+
+		if (hasIntersection)
+		{
+			auto difference = p - previosPosition_;
+			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= 2)
+			{
+				if (m >= 0 && m <= 1)
+					position_ = previosPosition_ + difference * m;
+				else
+					position_ = previosPosition_;
+			}
+
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2)
+				position_ = previosPosition_;
+
+			if (getLength(difference) <= obstacleRadius_)
+				position_ = previosPosition_;
+
+			isForced_ = true;
+		}
+		else
+			isForced_ = false;
 
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
