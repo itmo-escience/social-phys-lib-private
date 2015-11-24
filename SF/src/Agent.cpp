@@ -14,13 +14,12 @@ namespace SF
 	Agent::Agent(SFSimulator* sim) :
 		id_(0),
 		maxNeighbors_(0),
-		accelerationBuffer_(0.0f),
 		maxSpeed_(0.0f),
 		neighborDist_(0.0f),
 		radius_(0.0f),
 		timeHorizonObst_(0.0f),
 		obstaclePressure_(),
-		repulsiveObstacle_(1 / repulsiveObstacle_),
+		repulsiveObstacle_(0),
 		agentPressure_(),
 		correction(),
 		newVelocity_(),
@@ -34,9 +33,22 @@ namespace SF
 		attractiveTimeList_(),
 		obstacleRadius_(0.1f),
 		isForced_(false),
+		acceleration_(0),
+		relaxationTime_(0),
+		accelerationCoefficient_(0),
+		repulsiveAgent_(0),
+		repulsiveAgentFactor_(0),
+		repulsiveObstacleFactor_(0),
+		platformFactor_(0),
+		perception_(0),
+		friction_(0),
+		obstacleTrajectory_(),
+		agentNeighborsIndexList_(),
+		isUsedAttractivePoint_(false),
+		speedList_(),
 		sim_(sim)
-
 	{ 
+		
 	  setNullSpeed(id_); 
 
 	  // attractive section
@@ -100,7 +112,7 @@ namespace SF
 	{
 		setNullSpeed(id_);
 
-		if (previosPosition_.x() == INT_MIN && previosPosition_.y() == INT_MIN)
+		if ((fabs(previosPosition_.x() - INT_MIN) < SF_EPSILON) && (fabs(previosPosition_.y() - INT_MIN) < SF_EPSILON))
 			previosPosition_ = position_;
 
 		velocity_ = newVelocity_;
@@ -127,11 +139,13 @@ namespace SF
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
+			auto obstacle = obstacleNeighbors_[i].second;
+
 			if (isIntersect(
 				position_,
 				previosPosition_,
-				obstacleNeighbors_[i].second->point_,
-				obstacleNeighbors_[i].second->nextObstacle->point_
+				obstacle->point_,
+				obstacle->nextObstacle->point_
 				))
 			{
 				if (!hasIntersection)
@@ -140,8 +154,8 @@ namespace SF
 				auto intersection = getIntersection(
 					position_,
 					previosPosition_,
-					obstacleNeighbors_[i].second->point_,
-					obstacleNeighbors_[i].second->nextObstacle->point_
+					obstacle->point_,
+					obstacle->nextObstacle->point_
 					);
 
 				auto l = getLength(intersection - previosPosition_);
