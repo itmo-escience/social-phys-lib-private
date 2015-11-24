@@ -153,7 +153,6 @@ namespace SF
 	size_t id_;
 	size_t maxNeighbors_;
 	float acceleration_;
-    float accelerationBuffer_;
     float relaxationTime_;
 	float maxSpeed_;
     float neighborDist_;
