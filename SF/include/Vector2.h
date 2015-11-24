@@ -224,7 +224,9 @@ namespace SF
     */
     bool operator==(const Vector2& vector) const
     {
-      return x_ == vector.x() && y_ == vector.y();
+		return
+			(fabs(x_ - vector.x()) < FLT_EPSILON)
+			&& (fabs(y_ - vector.y()) < FLT_EPSILON);
     }
 
     /*!
@@ -236,7 +238,9 @@ namespace SF
     */
     bool operator!=(const Vector2& vector) const
     {
-      return x_ != vector.x() || y_ != vector.y();
+		return
+			(fabs(x_ - vector.x()) > FLT_EPSILON)
+			&& (fabs(y_ - vector.y()) > FLT_EPSILON);
     }
 
     /*!
@@ -316,7 +320,7 @@ namespace SF
     {
 		auto length = sqrt(pow(x_, 2) + pow(y_, 2));
 
-        if(length == 0)
+        if(length < FLT_EPSILON)
             return *this;
 
 		return Vector2(x_ / length, y_ / length);

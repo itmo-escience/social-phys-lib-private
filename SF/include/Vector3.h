@@ -199,7 +199,10 @@ public:
 	 */
 	bool operator==(const Vector3& vector) const
 	{
-		return val_[0] == vector[0] && val_[1] == vector[1] && val_[2] == vector[2];
+		return 
+			(fabs(val_[0] - vector[0]) < FLT_EPSILON) 
+			&& (fabs(val_[1] - vector[1]) < FLT_EPSILON) 
+			&& (fabs(val_[2] - vector[2]) < FLT_EPSILON);
 	}
 
 	/*!
@@ -209,7 +212,10 @@ public:
 	 */
 	bool operator!=(const Vector3& vector) const
 	{
-		return val_[0] != vector[0] || val_[1] != vector[1] || val_[2] != vector[2];
+		return
+			(fabs(val_[0] - vector[0]) > FLT_EPSILON)
+			&& (fabs(val_[1] - vector[1]) > FLT_EPSILON)
+			&& (fabs(val_[2] - vector[2]) > FLT_EPSILON);
 	}
 
 	/*!
