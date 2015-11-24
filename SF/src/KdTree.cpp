@@ -106,6 +106,8 @@ namespace SF
 		tree.minX = std::min(tree.minX, position.x());
 		tree.maxY = std::max(tree.maxY, position.y());
 		tree.minY = std::min(tree.minY, position.y());
+
+		agentTree_[node] = tree;
     }
 
     if (end - begin > MAX_LEAF_SIZE) {
