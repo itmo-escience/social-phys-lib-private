@@ -565,7 +565,7 @@ namespace SF
 		getAccelerationTerm();
 	}
 
-	Vector3 Agent::getCross(Vector3 left, Vector3 right) const
+	Vector3 Agent::getCross(const Vector3 &left, const Vector3 &right) const
 	{
 		float 
 			X,

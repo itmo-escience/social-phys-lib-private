@@ -163,7 +163,7 @@ namespace SF
 
 		const auto node = new ObstacleTreeNode;
 
-		auto optimalSplit = 0;
+		size_t optimalSplit = 0;
 		auto minLeft = obstacles.size();
 		auto minRight = obstacles.size();
 

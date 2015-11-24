@@ -95,8 +95,7 @@ namespace SF
 
 	SFSimulator::~SFSimulator()
 	{
-		if (defaultAgent_ != nullptr) 
-			delete defaultAgent_;
+		delete defaultAgent_;
 
 		for (size_t i = 0; i < agents_.size(); ++i) 
 			delete agents_[i];
@@ -257,7 +256,7 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (auto i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
+		for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
 		{
 			agents_[i]->computeNeighbors();
 			agents_[i]->computeNewVelocity();
@@ -265,7 +264,7 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (auto i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
+		for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
 			agents_[i]->update();
     
 		globalTime_ += timeStep_;
