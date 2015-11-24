@@ -424,7 +424,7 @@ namespace SF
 		timeStep_ = timeStep;
 	}
 
-	void SFSimulator::setPlatformVelocity(Vector3 velocity)
+	void SFSimulator::setPlatformVelocity(const Vector3 &velocity)
 	{
 		platformVelocity_ = velocity;
 	}
@@ -449,7 +449,7 @@ namespace SF
 		return angleSet_;
 	}
 
-	void SFSimulator::setRotationDegreeSet(RotationDegreeSet set)
+	void SFSimulator::setRotationDegreeSet(const RotationDegreeSet &set)
 	{
 		IsMovingPlatform = true;
 
@@ -480,13 +480,13 @@ namespace SF
 		}
 	}
 
-	void SFSimulator::setAdditionalForce(Vector3 velocity, RotationDegreeSet set)
+	void SFSimulator::setAdditionalForce(const Vector3 &velocity, const RotationDegreeSet &set)
 	{
 		setPlatformVelocity(velocity);
 		setRotationDegreeSet(set);
 	}
 
-	void SFSimulator::setAttractiveForce(std::vector<Vector2> pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
+	void SFSimulator::setAttractiveForce(const std::vector<Vector2> &pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
 	{
 		attractivePointList_ = pointList;
 	  

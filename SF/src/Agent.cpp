@@ -136,17 +136,18 @@ namespace SF
 	{
 		for (size_t i = 0; i < agentNeighbors_.size(); i++)
 		{
-			setNullSpeed(agentNeighbors_[i].second->id_);
-			auto pos = agentNeighbors_[i].second->position_;
+			auto agent = agentNeighbors_[i].second;
+			setNullSpeed(agent->id_);
+			auto pos = agent->position_;
 
 			if (pos == position_)
 				continue;
 
-			auto velocity = agentNeighbors_[i].second->velocity_;
+			auto velocity = agent->velocity_;
 
-			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto y = agent->velocity_ * speedList_[agent->id_] * sim_->timeStep_;
 			auto d = position_ - pos;
-			auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto radius = speedList_[agent->id_] * sim_->timeStep_;
 			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
 			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
 			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
@@ -176,8 +177,9 @@ namespace SF
 		{
 			setNullSpeed(id_);
 
-			auto start = obstacleNeighbors_[i].second->point_;
-			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto obstacle = obstacleNeighbors_[i].second;
+			auto start = obstacle->point_;
+			auto end = obstacle->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
 			auto hasSuchClosestPoint = false;
@@ -200,8 +202,9 @@ namespace SF
 
 		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			auto start = obstacleNeighbors_[i].second->point_;
-			auto end = obstacleNeighbors_[i].second->nextObstacle->point_;
+			auto obstacle = obstacleNeighbors_[i].second;
+			auto start = obstacle->point_;
+			auto end = obstacle->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
 			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
