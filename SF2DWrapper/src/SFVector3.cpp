@@ -9,7 +9,7 @@ SFVector3::SFVector3(float x, float y, float z)
 	Z = z;
 }
 
-SFVector3 SFVector3::operator + (SFVector3 other)
+SFVector3 SFVector3::operator + (const SFVector3 &other)
 {
 	return SFVector3(this->X + other.X, this->Y + other.Y, this->Z + other.Z);
 }
