@@ -82,6 +82,17 @@ namespace SF
     {
     }
 
+	Vector2& operator=(const Vector2 &right)
+	{
+		if (this == &right)
+			return *this;
+
+		x_ = right.x_;
+		y_ = right.y_;
+
+		return *this;
+	}
+
     /*!
     *  @brief      Constructs and initializes a two-dimensional vector from the
     *              specified two-dimensional vector.
