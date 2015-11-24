@@ -331,10 +331,10 @@ namespace SF
 				dOmega = getDOmega(parameterType, NOW);
 
 				Vector3
-					prefixCentralForce = Vector3(),
-					centralForce = Vector3(),
-					tangentialForce = Vector3(),
-					CoriolisForce = Vector3();
+					prefixCentralForce,
+					centralForce,
+					tangentialForce,
+					CoriolisForce;
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -360,7 +360,7 @@ namespace SF
 
 				determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
 				tangentialForce =
-					(determinantCentralForceX > 0) ?
+					(determinantTangentialForceX > 0) ?
 					getCross(dOmega, R) :
 					getCross(R, dOmega);
 
@@ -384,10 +384,10 @@ namespace SF
 				dOmega = getDOmega(parameterType, NOW);
 				
 				Vector3
-					prefixCentralForce = Vector3(),
-					centralForce = Vector3(),
-					tangentialForce = Vector3(),
-					CoriolisForce = Vector3();
+					prefixCentralForce,
+					centralForce,
+					tangentialForce,
+					CoriolisForce;
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -413,7 +413,7 @@ namespace SF
 
 				determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
 				tangentialForce =
-					(determinantCentralForceY > 0) ?
+					(determinantTangentialForceY > 0) ?
 					getCross(dOmega, R) :
 					getCross(R, dOmega);
 
