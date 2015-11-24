@@ -5,7 +5,7 @@ namespace SF
 
 	AgentPropertyConfig::AgentPropertyConfig(
 		float neighborDist,
-		int maxNeighbors,
+		size_t maxNeighbors,
 		float timeHorizon,
 		float obsHorizon,
 		float radius,
