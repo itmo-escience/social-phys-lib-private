@@ -50,7 +50,7 @@ public:
 	 *  @brief		Constructs and initializes a three-dimensional vector from the specified three-element array.
 	 *  @param		val		The three-element array containing the xyz-coordinates.
 	 */
-	inline explicit RotationDegreeSet(const float val[3], const Vector3 c)
+	inline explicit RotationDegreeSet(const float val[3], const Vector3 &c)
 	{
 		val_[0] = val[0];
 		val_[1] = val[1];
