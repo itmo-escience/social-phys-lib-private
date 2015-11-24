@@ -526,11 +526,11 @@ namespace SF
 	*	@param		v			New value of velocity
 	*	@param		friction	Value of friction
 	*/
-	void setAdditionalForce(Vector3 velocity, RotationDegreeSet set);
+	void setAdditionalForce(const Vector3 &velocity, const RotationDegreeSet &set);
 
 	 
 	void setAttractiveForce(
-		std::vector<Vector2> pointList, 
+		const std::vector<Vector2> &pointList, 
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
@@ -544,7 +544,7 @@ namespace SF
 	*	@brief		Sets the velocity of platform
 	*	@param		v	New value of velocity, default value is 1.0
 	*/
-	void setPlatformVelocity(Vector3 velocity);
+	void setPlatformVelocity(const Vector3 &velocity);
 
 	/*!
 	*	@brief		Returns the velocity of platform
@@ -566,7 +566,7 @@ namespace SF
 	*	@brief		Sets the angle set
 	*	@param		set		Angle set
 	*/
-	void setRotationDegreeSet(RotationDegreeSet set);
+	void setRotationDegreeSet(const RotationDegreeSet &set);
 
 	/*!
 	*	@brief		Returns the angle set
