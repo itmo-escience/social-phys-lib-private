@@ -171,7 +171,7 @@ namespace SF
 
 		size_t optimalSplit = 0;
 		auto minLeft = obstacles.size();
-		auto minRight = obstacles.size();
+		auto minRight = minLeft;
 
 		for (size_t i = 0; i < obstacles.size(); ++i) 
 		{
