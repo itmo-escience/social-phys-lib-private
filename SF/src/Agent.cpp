@@ -168,7 +168,7 @@ namespace SF
 		std::vector<Vector2> nearestObstaclePointList;
 		nearestObstaclePointList.clear();
 
-		Vector2 maxForce, sum;
+		Vector2 sum;
 		
 		std::vector<Vector2> forces;
 		forces.clear();
@@ -239,10 +239,7 @@ namespace SF
 			auto length = getLength(force);
 
 			if (maxForceLength < length)
-			{
 				maxForceLength = length;
-				maxForce = force;
-			}
 		}
 
 		auto size = forces.size();
@@ -314,14 +311,14 @@ namespace SF
 				fixedA = Vector3();
 
 			float
-				determinantPrefixCentralForceX = 0,
-				determinantPrefixCentralForceY = 0,
-				determinantCentralForceX = 0,
-				determinantCentralForceY = 0,
-				determinantTangentialForceX = 0,
-				determinantTangentialForceY = 0,
-				determinantCoriolisForceX = 0,
-				determinantCoriolisForceY = 0;
+				determinantPrefixCentralForceX,
+				determinantPrefixCentralForceY,
+				determinantCentralForceX,
+				determinantCentralForceY,
+				determinantTangentialForceX,
+				determinantTangentialForceY,
+				determinantCoriolisForceX,
+				determinantCoriolisForceY;
 
 			Vector2
 				newVX = Vector2(),
@@ -334,10 +331,10 @@ namespace SF
 				dOmega = getDOmega(parameterType, NOW);
 
 				Vector3
-					prefixCentralForce = Vector3(),
-					centralForce = Vector3(),
-					tangentialForce = Vector3(),
-					CoriolisForce = Vector3();
+					prefixCentralForce,
+					centralForce,
+					tangentialForce,
+					CoriolisForce;
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -363,7 +360,7 @@ namespace SF
 
 				determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
 				tangentialForce =
-					(determinantCentralForceX > 0) ?
+					(determinantTangentialForceX > 0) ?
 					getCross(dOmega, R) :
 					getCross(R, dOmega);
 
@@ -387,10 +384,10 @@ namespace SF
 				dOmega = getDOmega(parameterType, NOW);
 				
 				Vector3
-					prefixCentralForce = Vector3(),
-					centralForce = Vector3(),
-					tangentialForce = Vector3(),
-					CoriolisForce = Vector3();
+					prefixCentralForce,
+					centralForce,
+					tangentialForce,
+					CoriolisForce;
 
 				fixedR = Vector3(
 					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
@@ -416,7 +413,7 @@ namespace SF
 
 				determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
 				tangentialForce =
-					(determinantCentralForceY > 0) ?
+					(determinantTangentialForceY > 0) ?
 					getCross(dOmega, R) :
 					getCross(R, dOmega);
 
