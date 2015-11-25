@@ -149,6 +149,7 @@ namespace SF
 	const size_t MULT = 1000000;
 	const size_t SHIFT = 30;
 
+	bool isDeleted_;
 	bool isForced_;
 	size_t id_;
 	size_t maxNeighbors_;

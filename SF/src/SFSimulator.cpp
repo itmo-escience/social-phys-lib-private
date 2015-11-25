@@ -258,15 +258,19 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
 		{
-			agents_[i]->computeNeighbors();
-			agents_[i]->computeNewVelocity();
+			if (!(agents_[i]->isDeleted_))
+			{
+				agents_[i]->computeNeighbors();
+				agents_[i]->computeNewVelocity();
+			}
 		}
 
 #pragma omp parallel for
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
-			agents_[i]->update();
-    
+		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			if(!(agents_[i]->isDeleted_))
+				agents_[i]->update();
+		
 		globalTime_ += timeStep_;
 	}
 
@@ -566,6 +570,22 @@ namespace SF
 		}
 		else
 			result.push_back(0);
+
+		return result;
+	}
+
+	void SFSimulator::deleteAgent(size_t index)
+	{
+		agents_[index]->isDeleted_ = true;
+	}
+
+	std::vector<size_t> SFSimulator::getDeletedIDList()
+	{
+		auto result = std::vector<size_t>();
+
+		for (size_t i = 0; i < agents_.size(); i++)
+			if (agents_[i]->isDeleted_)
+				result.push_back(agents_[i]->id_);
 
 		return result;
 	}

@@ -161,6 +161,8 @@ namespace SF2D {
 				double getObstaclePressure(int index);
 				SF2D::SFVector2 getObstacleTrajectory(int index);
 				double getAgentPressure(int index);
+				void deleteAgent(int index);
+				System::Collections::Generic::List<int>^ getDeletedIDList();
 				System::Collections::Generic::List<double>^ getAgentPressureList();
 				System::Collections::Generic::List<double>^ getObstaclePressureList();
 				System::Collections::Generic::List<SFVector2>^ getPositionList();

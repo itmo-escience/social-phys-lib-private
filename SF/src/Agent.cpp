@@ -46,6 +46,7 @@ namespace SF
 		agentNeighborsIndexList_(),
 		isUsedAttractivePoint_(false),
 		speedList_(),
+		isDeleted_(false),
 		sim_(sim)
 	{ 
 		
@@ -196,32 +197,36 @@ namespace SF
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
 		previosPosition_ = position_;
+
 	}
 
 	void Agent::getRepulsiveAgentForce()
 	{
 		for (size_t i = 0; i < agentNeighbors_.size(); i++)
 		{
-			auto agent = agentNeighbors_[i].second;
-			setNullSpeed(agent->id_);
-			auto pos = agent->position_;
+			if (!agentNeighbors_[i].second->isDeleted_)
+			{
+				auto agent = agentNeighbors_[i].second;
+				setNullSpeed(agent->id_);
+				auto pos = agent->position_;
 
-			if (pos == position_)
-				continue;
+				if (pos == position_)
+					continue;
 
-			auto velocity = agent->velocity_;
+				auto velocity = agent->velocity_;
 
-			auto y = agent->velocity_ * speedList_[agent->id_] * sim_->timeStep_;
-			auto d = position_ - pos;
-			auto radius = speedList_[agent->id_] * sim_->timeStep_;
-			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
-			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
-			agentPressure_ = getLength(force);
+				auto y = agent->velocity_ * speedList_[agent->id_] * sim_->timeStep_;
+				auto d = position_ - pos;
+				auto radius = speedList_[agent->id_] * sim_->timeStep_;
+				auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+				auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+				auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+				auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
+				auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+				agentPressure_ = getLength(force);
 
-			correction += force;
+				correction += force;
+			}
 		}
 	}
 
