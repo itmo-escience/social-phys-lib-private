@@ -400,6 +400,11 @@ double SFSimulator::getAgentPressure(int index)
 	return _sim->getAgentPressure(index);
 }
 
+void SFSimulator::deleteAgent(int index)
+{
+	_sim->deleteAgent(index);
+}
+
 double SFSimulator::getObstaclePressure(int index)
 {
 	return _sim->getObstaclePressure(index);
@@ -439,5 +444,16 @@ System::Collections::Generic::List<SFVector2>^ SFSimulator::getPositionList()
 	for (size_t i = 0; i < getNumAgents(); i++)
 		out->Add(getAgentPosition(i));
 
+	return out;
+}
+
+System::Collections::Generic::List<int>^ SFSimulator::getDeletedIDList()
+{
+	auto in = _sim->getDeletedIDList();
+	System::Collections::Generic::List<int>^ out = gcnew System::Collections::Generic::List<int>();
+	
+	for each (auto del in in)
+		out->Add(del);
+	
 	return out;
 }
