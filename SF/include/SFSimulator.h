@@ -590,6 +590,9 @@ namespace SF
 
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
+	void deleteAgent(size_t index);
+	std::vector<size_t> getDeletedIDList();
+
 	Vector3 rotationPast_;
 	Vector3 rotationPast2Now_;
 	Vector3 rotationNow_;
@@ -606,9 +609,11 @@ namespace SF
 
 	bool IsMovingPlatform;
 
+	std::vector<size_t> deleteIDs;
+
   private:
     std::vector<Agent*> agents_;
-    Agent* defaultAgent_;
+	Agent* defaultAgent_;
     float globalTime_;
     KdTree* kdTree_;
     std::vector<Obstacle*> obstacles_;
