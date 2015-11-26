@@ -593,6 +593,13 @@ namespace SF
 	void deleteAgent(size_t index);
 	std::vector<size_t> getDeletedIDList();
 
+	void updateSFParameters(
+		float newRepulsiveAgent_,
+		float newRepulsiveAgentFactor_,
+		float newRepulsiveObstacle_,
+		float newRepulsiveObstacleFactor_
+	);
+
 	Vector3 rotationPast_;
 	Vector3 rotationPast2Now_;
 	Vector3 rotationNow_;

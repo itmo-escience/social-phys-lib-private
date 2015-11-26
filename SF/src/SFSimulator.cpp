@@ -590,6 +590,23 @@ namespace SF
 		return result;
 	}
 
+	void SFSimulator::updateSFParameters(float newRepulsiveAgent_, float newRepulsiveAgentFactor_, float newRepulsiveObstacle_, float newRepulsiveObstacleFactor_)
+	{
+#pragma omp parallel for
+
+		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+		{
+			if (!(agents_[i]->isDeleted_))
+			{
+				agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
+				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
+				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
+				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
+			}
+		}
+
+	}
+
 	double SFSimulator::getAgentPressure(size_t index)
 	{
 		return agents_[index]->agentPressure_;

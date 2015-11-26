@@ -457,3 +457,8 @@ System::Collections::Generic::List<int>^ SFSimulator::getDeletedIDList()
 	
 	return out;
 }
+
+void SFSimulator::updateSFParameters(float newRepulsiveAgent, float newRepulsiveAgentFactor, float newRepulsiveObstacle, float newRepulsiveObstacleFactor)
+{
+	_sim->updateSFParameters(newRepulsiveAgent, newRepulsiveAgentFactor, newRepulsiveObstacle, newRepulsiveObstacleFactor);
+}
