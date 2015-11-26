@@ -166,5 +166,7 @@ namespace SF2D {
 				System::Collections::Generic::List<double>^ getAgentPressureList();
 				System::Collections::Generic::List<double>^ getObstaclePressureList();
 				System::Collections::Generic::List<SFVector2>^ getPositionList();
+
+				void updateSFParameters(float newRepulsiveAgent, float newRepulsiveAgentFactor, float newRepulsiveObstacle, float newRepulsiveObstacleFactor);
 	};
 }
