@@ -293,7 +293,8 @@ namespace SF
   {
     if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) {
       for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) {
-        agent->insertAgentNeighbor(agents_[i], rangeSq);
+		  if(!(agents_[i]->isDeleted_))
+			agent->insertAgentNeighbor(agents_[i], rangeSq);
       }
     } else {
       const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
