@@ -60,7 +60,8 @@ namespace SF
 	  }
 	}
 
-	Agent::~Agent() { }
+	Agent::~Agent()
+	{ }
 
 	void Agent::computeNeighbors()
 	{

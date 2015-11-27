@@ -72,12 +72,12 @@
 
 namespace SF
 {
-	SFSimulator::SFSimulator() : 
-		rotationPast_(), 
-		rotationPast2Now_(), 
-		rotationNow_(), 
-		rotationNow2Future_(), 
-		rotationFuture_(), 
+	SFSimulator::SFSimulator() :
+		rotationPast_(),
+		rotationPast2Now_(),
+		rotationNow_(),
+		rotationNow2Future_(),
+		rotationFuture_(),
 		agents_(),
 		defaultAgent_(nullptr),
 		globalTime_(0.0f),
@@ -97,12 +97,12 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i) 
+		for (size_t i = 0; i < agents_.size(); ++i)
 			delete agents_[i];
 
-		for (size_t i = 0; i < obstacles_.size(); ++i) 
+		for (size_t i = 0; i < obstacles_.size(); ++i)
 			delete obstacles_[i];
-	
+
 		delete kdTree_;
 	}
 
@@ -128,7 +128,7 @@ namespace SF
 
 	size_t SFSimulator::addAgent(const Vector2& position)
 	{
-		if (defaultAgent_ == 0) 
+		if (defaultAgent_ == 0)
 			return SF_ERROR;
 
 		auto agent = new Agent(this);
@@ -150,7 +150,7 @@ namespace SF
 		agent->platformFactor_ = defaultAgent_->platformFactor_;
 		agent->perception_ = defaultAgent_->perception_;
 		agent->friction_ = defaultAgent_->friction_;
-	
+
 		agent->id_ = agents_.size();
 
 		agents_.push_back(agent);
@@ -159,28 +159,28 @@ namespace SF
 	}
 
 	size_t SFSimulator::addAgent(
-		const Vector2& position, 
-		float neighborDist, 
-		size_t maxNeighbors, 
+		const Vector2& position,
+		float neighborDist,
+		size_t maxNeighbors,
 		float timeHorizon,		// never used
-		float timeHorizonObst, 
-		float radius, 
-		float maxSpeed, 
-		float accelerationCoefficient, 
+		float timeHorizonObst,
+		float radius,
+		float maxSpeed,
+		float accelerationCoefficient,
 		float relaxationTime,
-		float repulsiveAgent, 
-		float repulsiveAgentFactor, 
-		float repulsiveObstacle, 
+		float repulsiveAgent,
+		float repulsiveAgentFactor,
+		float repulsiveObstacle,
 		float repulsiveObstacleFactor,
 		float obstacleRadius,
 		float platformFactor,
-		float perception, 
+		float perception,
 		float friction,
 		const Vector2& velocity
-	)
+		)
 	{
 		auto agent = new Agent(this);
-    
+
 		agent->position_ = position;
 		agent->maxNeighbors_ = maxNeighbors;
 		agent->maxSpeed_ = maxSpeed;
@@ -200,7 +200,7 @@ namespace SF
 		agent->friction_ = friction;
 
 		agent->id_ = agents_.size();
-    
+
 		agents_.push_back(agent);
 
 		return agents_.size() - 1;
@@ -216,25 +216,25 @@ namespace SF
 		for (size_t i = 0; i < vertices.size(); ++i) {
 			auto obstacle = new Obstacle();
 			obstacle->point_ = vertices[i];
-		
-			if (i != 0) 
+
+			if (i != 0)
 			{
 				obstacle->prevObstacle = obstacles_.back();
 				obstacle->prevObstacle->nextObstacle = obstacle;
 			}
-			if (i == vertices.size() - 1) 
+			if (i == vertices.size() - 1)
 			{
 				obstacle->nextObstacle = obstacles_[obstacleNo];
 				obstacle->nextObstacle->prevObstacle = obstacle;
-			} 
+			}
 
-			obstacle->unitDir_ = normalize(vertices[(i == vertices.size() - 1 ? 0 : i+1)] - vertices[i]);
+			obstacle->unitDir_ = normalize(vertices[(i == vertices.size() - 1 ? 0 : i + 1)] - vertices[i]);
 
 			if (vertices.size() == 2)
 				obstacle->isConvex_ = true;
-			else 
-				obstacle->isConvex_ = (leftOf(vertices[(i == 0 ? vertices.size() - 1 : i-1)], vertices[i], vertices[(i == vertices.size() - 1 ? 0 : i+1)]) >= 0);
-		
+			else
+				obstacle->isConvex_ = (leftOf(vertices[(i == 0 ? vertices.size() - 1 : i - 1)], vertices[i], vertices[(i == vertices.size() - 1 ? 0 : i + 1)]) >= 0);
+
 
 			obstacle->id_ = obstacles_.size();
 
@@ -258,9 +258,9 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
+		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			if (!(agents_[i]->isDeleted_))
+			if (!(agents_[i] == nullptr))
 			{
 				agents_[i]->computeNeighbors();
 				agents_[i]->computeNewVelocity();
@@ -270,9 +270,9 @@ namespace SF
 #pragma omp parallel for
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-			if(!(agents_[i]->isDeleted_))
+			if (!(agents_[i] == nullptr))
 				agents_[i]->update();
-		
+
 		globalTime_ += timeStep_;
 	}
 
@@ -360,13 +360,13 @@ namespace SF
 	{
 		return kdTree_->queryVisibility(point1, point2, radius);
 	}
-  
+
 	void SFSimulator::setAgentDefaults(AgentPropertyConfig & apc)
 	{
 		if (defaultAgent_ == nullptr)
 			defaultAgent_ = new Agent(this);
-	 
-	 
+
+
 		defaultAgent_->maxNeighbors_ = apc._maxNeighbors;
 		defaultAgent_->maxSpeed_ = apc._maxSpeed;
 		defaultAgent_->neighborDist_ = apc._neighborDist;
@@ -459,18 +459,18 @@ namespace SF
 	{
 		IsMovingPlatform = true;
 
-		if((fabs(set.getRotationOX()) > SF_EPSILON) || (fabs(set.getRotationOY()) > SF_EPSILON) || (fabs(set.getRotationOZ()) > SF_EPSILON))
+		if ((fabs(set.getRotationOX()) > SF_EPSILON) || (fabs(set.getRotationOY()) > SF_EPSILON) || (fabs(set.getRotationOZ()) > SF_EPSILON))
 		{
-			if(rotationPast_ == Vector3())
+			if (rotationPast_ == Vector3())
 			{
 				rotationPast_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 			}
-			else if(rotationNow_ == Vector3())
+			else if (rotationNow_ == Vector3())
 			{
 				rotationNow_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 				rotationPast2Now_ = (rotationPast_ + rotationNow_) / 2;
 			}
-			else if(rotationFuture_ == Vector3())
+			else if (rotationFuture_ == Vector3())
 			{
 				rotationFuture_ = Vector3(set.getRotationOY(), set.getRotationOX(), set.getRotationOZ());
 				rotationNow2Future_ = (rotationNow_ + rotationFuture_) / 2;
@@ -495,7 +495,7 @@ namespace SF
 	void SFSimulator::setAttractiveForce(const std::vector<Vector2> &pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
 	{
 		attractivePointList_ = pointList;
-	  
+
 		attractiveTime_ = attractiveTime;
 		attractiveLength_ = length;
 
@@ -554,19 +554,19 @@ namespace SF
 	std::vector<size_t> SFSimulator::getAgentNeighboursIndexList(size_t index, float radius)
 	{
 		std::vector<size_t> result;
-		if(agents_.size() > 0)
+		if (agents_.size() > 0)
 		{
-			if(index >= agents_.size())
+			if (index >= agents_.size())
 				result.push_back(0);
-			else 
+			else
 			{
 				auto agent = agents_[index];
 				auto rangeSq = sqr(radius);
-			 
+
 				agent->agentNeighborsIndexList_.clear();
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
-				for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+				for (size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
 					result.push_back(agent->agentNeighborsIndexList_[i].first);
 			}
 		}
@@ -578,14 +578,15 @@ namespace SF
 
 	void SFSimulator::deleteAgent(size_t index)
 	{
-		agents_[index]->isDeleted_ = true;
+		delete agents_[index];
+		agents_[index] = nullptr;
 	}
 
 	std::vector<size_t> SFSimulator::getDeletedIDList()
 	{
 		auto result = std::vector<size_t>();
 
-		for (auto a: agents_)
+		for (auto a : agents_)
 			if (a->isDeleted_)
 				result.push_back(a->id_);
 
@@ -601,8 +602,8 @@ namespace SF
 			dead = 0;
 
 		for (auto a : agents_)
-			a->isDeleted_ ? dead++ : alive++;
-					
+			a == nullptr ? dead++ : alive++;
+
 		result.push_back(agents_.size());
 		result.push_back(alive);
 		result.push_back(dead);
