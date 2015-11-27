@@ -591,6 +591,8 @@ namespace SF
 	std::vector<size_t> getAgentNeighboursIndexList(size_t index, float radius);
 
 	void deleteAgent(size_t index);
+
+	std::vector<size_t> getCountOfAliveAndDead();
 	std::vector<size_t> getDeletedIDList();
 
 	void updateSFParameters(

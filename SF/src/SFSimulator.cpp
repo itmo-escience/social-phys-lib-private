@@ -246,6 +246,8 @@ namespace SF
 
 	void SFSimulator::doStep()
 	{
+		size_t s = agents_.size();
+
 		kdTree_->buildAgentTree();
 
 		if (agents_.size() > 0)
@@ -583,9 +585,27 @@ namespace SF
 	{
 		auto result = std::vector<size_t>();
 
-		for (size_t i = 0; i < agents_.size(); i++)
-			if (agents_[i]->isDeleted_)
-				result.push_back(agents_[i]->id_);
+		for (auto a: agents_)
+			if (a->isDeleted_)
+				result.push_back(a->id_);
+
+		return result;
+	}
+
+	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
+	{
+		auto result = std::vector<size_t>();
+
+		size_t
+			alive = 0,
+			dead = 0;
+
+		for (auto a : agents_)
+			a->isDeleted_ ? dead++ : alive++;
+					
+		result.push_back(agents_.size());
+		result.push_back(alive);
+		result.push_back(dead);
 
 		return result;
 	}
