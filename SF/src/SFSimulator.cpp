@@ -108,22 +108,26 @@ namespace SF
 
 	size_t SFSimulator::getAgentNumAgentNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_.size();
+		//return agents_[agentNo]->agentNeighbors_.size();
+		return getAgentById(agentNo).agentNeighbors_.size();
 	}
 
 	size_t SFSimulator::getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
+		//return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
+		return getAgentById(agentNo).agentNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentObstacleNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
+		//return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
+		return getAgentById(agentNo).obstacleNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentNumObstacleNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_.size();
+		//return agents_[agentNo]->obstacleNeighbors_.size();
+		return getAgentById(agentNo).obstacleNeighbors_.size();
 	}
 
 	size_t SFSimulator::addAgent(const Vector2& position)
@@ -260,7 +264,8 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
 		{
-			if (!(agents_[i]->isDeleted_))
+			//if (!(agents_[i]->isDeleted_))
+			if (!(getAgentById(i).isDeleted_))
 			{
 				agents_[i]->computeNeighbors();
 				agents_[i]->computeNewVelocity();
@@ -270,7 +275,8 @@ namespace SF
 #pragma omp parallel for
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-			if(!(agents_[i]->isDeleted_))
+			//if(!(agents_[i]->isDeleted_))
+			if (!(getAgentById(i).isDeleted_))
 				agents_[i]->update();
 		
 		globalTime_ += timeStep_;
@@ -278,42 +284,50 @@ namespace SF
 
 	size_t SFSimulator::getAgentMaxNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxNeighbors_;
+		//return agents_[agentNo]->maxNeighbors_;
+		return getAgentById(agentNo).maxNeighbors_;
 	}
 
 	float SFSimulator::getAgentMaxSpeed(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxSpeed_;
+		//return agents_[agentNo]->maxSpeed_;
+		return getAgentById(agentNo).maxSpeed_;
 	}
 
 	float SFSimulator::getAgentNeighborDist(size_t agentNo) const
 	{
-		return agents_[agentNo]->neighborDist_;
+		//return agents_[agentNo]->neighborDist_;
+		return getAgentById(agentNo).neighborDist_;
 	}
 
 	const Vector2& SFSimulator::getAgentPosition(size_t agentNo) const
 	{
-		return agents_[agentNo]->position_;
+		//return agents_[agentNo]->position_;
+		return getAgentById(agentNo).position_;
 	}
 
 	const Vector2& SFSimulator::getAgentPrefVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->prefVelocity_;
+		//return agents_[agentNo]->prefVelocity_;
+		return getAgentById(agentNo).prefVelocity_;
 	}
 
 	float SFSimulator::getAgentRadius(size_t agentNo) const
 	{
-		return agents_[agentNo]->radius_;
+		//return agents_[agentNo]->radius_;
+		return getAgentById(agentNo).radius_;
 	}
 
 	float SFSimulator::getAgentTimeHorizonObst(size_t agentNo) const
 	{
-		return agents_[agentNo]->timeHorizonObst_;
+		//return agents_[agentNo]->timeHorizonObst_;
+		return getAgentById(agentNo).timeHorizonObst_;
 	}
 
 	const Vector2& SFSimulator::getAgentVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->velocity_;
+		//return agents_[agentNo]->velocity_;
+		return getAgentById(agentNo).velocity_;
 	}
 
 	float SFSimulator::getGlobalTime() const
@@ -447,7 +461,8 @@ namespace SF
 
 	float SFSimulator::getAgentFriction(size_t agentNo) const
 	{
-		return agents_[agentNo]->friction_;
+		//return agents_[agentNo]->friction_;
+		return getAgentById(agentNo).friction_;
 	}
 
 	RotationDegreeSet SFSimulator::getRotationDegreeSet()
@@ -560,14 +575,20 @@ namespace SF
 				result.push_back(0);
 			else 
 			{
-				auto agent = agents_[index];
+				//auto agent = agents_[index];
+				auto agent = getAgentById(index);
 				auto rangeSq = sqr(radius);
 			 
-				agent->agentNeighborsIndexList_.clear();
-				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
+				//agent->agentNeighborsIndexList_.clear();
+				agent.agentNeighborsIndexList_.clear();
+				//this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
+				this->kdTree_->computeAgentNeighborsIndexList(&agent, rangeSq);
 
-				for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
-					result.push_back(agent->agentNeighborsIndexList_[i].first);
+				/*for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+					result.push_back(agent->agentNeighborsIndexList_[i].first);*/
+
+				for (size_t i = 0; i < agent.agentNeighborsIndexList_.size(); i++)
+					result.push_back(agent.agentNeighborsIndexList_[i].first);
 			}
 		}
 		else
@@ -601,7 +622,7 @@ namespace SF
 					delete a;*/
 	}
 
-	Agent& SFSimulator::getAgentById(size_t id)
+	Agent& SFSimulator::getAgentById(size_t id) const
 	{
 		if(!agents_.empty())
 		{
@@ -609,10 +630,8 @@ namespace SF
 				if((*it)->id_ == id)
 					return **it;
 		
-			return;
 		}
 
-		return;
 	}
 
 	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
@@ -639,7 +658,8 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			if (!(agents_[i]->isDeleted_))
+			//if (!(agents_[i]->isDeleted_))
+			if (!(getAgentById(i).isDeleted_))
 			{
 				agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
 				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
@@ -652,16 +672,19 @@ namespace SF
 
 	double SFSimulator::getAgentPressure(size_t index)
 	{
-		return agents_[index]->agentPressure_;
+		//return agents_[index]->agentPressure_;
+		return getAgentById(index).agentPressure_;
 	}
 
 	double SFSimulator::getObstaclePressure(size_t index)
 	{
-		return agents_[index]->obstaclePressure_;
+		//return agents_[index]->obstaclePressure_;
+		return getAgentById(index).obstaclePressure_;
 	}
 
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		return agents_[index]->obstacleTrajectory_;
+		//return agents_[index]->obstacleTrajectory_;
+		return getAgentById(index).obstacleTrajectory_;
 	}
 }
