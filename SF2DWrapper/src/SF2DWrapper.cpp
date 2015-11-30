@@ -458,6 +458,17 @@ System::Collections::Generic::List<int>^ SFSimulator::getDeletedIDList()
 	return out;
 }
 
+System::Collections::Generic::List<int>^ SFSimulator::getCountOfAliveAndDead()
+{
+	auto in = _sim->getCountOfAliveAndDead();
+	System::Collections::Generic::List<int>^ out = gcnew System::Collections::Generic::List<int>();
+
+	for each (auto del in in)
+		out->Add(del);
+
+	return out;
+}
+
 void SFSimulator::updateSFParameters(float newRepulsiveAgent, float newRepulsiveAgentFactor, float newRepulsiveObstacle, float newRepulsiveObstacleFactor)
 {
 	_sim->updateSFParameters(newRepulsiveAgent, newRepulsiveAgentFactor, newRepulsiveObstacle, newRepulsiveObstacleFactor);
