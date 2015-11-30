@@ -596,7 +596,7 @@ namespace SF
 	std::vector<size_t> getDeletedIDList();
 	void cleanDeadAgents(size_t count);
 
-	Agent &getAgentById(size_t id);
+	Agent &getAgentById(size_t id) const;
 
 	void updateSFParameters(
 		float newRepulsiveAgent_,
