@@ -593,6 +593,11 @@ namespace SF
 		return result;
 	}
 
+	void SFSimulator::cleanDeadAgents(size_t count)
+	{
+
+	}
+
 	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
 	{
 		auto result = std::vector<size_t>();
