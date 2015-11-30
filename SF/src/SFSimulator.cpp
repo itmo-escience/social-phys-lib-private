@@ -579,6 +579,7 @@ namespace SF
 	void SFSimulator::deleteAgent(size_t index)
 	{
 		agents_[index]->isDeleted_ = true;
+		deleteIDs.push_back(index);
 	}
 
 	std::vector<size_t> SFSimulator::getDeletedIDList()
@@ -587,7 +588,7 @@ namespace SF
 
 		for (auto a: agents_)
 			if (a->isDeleted_)
-				result.push_back(a->id_);
+				result.push_back(a->id_); 
 
 		return result;
 	}
