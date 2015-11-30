@@ -97,37 +97,32 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i)
-			//delete agents_[i];
-			delete &getAgentById(i);
-
-		for (size_t i = 0; i < obstacles_.size(); ++i) 
-			delete obstacles_[i];
+		for (auto a : agents_)
+			delete a;
+		
+		for (auto o: obstacles_) 
+			delete o;
 	
 		delete kdTree_;
 	}
 
 	size_t SFSimulator::getAgentNumAgentNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->agentNeighbors_.size();
 		return getAgentById(agentNo).agentNeighbors_.size();
 	}
 
 	size_t SFSimulator::getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		//return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
 		return getAgentById(agentNo).agentNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentObstacleNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		//return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
 		return getAgentById(agentNo).obstacleNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentNumObstacleNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->obstacleNeighbors_.size();
 		return getAgentById(agentNo).obstacleNeighbors_.size();
 	}
 
@@ -288,49 +283,41 @@ namespace SF
 
 	size_t SFSimulator::getAgentMaxNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->maxNeighbors_;
 		return getAgentById(agentNo).maxNeighbors_;
 	}
 
 	float SFSimulator::getAgentMaxSpeed(size_t agentNo) const
 	{
-		//return agents_[agentNo]->maxSpeed_;
 		return getAgentById(agentNo).maxSpeed_;
 	}
 
 	float SFSimulator::getAgentNeighborDist(size_t agentNo) const
 	{
-		//return agents_[agentNo]->neighborDist_;
 		return getAgentById(agentNo).neighborDist_;
 	}
 
 	const Vector2& SFSimulator::getAgentPosition(size_t agentNo) const
 	{
-		//return agents_[agentNo]->position_;
 		return getAgentById(agentNo).position_;
 	}
 
 	const Vector2& SFSimulator::getAgentPrefVelocity(size_t agentNo) const
 	{
-		//return agents_[agentNo]->prefVelocity_;
 		return getAgentById(agentNo).prefVelocity_;
 	}
 
 	float SFSimulator::getAgentRadius(size_t agentNo) const
 	{
-		//return agents_[agentNo]->radius_;
 		return getAgentById(agentNo).radius_;
 	}
 
 	float SFSimulator::getAgentTimeHorizonObst(size_t agentNo) const
 	{
-		//return agents_[agentNo]->timeHorizonObst_;
 		return getAgentById(agentNo).timeHorizonObst_;
 	}
 
 	const Vector2& SFSimulator::getAgentVelocity(size_t agentNo) const
 	{
-		//return agents_[agentNo]->velocity_;
 		return getAgentById(agentNo).velocity_;
 	}
 
@@ -405,49 +392,41 @@ namespace SF
 
 	void SFSimulator::setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
 	{
-		//agents_[agentNo]->maxNeighbors_ = maxNeighbors;
 		getAgentById(agentNo).maxNeighbors_ = maxNeighbors;
 	}
 
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
-		//agents_[agentNo]->maxSpeed_ = maxSpeed;
 		getAgentById(agentNo).maxSpeed_ = maxSpeed;
 	}
 
 	void SFSimulator::setAgentNeighborDist(size_t agentNo, float neighborDist)
 	{
-		//agents_[agentNo]->neighborDist_ = neighborDist;
 		getAgentById(agentNo).neighborDist_ = neighborDist;
 	}
 
 	void SFSimulator::setAgentPosition(size_t agentNo, const Vector2& position)
 	{
-		//agents_[agentNo]->position_ = position;
 		getAgentById(agentNo).position_ = position;
 	}
 
 	void SFSimulator::setAgentPrefVelocity(size_t agentNo, const Vector2& prefVelocity)
 	{
-		//agents_[agentNo]->prefVelocity_ = prefVelocity;
 		getAgentById(agentNo).prefVelocity_ = prefVelocity;
 	}
 
 	void SFSimulator::setAgentRadius(size_t agentNo, float radius)
 	{
-		//agents_[agentNo]->radius_ = radius;
 		getAgentById(agentNo).radius_ = radius;
 	}
 
 	void SFSimulator::setAgentTimeHorizonObst(size_t agentNo, float timeHorizonObst)
 	{
-		//agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
 		getAgentById(agentNo).timeHorizonObst_ = timeHorizonObst;
 	}
 
 	void SFSimulator::setAgentVelocity(size_t agentNo, const Vector2& velocity)
 	{
-		//agents_[agentNo]->velocity_ = velocity;
 		getAgentById(agentNo).velocity_ = velocity;
 	}
 
@@ -468,13 +447,11 @@ namespace SF
 
 	void SFSimulator::setAgentFriction(size_t agentNo, float friction)
 	{
-		//agents_[agentNo]->friction_ = friction;
 		getAgentById(agentNo).friction_ = friction;
 	}
 
 	float SFSimulator::getAgentFriction(size_t agentNo) const
 	{
-		//return agents_[agentNo]->friction_;
 		return getAgentById(agentNo).friction_;
 	}
 
@@ -588,17 +565,11 @@ namespace SF
 				result.push_back(0);
 			else 
 			{
-				//auto agent = agents_[index];
 				auto agent = getAgentById(index);
 				auto rangeSq = sqr(radius);
 			 
-				//agent->agentNeighborsIndexList_.clear();
 				agent.agentNeighborsIndexList_.clear();
-				//this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 				this->kdTree_->computeAgentNeighborsIndexList(&agent, rangeSq);
-
-				/*for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
-					result.push_back(agent->agentNeighborsIndexList_[i].first);*/
 
 				for (size_t i = 0; i < agent.agentNeighborsIndexList_.size(); i++)
 					result.push_back(agent.agentNeighborsIndexList_[i].first);
@@ -672,13 +643,8 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			//if (!(agents_[i]->isDeleted_))
 			if (!(getAgentById(i).isDeleted_))
 			{
-				/*agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
-				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
-				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
-				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;*/
 				getAgentById(i).repulsiveAgent_ = newRepulsiveAgent_;
 				getAgentById(i).repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
 				getAgentById(i).repulsiveObstacle_ = newRepulsiveObstacle_;
@@ -690,19 +656,16 @@ namespace SF
 
 	double SFSimulator::getAgentPressure(size_t index)
 	{
-		//return agents_[index]->agentPressure_;
 		return getAgentById(index).agentPressure_;
 	}
 
 	double SFSimulator::getObstaclePressure(size_t index)
 	{
-		//return agents_[index]->obstaclePressure_;
 		return getAgentById(index).obstaclePressure_;
 	}
 
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		//return agents_[index]->obstacleTrajectory_;
 		return getAgentById(index).obstacleTrajectory_;
 	}
 }
