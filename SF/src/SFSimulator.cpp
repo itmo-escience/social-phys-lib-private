@@ -601,6 +601,20 @@ namespace SF
 					delete a;*/
 	}
 
+	Agent& SFSimulator::getAgentById(size_t id)
+	{
+		if(!agents_.empty())
+		{
+			for (auto it = agents_.begin(); it != agents_.end(); ++it)
+				if((*it)->id_ == id)
+					return **it;
+		
+			return;
+		}
+
+		return;
+	}
+
 	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
 	{
 		auto result = std::vector<size_t>();
