@@ -630,10 +630,10 @@ namespace SF
 
 	void SFSimulator::cleanDeadAgents(size_t count)
 	{
-		/*if (deleteIDs.size() % count == 0)
+		if (deleteIDs.size() % count == 0)
 			for (auto a : agents_)
 				if (a->isDeleted_)
-					delete a;*/
+					delete a;
 	}
 
 	Agent& SFSimulator::getAgentById(size_t id) const
