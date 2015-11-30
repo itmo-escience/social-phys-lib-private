@@ -392,49 +392,41 @@ namespace SF
 
 	void SFSimulator::setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
 	{
-		//agents_[agentNo]->maxNeighbors_ = maxNeighbors;
 		getAgentById(agentNo).maxNeighbors_ = maxNeighbors;
 	}
 
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
-		//agents_[agentNo]->maxSpeed_ = maxSpeed;
 		getAgentById(agentNo).maxSpeed_ = maxSpeed;
 	}
 
 	void SFSimulator::setAgentNeighborDist(size_t agentNo, float neighborDist)
 	{
-		//agents_[agentNo]->neighborDist_ = neighborDist;
 		getAgentById(agentNo).neighborDist_ = neighborDist;
 	}
 
 	void SFSimulator::setAgentPosition(size_t agentNo, const Vector2& position)
 	{
-		//agents_[agentNo]->position_ = position;
 		getAgentById(agentNo).position_ = position;
 	}
 
 	void SFSimulator::setAgentPrefVelocity(size_t agentNo, const Vector2& prefVelocity)
 	{
-		//agents_[agentNo]->prefVelocity_ = prefVelocity;
 		getAgentById(agentNo).prefVelocity_ = prefVelocity;
 	}
 
 	void SFSimulator::setAgentRadius(size_t agentNo, float radius)
 	{
-		//agents_[agentNo]->radius_ = radius;
 		getAgentById(agentNo).radius_ = radius;
 	}
 
 	void SFSimulator::setAgentTimeHorizonObst(size_t agentNo, float timeHorizonObst)
 	{
-		//agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
 		getAgentById(agentNo).timeHorizonObst_ = timeHorizonObst;
 	}
 
 	void SFSimulator::setAgentVelocity(size_t agentNo, const Vector2& velocity)
 	{
-		//agents_[agentNo]->velocity_ = velocity;
 		getAgentById(agentNo).velocity_ = velocity;
 	}
 
@@ -455,13 +447,11 @@ namespace SF
 
 	void SFSimulator::setAgentFriction(size_t agentNo, float friction)
 	{
-		//agents_[agentNo]->friction_ = friction;
 		getAgentById(agentNo).friction_ = friction;
 	}
 
 	float SFSimulator::getAgentFriction(size_t agentNo) const
 	{
-		//return agents_[agentNo]->friction_;
 		return getAgentById(agentNo).friction_;
 	}
 
