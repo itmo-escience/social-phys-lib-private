@@ -79,6 +79,7 @@ namespace SF
 		rotationNow2Future_(), 
 		rotationFuture_(), 
 		agents_(),
+		ids(),
 		defaultAgent_(nullptr),
 		globalTime_(0.0f),
 		kdTree_(nullptr),
@@ -154,6 +155,7 @@ namespace SF
 		agent->id_ = agents_.size();
 
 		agents_.push_back(agent);
+		ids.push_back(agent->id_);
 
 		return agents_.size() - 1;
 	}
@@ -202,6 +204,7 @@ namespace SF
 		agent->id_ = agents_.size();
     
 		agents_.push_back(agent);
+		ids.push_back(agent->id_);
 
 		return agents_.size() - 1;
 	}
@@ -258,15 +261,12 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i) 
+		for (int i = 0; i < static_cast<size_t>(ids.size()); ++i)
 		{
-			//if (!(agents_[i]->isDeleted_))
-			if (!(getAgentById(i).isDeleted_))
+			if (!(getAgentById(ids[i]).isDeleted_))
 			{
-				/*agents_[i]->computeNeighbors();
-				agents_[i]->computeNewVelocity();*/
-				getAgentById(i).computeNeighbors();
-				getAgentById(i).computeNewVelocity();
+				getAgentById(ids[i]).computeNeighbors();
+				getAgentById(ids[i]).computeNewVelocity();
 			}
 		}
 
