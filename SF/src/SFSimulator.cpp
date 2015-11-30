@@ -583,7 +583,6 @@ namespace SF
 
 	void SFSimulator::deleteAgent(size_t index)
 	{
-		//agents_[index]->isDeleted_ = true;
 		getAgentById(index).isDeleted_ = true;
 		deleteIDs.push_back(index);
 	}
