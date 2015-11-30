@@ -622,6 +622,7 @@ namespace SF
 	bool IsMovingPlatform;
 
 	std::vector<size_t> deleteIDs;
+	std::vector<size_t> ids;
 
   private:
     std::vector<Agent*> agents_;
