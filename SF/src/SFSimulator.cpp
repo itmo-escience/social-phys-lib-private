@@ -272,11 +272,9 @@ namespace SF
 
 #pragma omp parallel for
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-			//if(!(agents_[i]->isDeleted_))
-			if (!(getAgentById(i).isDeleted_))
-				//agents_[i]->update();
-				getAgentById(i).update();
+		for (int i = 0; i < static_cast<size_t>(ids.size()); ++i)
+			if (!(getAgentById(ids[i]).isDeleted_))
+				getAgentById(ids[i]).update();
 		
 		globalTime_ += timeStep_;
 	}
