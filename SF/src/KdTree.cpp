@@ -80,9 +80,11 @@ namespace SF
   {
     if (agents_.size() < sim_->agents_.size()) {
       for (auto i = agents_.size(); i < sim_->agents_.size(); ++i) {
-		  if (!sim_->agents_[i]->isDeleted_)
+		  //if (!sim_->agents_[i]->isDeleted_)
+		  if (!sim_->getAgentById(i).isDeleted_)
 		  {
-			  agents_.push_back(sim_->agents_[i]);
+			  //agents_.push_back(sim_->agents_[i]);
+			  agents_.push_back(&(sim_->getAgentById(i)));
 		  }
       }
       agentTree_.resize(2 * agents_.size() - 1);
