@@ -108,25 +108,21 @@ namespace SF
 
 	size_t SFSimulator::getAgentNumAgentNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->agentNeighbors_.size();
 		return getAgentById(agentNo).agentNeighbors_.size();
 	}
 
 	size_t SFSimulator::getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		//return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
 		return getAgentById(agentNo).agentNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentObstacleNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		//return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
 		return getAgentById(agentNo).obstacleNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentNumObstacleNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->obstacleNeighbors_.size();
 		return getAgentById(agentNo).obstacleNeighbors_.size();
 	}
 
