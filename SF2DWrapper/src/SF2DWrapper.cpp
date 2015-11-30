@@ -473,3 +473,8 @@ void SFSimulator::updateSFParameters(float newRepulsiveAgent, float newRepulsive
 {
 	_sim->updateSFParameters(newRepulsiveAgent, newRepulsiveAgentFactor, newRepulsiveObstacle, newRepulsiveObstacleFactor);
 }
+
+void SFSimulator::cleanDeadAgents(size_t count)
+{
+	_sim->cleanDeadAgents(count);
+}
