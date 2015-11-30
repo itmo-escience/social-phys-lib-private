@@ -565,17 +565,11 @@ namespace SF
 				result.push_back(0);
 			else 
 			{
-				//auto agent = agents_[index];
 				auto agent = getAgentById(index);
 				auto rangeSq = sqr(radius);
 			 
-				//agent->agentNeighborsIndexList_.clear();
 				agent.agentNeighborsIndexList_.clear();
-				//this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 				this->kdTree_->computeAgentNeighborsIndexList(&agent, rangeSq);
-
-				/*for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
-					result.push_back(agent->agentNeighborsIndexList_[i].first);*/
 
 				for (size_t i = 0; i < agent.agentNeighborsIndexList_.size(); i++)
 					result.push_back(agent.agentNeighborsIndexList_[i].first);
@@ -649,13 +643,8 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			//if (!(agents_[i]->isDeleted_))
 			if (!(getAgentById(i).isDeleted_))
 			{
-				/*agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
-				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
-				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
-				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;*/
 				getAgentById(i).repulsiveAgent_ = newRepulsiveAgent_;
 				getAgentById(i).repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
 				getAgentById(i).repulsiveObstacle_ = newRepulsiveObstacle_;
@@ -667,19 +656,16 @@ namespace SF
 
 	double SFSimulator::getAgentPressure(size_t index)
 	{
-		//return agents_[index]->agentPressure_;
 		return getAgentById(index).agentPressure_;
 	}
 
 	double SFSimulator::getObstaclePressure(size_t index)
 	{
-		//return agents_[index]->obstaclePressure_;
 		return getAgentById(index).obstaclePressure_;
 	}
 
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		//return agents_[index]->obstacleTrajectory_;
 		return getAgentById(index).obstacleTrajectory_;
 	}
 }
