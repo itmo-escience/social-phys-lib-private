@@ -97,12 +97,11 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i)
-			//delete agents_[i];
-			delete &getAgentById(i);
-
-		for (size_t i = 0; i < obstacles_.size(); ++i) 
-			delete obstacles_[i];
+		for (auto a : agents_)
+			delete a;
+		
+		for (auto o: obstacles_) 
+			delete o;
 	
 		delete kdTree_;
 	}
