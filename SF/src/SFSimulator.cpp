@@ -283,49 +283,41 @@ namespace SF
 
 	size_t SFSimulator::getAgentMaxNeighbors(size_t agentNo) const
 	{
-		//return agents_[agentNo]->maxNeighbors_;
 		return getAgentById(agentNo).maxNeighbors_;
 	}
 
 	float SFSimulator::getAgentMaxSpeed(size_t agentNo) const
 	{
-		//return agents_[agentNo]->maxSpeed_;
 		return getAgentById(agentNo).maxSpeed_;
 	}
 
 	float SFSimulator::getAgentNeighborDist(size_t agentNo) const
 	{
-		//return agents_[agentNo]->neighborDist_;
 		return getAgentById(agentNo).neighborDist_;
 	}
 
 	const Vector2& SFSimulator::getAgentPosition(size_t agentNo) const
 	{
-		//return agents_[agentNo]->position_;
 		return getAgentById(agentNo).position_;
 	}
 
 	const Vector2& SFSimulator::getAgentPrefVelocity(size_t agentNo) const
 	{
-		//return agents_[agentNo]->prefVelocity_;
 		return getAgentById(agentNo).prefVelocity_;
 	}
 
 	float SFSimulator::getAgentRadius(size_t agentNo) const
 	{
-		//return agents_[agentNo]->radius_;
 		return getAgentById(agentNo).radius_;
 	}
 
 	float SFSimulator::getAgentTimeHorizonObst(size_t agentNo) const
 	{
-		//return agents_[agentNo]->timeHorizonObst_;
 		return getAgentById(agentNo).timeHorizonObst_;
 	}
 
 	const Vector2& SFSimulator::getAgentVelocity(size_t agentNo) const
 	{
-		//return agents_[agentNo]->velocity_;
 		return getAgentById(agentNo).velocity_;
 	}
 
