@@ -97,8 +97,9 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i) 
-			delete agents_[i];
+		for (size_t i = 0; i < agents_.size(); ++i)
+			//delete agents_[i];
+			delete &getAgentById(i);
 
 		for (size_t i = 0; i < obstacles_.size(); ++i) 
 			delete obstacles_[i];
@@ -267,8 +268,10 @@ namespace SF
 			//if (!(agents_[i]->isDeleted_))
 			if (!(getAgentById(i).isDeleted_))
 			{
-				agents_[i]->computeNeighbors();
-				agents_[i]->computeNewVelocity();
+				/*agents_[i]->computeNeighbors();
+				agents_[i]->computeNewVelocity();*/
+				getAgentById(i).computeNeighbors();
+				getAgentById(i).computeNewVelocity();
 			}
 		}
 
@@ -277,7 +280,8 @@ namespace SF
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			//if(!(agents_[i]->isDeleted_))
 			if (!(getAgentById(i).isDeleted_))
-				agents_[i]->update();
+				//agents_[i]->update();
+				getAgentById(i).update();
 		
 		globalTime_ += timeStep_;
 	}
@@ -401,42 +405,50 @@ namespace SF
 
 	void SFSimulator::setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
 	{
-		agents_[agentNo]->maxNeighbors_ = maxNeighbors;
+		//agents_[agentNo]->maxNeighbors_ = maxNeighbors;
+		getAgentById(agentNo).maxNeighbors_ = maxNeighbors;
 	}
 
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
-		agents_[agentNo]->maxSpeed_ = maxSpeed;
+		//agents_[agentNo]->maxSpeed_ = maxSpeed;
+		getAgentById(agentNo).maxSpeed_ = maxSpeed;
 	}
 
 	void SFSimulator::setAgentNeighborDist(size_t agentNo, float neighborDist)
 	{
-		agents_[agentNo]->neighborDist_ = neighborDist;
+		//agents_[agentNo]->neighborDist_ = neighborDist;
+		getAgentById(agentNo).neighborDist_ = neighborDist;
 	}
 
 	void SFSimulator::setAgentPosition(size_t agentNo, const Vector2& position)
 	{
-		agents_[agentNo]->position_ = position;
+		//agents_[agentNo]->position_ = position;
+		getAgentById(agentNo).position_ = position;
 	}
 
 	void SFSimulator::setAgentPrefVelocity(size_t agentNo, const Vector2& prefVelocity)
 	{
-		agents_[agentNo]->prefVelocity_ = prefVelocity;
+		//agents_[agentNo]->prefVelocity_ = prefVelocity;
+		getAgentById(agentNo).prefVelocity_ = prefVelocity;
 	}
 
 	void SFSimulator::setAgentRadius(size_t agentNo, float radius)
 	{
-		agents_[agentNo]->radius_ = radius;
+		//agents_[agentNo]->radius_ = radius;
+		getAgentById(agentNo).radius_ = radius;
 	}
 
 	void SFSimulator::setAgentTimeHorizonObst(size_t agentNo, float timeHorizonObst)
 	{
-		agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
+		//agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
+		getAgentById(agentNo).timeHorizonObst_ = timeHorizonObst;
 	}
 
 	void SFSimulator::setAgentVelocity(size_t agentNo, const Vector2& velocity)
 	{
-		agents_[agentNo]->velocity_ = velocity;
+		//agents_[agentNo]->velocity_ = velocity;
+		getAgentById(agentNo).velocity_ = velocity;
 	}
 
 	void SFSimulator::setTimeStep(float timeStep)
@@ -456,7 +468,8 @@ namespace SF
 
 	void SFSimulator::setAgentFriction(size_t agentNo, float friction)
 	{
-		agents_[agentNo]->friction_ = friction;
+		//agents_[agentNo]->friction_ = friction;
+		getAgentById(agentNo).friction_ = friction;
 	}
 
 	float SFSimulator::getAgentFriction(size_t agentNo) const
@@ -599,7 +612,8 @@ namespace SF
 
 	void SFSimulator::deleteAgent(size_t index)
 	{
-		agents_[index]->isDeleted_ = true;
+		//agents_[index]->isDeleted_ = true;
+		getAgentById(index).isDeleted_ = true;
 		deleteIDs.push_back(index);
 	}
 
@@ -661,10 +675,14 @@ namespace SF
 			//if (!(agents_[i]->isDeleted_))
 			if (!(getAgentById(i).isDeleted_))
 			{
-				agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
+				/*agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
 				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
 				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
-				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
+				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;*/
+				getAgentById(i).repulsiveAgent_ = newRepulsiveAgent_;
+				getAgentById(i).repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
+				getAgentById(i).repulsiveObstacle_ = newRepulsiveObstacle_;
+				getAgentById(i).repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
 			}
 		}
 
