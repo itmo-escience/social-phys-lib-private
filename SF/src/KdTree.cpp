@@ -79,10 +79,12 @@ namespace SF
   void KdTree::buildAgentTree()
   {
     if (agents_.size() < sim_->agents_.size()) {
-      for (auto i = agents_.size(); i < sim_->agents_.size(); ++i) {
-		  if (!sim_->agents_[i]->isDeleted_)
+      for (auto i = agents_.size(); i < sim_->agents_.size(); ++i) 
+	  {
+		  auto id = sim_->ID[i];
+		  if (id != -1)
 		  {
-			  agents_.push_back(sim_->agents_[i]);
+			  agents_.push_back(sim_->agents_[id]);
 		  }
       }
       agentTree_.resize(2 * agents_.size() - 1);
