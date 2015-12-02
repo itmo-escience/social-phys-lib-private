@@ -88,7 +88,8 @@ namespace SF
 		platformVelocity_(),
 		platformRotationXY_(0),
 		platformRotationXZ_(0),
-		platformRotationYZ_(0)
+		platformRotationYZ_(0),
+		ID()
 	{
 		kdTree_ = new KdTree(this);
 	}
@@ -97,8 +98,9 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i)
-			delete agents_[i];
+		for (auto id : ID)
+			if (id != -1)
+				delete agents_[id];
 
 		for (size_t i = 0; i < obstacles_.size(); ++i)
 			delete obstacles_[i];
@@ -108,22 +110,34 @@ namespace SF
 
 	size_t SFSimulator::getAgentNumAgentNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_.size();
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->agentNeighbors_.size();
 	}
 
 	size_t SFSimulator::getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->agentNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentObstacleNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->obstacleNeighbors_[neighborNo].second->id_;
 	}
 
 	size_t SFSimulator::getAgentNumObstacleNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_.size();
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->obstacleNeighbors_.size();
 	}
 
 	size_t SFSimulator::addAgent(const Vector2& position)
@@ -154,6 +168,7 @@ namespace SF
 		agent->id_ = agents_.size();
 
 		agents_.push_back(agent);
+		ID.push_back(agent->id_);
 
 		return agents_.size() - 1;
 	}
@@ -202,6 +217,7 @@ namespace SF
 		agent->id_ = agents_.size();
 
 		agents_.push_back(agent);
+		ID.push_back(agent->id_);
 
 		return agents_.size() - 1;
 	}
@@ -260,60 +276,90 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			if (!(agents_[i]->isDeleted_))
+			auto id = ID[i];
+
+			if(id != -1)
 			{
-				agents_[i]->computeNeighbors();
-				agents_[i]->computeNewVelocity();
+				agents_[id]->computeNeighbors();
+				agents_[id]->computeNewVelocity();
 			}
 		}
 
 #pragma omp parallel for
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-			if(!(agents_[i]->isDeleted_))
-				agents_[i]->update();
+		{
+			auto id = ID[i];
+
+			if (id != -1)
+				agents_[id]->update();
+		}
 
 		globalTime_ += timeStep_;
 	}
 
 	size_t SFSimulator::getAgentMaxNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxNeighbors_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->maxNeighbors_;
 	}
 
 	float SFSimulator::getAgentMaxSpeed(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxSpeed_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->maxSpeed_;
 	}
 
 	float SFSimulator::getAgentNeighborDist(size_t agentNo) const
 	{
-		return agents_[agentNo]->neighborDist_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->neighborDist_;
 	}
 
 	const Vector2& SFSimulator::getAgentPosition(size_t agentNo) const
 	{
-		return agents_[agentNo]->position_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->position_;
 	}
 
 	const Vector2& SFSimulator::getAgentPrefVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->prefVelocity_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+		return agents_[id]->prefVelocity_;
 	}
 
 	float SFSimulator::getAgentRadius(size_t agentNo) const
 	{
-		return agents_[agentNo]->radius_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->radius_;
 	}
 
 	float SFSimulator::getAgentTimeHorizonObst(size_t agentNo) const
 	{
-		return agents_[agentNo]->timeHorizonObst_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->timeHorizonObst_;
 	}
 
 	const Vector2& SFSimulator::getAgentVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->velocity_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->velocity_;
 	}
 
 	float SFSimulator::getGlobalTime() const
@@ -579,6 +625,8 @@ namespace SF
 	void SFSimulator::deleteAgent(size_t index)
 	{
 		agents_[index]->isDeleted_ = true;
+
+		ID[index] = -1;
 	}
 
 	std::vector<size_t> SFSimulator::getDeletedIDList() const
