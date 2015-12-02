@@ -592,8 +592,8 @@ namespace SF
 
 	void deleteAgent(size_t index);
 
-	std::vector<size_t> getCountOfAliveAndDead();
-	std::vector<size_t> getDeletedIDList();
+	std::vector<size_t> getCountOfAliveAndDead() const;
+	std::vector<size_t> getDeletedIDList() const;
 
 	void updateSFParameters(
 		float newRepulsiveAgent_,
@@ -632,7 +632,7 @@ namespace SF
 	double platformRotationXY_;
 	double platformRotationXZ_;
 	double platformRotationYZ_;
-
+	std::vector<int> ID;
 
     friend class Agent;
     friend class KdTree;
