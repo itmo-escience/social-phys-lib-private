@@ -433,42 +433,66 @@ namespace SF
 
 	void SFSimulator::setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
 	{
-		agents_[agentNo]->maxNeighbors_ = maxNeighbors;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->maxNeighbors_ = maxNeighbors;
 	}
 
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
-		agents_[agentNo]->maxSpeed_ = maxSpeed;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->maxSpeed_ = maxSpeed;
 	}
 
 	void SFSimulator::setAgentNeighborDist(size_t agentNo, float neighborDist)
 	{
-		agents_[agentNo]->neighborDist_ = neighborDist;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->neighborDist_ = neighborDist;
 	}
 
 	void SFSimulator::setAgentPosition(size_t agentNo, const Vector2& position)
 	{
-		agents_[agentNo]->position_ = position;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->position_ = position;
 	}
 
 	void SFSimulator::setAgentPrefVelocity(size_t agentNo, const Vector2& prefVelocity)
 	{
-		agents_[agentNo]->prefVelocity_ = prefVelocity;
+		auto id = ID[agentNo];
+			
+		if(id != -1)
+			agents_[id]->prefVelocity_ = prefVelocity;
 	}
 
 	void SFSimulator::setAgentRadius(size_t agentNo, float radius)
 	{
-		agents_[agentNo]->radius_ = radius;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->radius_ = radius;
 	}
 
 	void SFSimulator::setAgentTimeHorizonObst(size_t agentNo, float timeHorizonObst)
 	{
-		agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->timeHorizonObst_ = timeHorizonObst;
 	}
 
 	void SFSimulator::setAgentVelocity(size_t agentNo, const Vector2& velocity)
 	{
-		agents_[agentNo]->velocity_ = velocity;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->velocity_ = velocity;
 	}
 
 	void SFSimulator::setTimeStep(float timeStep)
@@ -488,12 +512,18 @@ namespace SF
 
 	void SFSimulator::setAgentFriction(size_t agentNo, float friction)
 	{
-		agents_[agentNo]->friction_ = friction;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			agents_[id]->friction_ = friction;
 	}
 
 	float SFSimulator::getAgentFriction(size_t agentNo) const
 	{
-		return agents_[agentNo]->friction_;
+		auto id = ID[agentNo];
+
+		if(id != -1)
+			return agents_[id]->friction_;
 	}
 
 	RotationDegreeSet SFSimulator::getRotationDegreeSet()
@@ -602,11 +632,13 @@ namespace SF
 		std::vector<size_t> result;
 		if (agents_.size() > 0)
 		{
-			if (index >= agents_.size())
+			auto id = ID[index];
+
+			if (index >= agents_.size() || id == -1)
 				result.push_back(0);
 			else
 			{
-				auto agent = agents_[index];
+				auto agent = agents_[id];
 				auto rangeSq = sqr(radius);
 
 				agent->agentNeighborsIndexList_.clear();
@@ -664,12 +696,13 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			if (!(agents_[i]->isDeleted_))
+			auto id = ID[i];
+			if (id != -1)
 			{
-				agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
-				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
-				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
-				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
+				agents_[id]->repulsiveAgent_ = newRepulsiveAgent_;
+				agents_[id]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
+				agents_[id]->repulsiveObstacle_ = newRepulsiveObstacle_;
+				agents_[id]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
 			}
 		}
 
@@ -677,16 +710,25 @@ namespace SF
 
 	double SFSimulator::getAgentPressure(size_t index)
 	{
-		return agents_[index]->agentPressure_;
+		auto id = ID[index];
+
+		if(id != -1)
+			return agents_[id]->agentPressure_;
 	}
 
 	double SFSimulator::getObstaclePressure(size_t index)
 	{
-		return agents_[index]->obstaclePressure_;
+		auto id = ID[index];
+
+		if(id != -1)
+			return agents_[id]->obstaclePressure_;
 	}
 
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		return agents_[index]->obstacleTrajectory_;
+		auto id = ID[index];
+
+		if(id != -1)
+			return agents_[id]->obstacleTrajectory_;
 	}
 }
