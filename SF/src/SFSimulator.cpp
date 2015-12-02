@@ -78,6 +78,7 @@ namespace SF
 		rotationNow_(),
 		rotationNow2Future_(),
 		rotationFuture_(),
+		IsMovingPlatform(false),
 		agents_(),
 		defaultAgent_(nullptr),
 		globalTime_(0.0f),
@@ -87,8 +88,7 @@ namespace SF
 		platformVelocity_(),
 		platformRotationXY_(0),
 		platformRotationXZ_(0),
-		platformRotationYZ_(0),
-		IsMovingPlatform(false)
+		platformRotationYZ_(0)
 	{
 		kdTree_ = new KdTree(this);
 	}
@@ -128,7 +128,7 @@ namespace SF
 
 	size_t SFSimulator::addAgent(const Vector2& position)
 	{
-		if (defaultAgent_ == 0)
+		if (defaultAgent_ == nullptr)
 			return SF_ERROR;
 
 		auto agent = new Agent(this);
@@ -246,7 +246,7 @@ namespace SF
 
 	void SFSimulator::doStep()
 	{
-		size_t s = agents_.size();
+		auto s = agents_.size();
 
 		kdTree_->buildAgentTree();
 
@@ -581,7 +581,7 @@ namespace SF
 		agents_[index]->isDeleted_ = true;
 	}
 
-	std::vector<size_t> SFSimulator::getDeletedIDList()
+	std::vector<size_t> SFSimulator::getDeletedIDList() const
 	{
 		auto result = std::vector<size_t>();
 
@@ -592,7 +592,7 @@ namespace SF
 		return result;
 	}
 
-	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
+	std::vector<size_t> SFSimulator::getCountOfAliveAndDead() const
 	{
 		auto result = std::vector<size_t>();
 
