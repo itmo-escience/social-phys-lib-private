@@ -203,33 +203,52 @@ namespace SF
 
 	void Agent::getRepulsiveAgentForce()
 	{
+		double pressure = 0;
+		auto forceSum = Vector2();
+		auto maxForceLength = FLT_MIN;
+
 		for (size_t i = 0; i < agentNeighbors_.size(); i++)
 		{
-			if (!agentNeighbors_[i].second->isDeleted_)
-			{
-				auto agent = agentNeighbors_[i].second;
-				setNullSpeed(agent->id_);
-				auto pos = agent->position_;
+			setNullSpeed(agentNeighbors_[i].second->id_);
+			auto pos = agentNeighbors_[i].second->position_;
 
-				if (pos == position_)
-					continue;
+			if (position_ == pos)
+				continue;
 
-				auto velocity = agent->velocity_;
+			auto velocity = agentNeighbors_[i].second->velocity_;
 
-				auto y = agent->velocity_ * speedList_[agent->id_] * sim_->timeStep_;
-				auto d = position_ - pos;
-				auto radius = speedList_[agent->id_] * sim_->timeStep_;
-				auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-				auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-				auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-				auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
-				auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
-				agentPressure_ = getLength(force);
+			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto d = position_ - pos;
+			auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
+			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
 
-				correction += force;
-			}
+			auto length = getLength(force);
+			pressure += length;
+
+			if (maxForceLength < length)
+				maxForceLength = length;
+
+			forceSum += force;
 		}
+
+		auto forceSumLength = getLength(forceSum);
+
+		if (forceSumLength > maxForceLength)
+		{
+			auto coeff = maxForceLength / forceSumLength;
+			forceSum *= coeff;
+		}
+
+		auto maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
+		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
+
+		correction += forceSum;
 	}
+
 
 	void Agent::getRepulsiveObstacleForce()
 	{
