@@ -530,7 +530,6 @@ namespace SF
 
 	 
 	void setAttractiveForce(
-		const std::vector<Vector2> &pointList, 
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
@@ -621,7 +620,6 @@ namespace SF
 	float repulsiveStrength_;
 	float repulsiveRange_;
 	float attractiveLength_;
-	std::vector<Vector2> attractivePointList_;
 
 	bool IsMovingPlatform;
 

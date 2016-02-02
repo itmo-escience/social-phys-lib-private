@@ -492,10 +492,15 @@ namespace SF
 		setRotationDegreeSet(set);
 	}
 
-	void SFSimulator::setAttractiveForce(const std::vector<Vector2> &pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
+	void SFSimulator::setAttractiveForce(
+		float attractiveStrength, 
+		float repulsiveStrength, 
+		float attractiveRange, 
+		float repulsiveRange, 
+		float attractiveTime, 
+		float length
+	)
 	{
-		attractivePointList_ = pointList;
-
 		attractiveTime_ = attractiveTime;
 		attractiveLength_ = length;
 
