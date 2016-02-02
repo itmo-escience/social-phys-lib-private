@@ -359,7 +359,6 @@ void SFSimulator::setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationD
 }
 
 void SFSimulator::setAttractiveForce(
-	System::Collections::Generic::List<SFVector2>^ pointList, 
 	float attractiveStrength, 
 	float repulsiveStrength, 
 	float attractiveRange, 
@@ -367,13 +366,8 @@ void SFSimulator::setAttractiveForce(
 	float attractiveTime, 
 	float length
 )
-{
-	std::vector<SF::Vector2> to;
-
-	for (size_t i = 0; i < pointList->Count; i++)
-		to.push_back(SF::Vector2(pointList[i].X, pointList[i].Y));
-	
-	_sim->setAttractiveForce(to, attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime, length);
+{	
+	_sim->setAttractiveForce(attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime, length);
 }
 
 void SFSimulator::setAttractiveIdList(

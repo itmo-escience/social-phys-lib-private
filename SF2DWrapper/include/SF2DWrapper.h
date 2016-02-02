@@ -136,7 +136,6 @@ namespace SF2D {
 				void setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationDegreeSet set);
 				
 				void setAttractiveForce(
-					System::Collections::Generic::List<SFVector2>^ pointList, 
 					float attractiveStrength, 
 					float repulsiveStrength, 
 					float attractiveRange, 
