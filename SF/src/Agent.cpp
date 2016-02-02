@@ -51,14 +51,7 @@ namespace SF
 		sim_(sim)
 	{ 
 		
-	  setNullSpeed(id_); 
-
-	  // attractive section
-	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
-	  {
-		  attractiveTimeList_.push_back(0);
-		  isUsedAttractivePoint_.push_back(false);
-	  }
+	  setNullSpeed(id_);
 	}
 
 	Agent::~Agent()
