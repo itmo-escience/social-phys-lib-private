@@ -492,10 +492,15 @@ namespace SF
 		setRotationDegreeSet(set);
 	}
 
-	void SFSimulator::setAttractiveForce(const std::vector<Vector2> &pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
+	void SFSimulator::setAttractiveForce(
+		float attractiveStrength, 
+		float repulsiveStrength, 
+		float attractiveRange, 
+		float repulsiveRange, 
+		float attractiveTime, 
+		float length
+	)
 	{
-		attractivePointList_ = pointList;
-
 		attractiveTime_ = attractiveTime;
 		attractiveLength_ = length;
 
@@ -503,6 +508,45 @@ namespace SF
 		repulsiveStrength_ = repulsiveStrength;
 		attractiveRange_ = attractiveRange;
 		repulsiveRange_ = repulsiveRange;
+	}
+
+	void SFSimulator::setAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	{
+		agents_[id]->attractiveIds_ = attractiveIds;
+	}
+
+	void SFSimulator::addAttractiveId(size_t id, size_t newId)
+	{
+		agents_[id]->attractiveIds_.push_back(newId);
+	}
+
+	void SFSimulator::addAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	{
+		agents_[id]->attractiveIds_.insert(
+			agents_[id]->attractiveIds_.end(), 
+			attractiveIds.begin(), 
+			attractiveIds.end()
+		);
+	}
+
+	void SFSimulator::deleteAttractiveId(size_t id, size_t idForDelete)
+	{
+		for (std::vector<size_t>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
+		{
+			if (*i == idForDelete)
+			{
+				agents_[id]->attractiveIds_.erase(i);
+				break;
+			}
+		}
+	}
+
+	void SFSimulator::deleteAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	{
+		for(auto ai: attractiveIds)
+		{
+			deleteAttractiveId(id, ai);
+		}
 	}
 
 	void SFSimulator::addPlatformRotationXY(float value)

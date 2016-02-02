@@ -530,7 +530,6 @@ namespace SF
 
 	 
 	void setAttractiveForce(
-		const std::vector<Vector2> &pointList, 
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
@@ -539,6 +538,13 @@ namespace SF
 		float length
 	);
 
+	void setAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
+
+	void addAttractiveId(size_t id, size_t newId);
+	void addAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
+
+	void deleteAttractiveId(size_t id, size_t idForDelete);
+	void deleteAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
 
 	/*!
 	*	@brief		Sets the velocity of platform
@@ -614,7 +620,6 @@ namespace SF
 	float repulsiveStrength_;
 	float repulsiveRange_;
 	float attractiveLength_;
-	std::vector<Vector2> attractivePointList_;
 
 	bool IsMovingPlatform;
 

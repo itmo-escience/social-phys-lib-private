@@ -358,14 +358,65 @@ void SFSimulator::setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationD
 	setRotationDegreeSet(set);
 }
 
-void SFSimulator::setAttractiveForce(System::Collections::Generic::List<SFVector2>^ pointList, float attractiveStrength, float repulsiveStrength, float attractiveRange, float repulsiveRange, float attractiveTime, float length)
-{
-	std::vector<SF::Vector2> to;
+void SFSimulator::setAttractiveForce(
+	float attractiveStrength, 
+	float repulsiveStrength, 
+	float attractiveRange, 
+	float repulsiveRange, 
+	float attractiveTime, 
+	float length
+)
+{	
+	_sim->setAttractiveForce(attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime, length);
+}
 
-	for (size_t i = 0; i < pointList->Count; i++)
-		to.push_back(SF::Vector2(pointList[i].X, pointList[i].Y));
-	
-	_sim->setAttractiveForce(to, attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime, length);
+void SFSimulator::setAttractiveIdList(
+	size_t id, 
+	System::Collections::Generic::List<size_t>^ attractiveIds
+)
+{
+	std::vector<size_t> to;
+
+	for (size_t i = 0; i < attractiveIds->Count; i++)
+		to.push_back(attractiveIds[i]);
+
+	_sim->setAttractiveIdList(id, to);
+}
+
+void SFSimulator::addAttractiveId(size_t id, size_t newId)
+{
+	_sim->addAttractiveId(id, newId);
+}
+
+void SFSimulator::addAttractiveIdList(
+	size_t id, 
+	System::Collections::Generic::List<size_t>^ attractiveIds	
+)
+{
+	std::vector<size_t> to;
+
+	for (size_t i = 0; i < attractiveIds->Count; i++)
+		to.push_back(attractiveIds[i]);
+
+	_sim->addAttractiveIdList(id, to);
+}
+
+void SFSimulator::deleteAttractiveId(size_t id, size_t idForDelete)
+{
+	_sim->deleteAttractiveId(id, idForDelete);
+}
+
+void SFSimulator::deleteAttractiveIdList(
+	size_t id, 
+	System::Collections::Generic::List<size_t>^ attractiveIds
+)
+{
+	std::vector<size_t> to;
+
+	for (size_t i = 0; i < attractiveIds->Count; i++)
+		to.push_back(attractiveIds[i]);
+
+	_sim->deleteAttractiveIdList(id, to);
 }
 
 void SFSimulator::setRotationDegreeSet(SF3D::SFRotationDegreeSet set)

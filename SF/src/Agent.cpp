@@ -45,19 +45,13 @@ namespace SF
 		obstacleTrajectory_(),
 		agentNeighborsIndexList_(),
 		isUsedAttractivePoint_(false),
+		attractiveIds_(),
 		speedList_(),
 		isDeleted_(false),
 		sim_(sim)
 	{ 
 		
-	  setNullSpeed(id_); 
-
-	  // attractive section
-	  for (size_t i = 0; i < sim->attractivePointList_.size(); i++)
-	  {
-		  attractiveTimeList_.push_back(0);
-		  isUsedAttractivePoint_.push_back(false);
-	  }
+	  setNullSpeed(id_);
 	}
 
 	Agent::~Agent()
@@ -358,31 +352,16 @@ namespace SF
 
 	void Agent::getAttractiveForce()
 	{
-		auto time = sim_->attractiveTime_;
-		auto attractivePointList = sim_->attractivePointList_;
-
-		for (size_t i = 0; i < attractivePointList.size(); i++)
+		for (auto i: attractiveIds_)
 		{
-			if (!isUsedAttractivePoint_[i])
-			{
-				if (getLength(attractivePointList[i] - position_) <= sim_->attractiveLength_)
-					attractiveTimeList_[i] += sim_->timeStep_;
+			auto difference = normalize(position_ - sim_->agents_[i]->position_);
 
-				if (attractiveTimeList_[i] <= time && attractiveTimeList_[i] > 0)
-				{
-					auto difference = normalize(position_ - attractivePointList[i]);
+			auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
+			auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
 
-					auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
-					auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
+			auto add = (first - second) * getPerception(&position_, &(sim_->agents_[i]->position_)) * difference;
 
-					auto add =  (first - second) * getPerception(&position_, &attractivePointList[i]) * difference;
-
-					correction += add;
-				}
-
-				if (attractiveTimeList_[i] > time)
-					isUsedAttractivePoint_[i] = true;
-			}
+			correction += add;
 		}
 	}
 

@@ -136,7 +136,6 @@ namespace SF2D {
 				void setAdditionalForce(SF3D::SFVector3 velocity, SF3D::SFRotationDegreeSet set);
 				
 				void setAttractiveForce(
-					System::Collections::Generic::List<SFVector2>^ pointList, 
 					float attractiveStrength, 
 					float repulsiveStrength, 
 					float attractiveRange, 
@@ -145,6 +144,31 @@ namespace SF2D {
 					float length
 				);
 				
+				void setAttractiveIdList(
+					size_t id,
+					System::Collections::Generic::List<size_t>^ attractiveIds
+				);
+
+				void addAttractiveId(
+					size_t id,
+					size_t newId
+				);
+
+				void addAttractiveIdList(
+					size_t id,
+					System::Collections::Generic::List<size_t>^ attractiveIds
+				);
+
+				void deleteAttractiveId(
+					size_t id,
+					size_t idForDelete
+				);
+
+				void deleteAttractiveIdList(
+					size_t id,
+					System::Collections::Generic::List<size_t>^ attractiveIds
+				);
+
 				void setPlatformVelocity(SF3D::SFVector3 velocity);
 				SF3D::SFVector3 getPlatformVelocity();
 				float getAgentFriction(int agentNo);
