@@ -45,6 +45,7 @@ namespace SF
 		obstacleTrajectory_(),
 		agentNeighborsIndexList_(),
 		isUsedAttractivePoint_(false),
+		attractiveIds_(),
 		speedList_(),
 		isDeleted_(false),
 		sim_(sim)

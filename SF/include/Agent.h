@@ -183,6 +183,7 @@ namespace SF
 	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
 	std::vector<float> attractiveTimeList_;
 	std::vector<bool> isUsedAttractivePoint_;
+	std::vector<size_t> attractiveIds_;
     std::map<size_t, float> speedList_;
 	SFSimulator* sim_;
     
