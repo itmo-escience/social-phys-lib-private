@@ -12,14 +12,26 @@
 namespace SF
 {
 	Agent::Agent(SFSimulator* sim) :
+		isDeleted_(false),
+		isForced_(false),
 		id_(0),
 		maxNeighbors_(0),
+		acceleration_(0),
+		relaxationTime_(0),
 		maxSpeed_(0.0f),
 		neighborDist_(0.0f),
 		radius_(0.0f),
 		timeHorizonObst_(0.0f),
-		obstaclePressure_(),
+		accelerationCoefficient_(0),
+		repulsiveAgent_(0),
+		repulsiveAgentFactor_(0),
 		repulsiveObstacle_(0),
+		repulsiveObstacleFactor_(0),
+		obstacleRadius_(0.1f),
+		platformFactor_(0),
+		perception_(0),
+		friction_(0),
+		obstaclePressure_(),
 		agentPressure_(),
 		correction(),
 		newVelocity_(),
@@ -27,27 +39,15 @@ namespace SF
 		prefVelocity_(),
 		previosPosition_(INT_MIN, INT_MIN),
 		velocity_(),
+		obstacleTrajectory_(),
 		oldPlatformVelocity_(),
 		obstacleNeighbors_(),
 		agentNeighbors_(),
-		attractiveTimeList_(),
-		obstacleRadius_(0.1f),
-		isForced_(false),
-		acceleration_(0),
-		relaxationTime_(0),
-		accelerationCoefficient_(0),
-		repulsiveAgent_(0),
-		repulsiveAgentFactor_(0),
-		repulsiveObstacleFactor_(0),
-		platformFactor_(0),
-		perception_(0),
-		friction_(0),
-		obstacleTrajectory_(),
 		agentNeighborsIndexList_(),
+		attractiveTimeList_(),
 		isUsedAttractivePoint_(false),
 		attractiveIds_(),
 		speedList_(),
-		isDeleted_(false),
 		sim_(sim)
 	{ 
 		
@@ -293,8 +293,9 @@ namespace SF
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
 			auto j = 0;
-			for(auto nop: nearestObstaclePointList)
+			for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 			{
+				auto nop = nearestObstaclePointList[i];
 				auto l = nop - closestPoint;
 				if (l.GetLengthSquared() > TOLERANCE)
 				{
