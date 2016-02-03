@@ -523,11 +523,8 @@ namespace SF
 
 	void SFSimulator::addAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
-		/*agents_[id]->attractiveIds_.insert(
-			agents_[id]->attractiveIds_.end(), 
-			attractiveIds.begin(), 
-			attractiveIds.end()
-		);*/
+		for (auto ai : attractiveIds)
+			addAttractiveId(id, ai);
 	}
 
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
@@ -545,9 +542,7 @@ namespace SF
 	void SFSimulator::deleteAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
 		for(auto ai: attractiveIds)
-		{
 			deleteAttractiveId(id, ai);
-		}
 	}
 
 	void SFSimulator::addPlatformRotationXY(float value)
@@ -611,8 +606,8 @@ namespace SF
 				agent->agentNeighborsIndexList_.clear();
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
-				for (size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
-					result.push_back(agent->agentNeighborsIndexList_[i].first);
+				for (auto an : agent->agentNeighborsIndexList_)
+					result.push_back(an.first);
 			}
 		}
 		else
