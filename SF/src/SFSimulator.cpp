@@ -496,14 +496,9 @@ namespace SF
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
-		float repulsiveRange, 
-		float attractiveTime, 
-		float length
+		float repulsiveRange
 	)
 	{
-		attractiveTime_ = attractiveTime;
-		attractiveLength_ = length;
-
 		attractiveStrength_ = attractiveStrength;
 		repulsiveStrength_ = repulsiveStrength;
 		attractiveRange_ = attractiveRange;
