@@ -145,28 +145,28 @@ namespace SF2D {
 				);
 				
 				void setAttractiveIdList(
-					size_t id,
-					System::Collections::Generic::List<size_t>^ attractiveIds
+					int id,
+					System::Collections::Generic::List<int>^ attractiveIds
 				);
 
 				void addAttractiveId(
-					size_t id,
-					size_t newId
+					int id,
+					int newId
 				);
 
 				void addAttractiveIdList(
-					size_t id,
-					System::Collections::Generic::List<size_t>^ attractiveIds
+					int id,
+					System::Collections::Generic::List<int>^ attractiveIds
 				);
 
 				void deleteAttractiveId(
-					size_t id,
-					size_t idForDelete
+					int id,
+					int idForDelete
 				);
 
 				void deleteAttractiveIdList(
-					size_t id,
-					System::Collections::Generic::List<size_t>^ attractiveIds
+					int id,
+					System::Collections::Generic::List<int>^ attractiveIds
 				);
 
 				void setPlatformVelocity(SF3D::SFVector3 velocity);

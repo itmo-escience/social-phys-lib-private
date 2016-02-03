@@ -371,49 +371,49 @@ void SFSimulator::setAttractiveForce(
 }
 
 void SFSimulator::setAttractiveIdList(
-	size_t id, 
-	System::Collections::Generic::List<size_t>^ attractiveIds
+	int id,
+	System::Collections::Generic::List<int>^ attractiveIds
 )
 {
-	std::vector<size_t> to;
+	std::vector<int> to;
 
-	for (size_t i = 0; i < attractiveIds->Count; i++)
+	for (int i = 0; i < attractiveIds->Count; i++)
 		to.push_back(attractiveIds[i]);
 
 	_sim->setAttractiveIdList(id, to);
 }
 
-void SFSimulator::addAttractiveId(size_t id, size_t newId)
+void SFSimulator::addAttractiveId(int id, int newId)
 {
 	_sim->addAttractiveId(id, newId);
 }
 
 void SFSimulator::addAttractiveIdList(
-	size_t id, 
-	System::Collections::Generic::List<size_t>^ attractiveIds	
+	int id,
+	System::Collections::Generic::List<int>^ attractiveIds
 )
 {
-	std::vector<size_t> to;
+	std::vector<int> to;
 
-	for (size_t i = 0; i < attractiveIds->Count; i++)
+	for (int i = 0; i < attractiveIds->Count; i++)
 		to.push_back(attractiveIds[i]);
 
 	_sim->addAttractiveIdList(id, to);
 }
 
-void SFSimulator::deleteAttractiveId(size_t id, size_t idForDelete)
+void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 {
 	_sim->deleteAttractiveId(id, idForDelete);
 }
 
 void SFSimulator::deleteAttractiveIdList(
-	size_t id, 
-	System::Collections::Generic::List<size_t>^ attractiveIds
+	int id,
+	System::Collections::Generic::List<int>^ attractiveIds
 )
 {
-	std::vector<size_t> to;
+	std::vector<int> to;
 
-	for (size_t i = 0; i < attractiveIds->Count; i++)
+	for (int i = 0; i < attractiveIds->Count; i++)
 		to.push_back(attractiveIds[i]);
 
 	_sim->deleteAttractiveIdList(id, to);
