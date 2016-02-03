@@ -360,12 +360,10 @@ void SFSimulator::setAttractiveForce(
 	float attractiveStrength, 
 	float repulsiveStrength, 
 	float attractiveRange, 
-	float repulsiveRange, 
-	float attractiveTime, 
-	float length
+	float repulsiveRange
 )
 {	
-	_sim->setAttractiveForce(attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange, attractiveTime, length);
+	_sim->setAttractiveForce(attractiveStrength, repulsiveStrength, attractiveRange, repulsiveRange);
 }
 
 void SFSimulator::setAttractiveIdList(

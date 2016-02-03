@@ -533,9 +533,7 @@ namespace SF
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
-		float repulsiveRange, 
-		float attractiveTime, 
-		float length
+		float repulsiveRange
 	);
 
 	void setAttractiveIdList(int id, const std::vector<int> &attractiveIds);
@@ -614,13 +612,11 @@ namespace SF
 	Vector3 rotationNow2Future_;
 	Vector3 rotationFuture_;
 
-	float attractiveTime_;
 	float attractiveStrength_;
 	float attractiveRange_;
 	float repulsiveStrength_;
 	float repulsiveRange_;
-	float attractiveLength_;
-
+	
 	bool IsMovingPlatform;
 
 	std::vector<size_t> deleteIDs;

@@ -496,14 +496,9 @@ namespace SF
 		float attractiveStrength, 
 		float repulsiveStrength, 
 		float attractiveRange, 
-		float repulsiveRange, 
-		float attractiveTime, 
-		float length
+		float repulsiveRange
 	)
 	{
-		attractiveTime_ = attractiveTime;
-		attractiveLength_ = length;
-
 		attractiveStrength_ = attractiveStrength;
 		repulsiveStrength_ = repulsiveStrength;
 		attractiveRange_ = attractiveRange;
@@ -530,8 +525,7 @@ namespace SF
 
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		auto ail = agents_[id]->attractiveIds_;
-		for (std::vector<int>::iterator i = ail.begin(); i != ail.end(); ++i)
+		for (std::vector<int>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
 		{
 			if (*i == idForDelete)
 			{

@@ -139,9 +139,7 @@ namespace SF2D {
 					float attractiveStrength, 
 					float repulsiveStrength, 
 					float attractiveRange, 
-					float repulsiveRange, 
-					float attractiveTime_,
-					float length
+					float repulsiveRange
 				);
 				
 				void setAttractiveIdList(
