@@ -538,13 +538,13 @@ namespace SF
 		float length
 	);
 
-	void setAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
+	void setAttractiveIdList(int id, const std::vector<int> &attractiveIds);
 
-	void addAttractiveId(size_t id, size_t newId);
-	void addAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
+	void addAttractiveId(int id, int newId);
+	void addAttractiveIdList(int id, const std::vector<int> &attractiveIds);
 
-	void deleteAttractiveId(size_t id, size_t idForDelete);
-	void deleteAttractiveIdList(size_t id, const std::vector<size_t> &attractiveIds);
+	void deleteAttractiveId(int id, int idForDelete);
+	void deleteAttractiveIdList(int id, const std::vector<int> &attractiveIds);
 
 	/*!
 	*	@brief		Sets the velocity of platform

@@ -352,16 +352,30 @@ namespace SF
 
 	void Agent::getAttractiveForce()
 	{
-		for (auto i: attractiveIds_)
+		id_ = id_;
+		int save[20];
+		for (int i = 0; i < attractiveIds_.size(); i++)
+			save[i] = attractiveIds_[i];
+
+		if(attractiveIds_.size() > 0)
 		{
-			auto difference = normalize(position_ - sim_->agents_[i]->position_);
+			for (int i = 0; i < attractiveIds_.size(); i++)
+			{
+				auto pairId = attractiveIds_[i];
 
-			auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->repulsiveRange_);;
-			auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(difference)) / sim_->attractiveRange_);;
+				if (pairId == id_)
+					continue;
 
-			auto add = (first - second) * getPerception(&position_, &(sim_->agents_[i]->position_)) * difference;
+				auto pairPosition = sim_->agents_[pairId]->position_;
+				auto normalizedDistance = normalize(position_ - sim_->agents_[pairId]->position_);
 
-			correction += add;
+				auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->repulsiveRange_);
+				auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->attractiveRange_);
+
+				auto add = (first - second) * getPerception(&position_, &(sim_->agents_[pairId]->position_)) * normalizedDistance;
+
+				correction += add;
+			}
 		}
 	}
 

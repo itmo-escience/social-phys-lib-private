@@ -510,28 +510,29 @@ namespace SF
 		repulsiveRange_ = repulsiveRange;
 	}
 
-	void SFSimulator::setAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	void SFSimulator::setAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
 		agents_[id]->attractiveIds_ = attractiveIds;
 	}
 
-	void SFSimulator::addAttractiveId(size_t id, size_t newId)
+	void SFSimulator::addAttractiveId(int id, int newId)
 	{
-		agents_[id]->attractiveIds_.push_back(newId);
+		if(std::find(agents_[id]->attractiveIds_.begin(), agents_[id]->attractiveIds_.end(), newId) == agents_[id]->attractiveIds_.end())
+			agents_[id]->attractiveIds_.push_back(newId);
 	}
 
-	void SFSimulator::addAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	void SFSimulator::addAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
-		agents_[id]->attractiveIds_.insert(
+		/*agents_[id]->attractiveIds_.insert(
 			agents_[id]->attractiveIds_.end(), 
 			attractiveIds.begin(), 
 			attractiveIds.end()
-		);
+		);*/
 	}
 
-	void SFSimulator::deleteAttractiveId(size_t id, size_t idForDelete)
+	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		for (std::vector<size_t>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
+		for (std::vector<int>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
 		{
 			if (*i == idForDelete)
 			{
@@ -541,7 +542,7 @@ namespace SF
 		}
 	}
 
-	void SFSimulator::deleteAttractiveIdList(size_t id, const std::vector<size_t>& attractiveIds)
+	void SFSimulator::deleteAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
 		for(auto ai: attractiveIds)
 		{
