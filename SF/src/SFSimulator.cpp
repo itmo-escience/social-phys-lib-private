@@ -517,7 +517,8 @@ namespace SF
 
 	void SFSimulator::addAttractiveId(int id, int newId)
 	{
-		if(std::find(agents_[id]->attractiveIds_.begin(), agents_[id]->attractiveIds_.end(), newId) == agents_[id]->attractiveIds_.end())
+		auto ail = agents_[id]->attractiveIds_;
+		if(std::find(ail.begin(), ail.end(), newId) == ail.end())
 			agents_[id]->attractiveIds_.push_back(newId);
 	}
 
@@ -529,7 +530,8 @@ namespace SF
 
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		for (std::vector<int>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
+		auto ail = agents_[id]->attractiveIds_;
+		for (std::vector<int>::iterator i = ail.begin(); i != ail.end(); ++i)
 		{
 			if (*i == idForDelete)
 			{

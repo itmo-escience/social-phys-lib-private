@@ -292,7 +292,7 @@ namespace SF
 			auto end = obstacle->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
-			auto j = 0;
+			size_t j = 0;
 			for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 			{
 				auto nop = nearestObstaclePointList[i];
@@ -356,9 +356,6 @@ namespace SF
 
 	void Agent::getAttractiveForce()
 	{
-		id_ = id_;
-		int save[20];
-		
 		if(attractiveIds_.size() > 0)
 		{
 			for(auto ai: attractiveIds_)
@@ -366,13 +363,15 @@ namespace SF
 				if (ai == id_)
 					continue;
 
-				auto pairPosition = sim_->agents_[ai]->position_;
-				auto normalizedDistance = normalize(position_ - sim_->agents_[ai]->position_);
+				auto anp = sim_->agents_[ai]->position_;
+
+				auto pairPosition = anp;
+				auto normalizedDistance = normalize(position_ - anp);
 
 				auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->repulsiveRange_);
 				auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->attractiveRange_);
 
-				auto add = (first - second) * getPerception(&position_, &(sim_->agents_[ai]->position_)) * normalizedDistance;
+				auto add = (first - second) * getPerception(&position_, &(anp)) * normalizedDistance;
 
 				correction += add;
 			}

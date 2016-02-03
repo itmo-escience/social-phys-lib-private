@@ -290,9 +290,8 @@ int SFSimulator::addObstacle(System::Collections::Generic::List<SFVector2>^ vert
 {
 	std::vector<SF::Vector2> vert;	
 	for(size_t i = 0 ; i < vertices->Count; i++)
-	{		
 		vert.push_back(SF::Vector2(vertices[i].X,vertices[i].Y));
-	}
+	
 	return _sim->addObstacle(vert);	
 }
 
@@ -300,9 +299,8 @@ int SFSimulator::addObstacle(array<SFVector2>^ vertices)
 {
 	std::vector<SF::Vector2> vert;	
 	for(size_t i = 0 ; i < vertices->Length; i++)
-	{		
 		vert.push_back(SF::Vector2(vertices[i].X,vertices[i].Y));
-	}
+	
 	return _sim->addObstacle(vert);
 }
 
