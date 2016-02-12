@@ -11,52 +11,55 @@
 
 namespace SF
 {
+	// instance constructor
 	Agent::Agent(SFSimulator* sim) :
-		isDeleted_(false),
-		isForced_(false),
-		id_(0),
-		maxNeighbors_(0),
-		acceleration_(0),
-		relaxationTime_(0),
-		maxSpeed_(0.0f),
-		neighborDist_(0.0f),
-		radius_(0.0f),
-		timeHorizonObst_(0.0f),
-		accelerationCoefficient_(0),
-		repulsiveAgent_(0),
-		repulsiveAgentFactor_(0),
-		repulsiveObstacle_(0),
-		repulsiveObstacleFactor_(0),
-		obstacleRadius_(0.1f),
-		platformFactor_(0),
-		perception_(0),
-		friction_(0),
-		obstaclePressure_(),
-		agentPressure_(),
-		correction(),
-		newVelocity_(),
-		position_(),
-		prefVelocity_(),
-		previosPosition_(INT_MIN, INT_MIN),
-		velocity_(),
-		obstacleTrajectory_(),
-		oldPlatformVelocity_(),
-		obstacleNeighbors_(),
-		agentNeighbors_(),
-		agentNeighborsIndexList_(),
-		attractiveTimeList_(),
-		isUsedAttractivePoint_(false),
-		attractiveIds_(),
-		speedList_(),
-		sim_(sim)
+		isDeleted_(false),					// agent mark for deleting {true, false} : bool
+		isForced_(false),					// prevents high speed after meeting with the obstacle {true, false} : bool
+		id_(0),								// unique identifier [0, 1, ... , +inf) : int
+		maxNeighbors_(0),					// max count of neighbors [0, 1, ... , +inf) : int
+		acceleration_(0),					// [0, ... , +inf) : float
+		relaxationTime_(0),					// time of approching the max agent speed  (0, ... , +inf) : float
+		maxSpeed_(0.0f),					// max agent speed (0, ... , +inf) : float
+		neighborDist_(0.0f),				// min distance for agent's neighbors [0, ... , +inf) : float
+		radius_(0.0f),						// agent's zone defined by radius [0, ... , +inf) : float
+		timeHorizonObst_(0.0f),				// [0, ... , +inf) : float
+		accelerationCoefficient_(0),		// accelereation factor coefficient for acceleration term [0, ... , +inf) : float
+		repulsiveAgent_(0),					// repulsive exponential agent coefficient for agent repulsive force [0, ... , +inf) : float
+		repulsiveAgentFactor_(0),			// repulsive factor agent coefficient for agent repulsive force [0, ... , +inf) : float
+		repulsiveObstacle_(0),				// repulsive exponential obstacle coefficient for obstacle repulsive force [0, ... , +inf) : float
+		repulsiveObstacleFactor_(0),		// repulsive factor obstacle coefficient for obstacle repulsive force [0, ... , +inf) : float
+		obstacleRadius_(0.1f),				// min agent<->obstacle distance [0, ... , +inf) : float
+		platformFactor_(0),					// factor platform coefficient for moving platform force [0, ... , +inf) : float
+		perception_(0),						// defines angle of eye perception [0, ... , +inf) : float
+		friction_(0),						// friction platform coefficient [0, ... , +inf) : float
+		obstaclePressure_(),				// total pressure for obstacle repulsive force [0, ... , +inf) : float
+		agentPressure_(),					// total pressure for agent repulsive force [0, ... , +inf) : float
+		correction(),						// current result vector force 
+		newVelocity_(),						// resulting vector force
+		position_(),						// agent's position
+		prefVelocity_(),					// pre-computed agent's desired velocity
+		previosPosition_(INT_MIN, INT_MIN),	// saved previous agent's position
+		velocity_(),						// agent's velocity
+		obstacleTrajectory_(),				// graphic agent's trajectory
+		oldPlatformVelocity_(),				// saved previous platform velocity
+		obstacleNeighbors_(),				// vector of neighbor obstacles
+		agentNeighbors_(),					// vector of neighbor agents
+		agentNeighborsIndexList_(),			// vector of neighbor agent identifiers
+		attractiveTimeList_(),				// vector of attractive point times
+		isUsedAttractivePoint_(false),		// mark for used attractive points {true, false} : bool
+		attractiveIds_(),					// vector of attractive agent identifiers
+		speedList_(),						// map with agent apeeds
+		sim_(sim)							// simulator interface
 	{ 
 		
 	  setNullSpeed(id_);
 	}
 
+	// destructor
 	Agent::~Agent()
 	{ }
 
+	// computing obstacle & agent neighbors
 	void Agent::computeNeighbors()
 	{
 		// obstacle section
@@ -73,6 +76,7 @@ namespace SF
 		}
 	}
 
+	// sets value corresponding identifier in the speed map
 	void Agent::setSpeedList(size_t index, float value)
 	{
 		if (speedList_.count(index) < 1)
@@ -81,12 +85,14 @@ namespace SF
 			speedList_[index] = value;
 	}
 
+	// null-initialization
 	void Agent::setNullSpeed(size_t id)
 	{
 		if (speedList_.count(id) < 1)
 			setSpeedList(id, 0.0f);
 	}
 
+	// returns value corresponding the angle of eye perception
 	float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
 	{
 		if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
@@ -95,7 +101,7 @@ namespace SF
 		return perception_;
 	}
 
-
+	// returns the normalized speed
 	float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
 	{
         if (currentSpeed <= maxSpeed)
@@ -104,6 +110,7 @@ namespace SF
         return maxSpeed / currentSpeed;
     }
 
+	// acceleration term method
 	void Agent::getAccelerationTerm()
 	{
 		setNullSpeed(id_);
@@ -195,6 +202,7 @@ namespace SF
 
 	}
 
+	// repulsive agent force
 	void Agent::getRepulsiveAgentForce()
 	{
 		double pressure = 0;
@@ -243,7 +251,7 @@ namespace SF
 		correction += forceSum;
 	}
 
-
+	// repulsive obstacle force
 	void Agent::getRepulsiveObstacleForce()
 	{
 		auto forceSum = Vector2();
@@ -354,6 +362,7 @@ namespace SF
 			obstacleTrajectory_ = position_;
 	}
 
+	// attractive force
 	void Agent::getAttractiveForce()
 	{
 		if(attractiveIds_.size() > 0)
@@ -378,6 +387,7 @@ namespace SF
 		}
 	}
 
+	// moving platform force
 	void Agent::getMovingPlatformForce()
 	{
 		if (sim_->rotationFuture_ != Vector3())
@@ -519,6 +529,7 @@ namespace SF
 			auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
 			// heave
+			// TODO heave
 			auto platformVeclocity = sim_->getPlatformVelocity();
 			
 			float
@@ -538,7 +549,7 @@ namespace SF
 		}
 	}
 
-	/* Search for the best new velocity. */
+	// search for the best new velocity
 	void Agent::computeNewVelocity()
 	{
 		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
@@ -558,29 +569,35 @@ namespace SF
 		newVelocity_ += correction;
 	}
 
-  void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
-  {
-    if (this != agent) {
-      const auto distSq = absSq(position_ - agent->position_);
+	// safe inserting agents into agent neighbor vector
+	void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
+	{
+		if (this != agent) 
+		{
+			const auto distSq = absSq(position_ - agent->position_);
 
-      if (distSq < rangeSq) {
-        if (agentNeighbors_.size() < maxNeighbors_) {
-          agentNeighbors_.push_back(std::make_pair(distSq,agent));
-        }
-		auto i = agentNeighbors_.size() - 1;
-        while (i != 0 && distSq < agentNeighbors_[i-1].first) {
-          agentNeighbors_[i] = agentNeighbors_[i-1];
-          --i;
-        }
-        agentNeighbors_[i] = std::make_pair(distSq, agent);
+			if (distSq < rangeSq) 
+			{
+				if (agentNeighbors_.size() < maxNeighbors_) 
+					agentNeighbors_.push_back(std::make_pair(distSq,agent));
+				
+				auto i = agentNeighbors_.size() - 1;
+			
+				while (i != 0 && distSq < agentNeighbors_[i-1].first) 
+				{
+					agentNeighbors_[i] = agentNeighbors_[i-1];
+					--i;
+				}
+				
+				agentNeighbors_[i] = std::make_pair(distSq, agent);
 
-        if (agentNeighbors_.size() == maxNeighbors_) {
-          rangeSq = agentNeighbors_.back().first;
-        }
-      }
-    }
-  }
+				if (agentNeighbors_.size() == maxNeighbors_) 
+					rangeSq = agentNeighbors_.back().first;
+			}
+		}
+	}
 
+	// safe inserting obstacles into obstacle neighbor vector
 	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
 	{
 		const Obstacle* const nextObstacle = obstacle->nextObstacle;
@@ -602,6 +619,7 @@ namespace SF
 		}
 	}
 
+	// safe inserting agent index into agent identifier neighbor vector
 	void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
 	{
 		if (this != agent) 
@@ -624,6 +642,7 @@ namespace SF
 		}
 	}
 
+	// computing the nearest point for two other points
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
 		auto relativeEndPoint = *end - *start;
@@ -638,16 +657,20 @@ namespace SF
 			return *start + static_cast<float>(lambda) * relativeEndPoint;
 	}
 
+	// service min computing
 	inline float getMinFloat(float a, float b)
 	{
 		return a < b ? a : b;
 	}
 
+	// used for acceleration term method calling
+	// TODO: you can improve some logic
 	void Agent::update()
 	{
 		getAccelerationTerm();
 	}
 
+	// matrix cross for moving platform
 	Vector3 Agent::getCross(const Vector3 &left, const Vector3 &right) const
 	{
 		float 
@@ -662,16 +685,19 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
+	// service degrees->radians method
 	double Agent::degreesToRadians(float degree) const
 	{
         return degree * (M_PI / 180.0f);
     }
 
+	// service radians->degrees method
 	double Agent::radiansToDegrees(float radian) const
 	{
         return radian * (180.0f / M_PI);
     }
 
+	// returns current roll
 	Vector3 Agent::getRoll(ParameterType pt, TimeType tt) const
 	{
 		Vector3 rotation;
@@ -700,6 +726,7 @@ namespace SF
 		return Vector3(value, value, value);
 	}
 
+	// returns the omega value
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
 		float value = 0;
@@ -723,6 +750,7 @@ namespace SF
 		return Vector3();
 	}
 
+	// returns the dOmega value
 	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
 		float value = 0;
@@ -742,6 +770,7 @@ namespace SF
 		return Vector3();
 	}
 
+	// has intersection computing method
 	bool Agent::isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
 		auto v1 = (d.x() - c.x())*(a.y() - c.y()) - (d.y() - c.y())*(a.x() - c.x());
@@ -752,6 +781,7 @@ namespace SF
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
 	}
 
+	// returns intersection point method
 	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
 		float 
@@ -770,6 +800,7 @@ namespace SF
 		return Vector2(x, y);
 	}
 
+	// returns rotation X matrix for movement platform
 	SimpleMatrix Agent::getRotationX(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
@@ -785,6 +816,7 @@ namespace SF
 		return result;
 	}
 
+	// returns rotation Y matrix for movement platform
 	SimpleMatrix Agent::getRotationY(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
@@ -800,6 +832,7 @@ namespace SF
 		return result;
 	}
 
+	// returns rotation Z matrix for movement platform
 	SimpleMatrix Agent::getRotationZ(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
