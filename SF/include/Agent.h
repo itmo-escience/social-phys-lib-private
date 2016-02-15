@@ -172,51 +172,53 @@ namespace SF
 		/// <returns> Rotation matrix </returns>
 		SimpleMatrix getRotationZ(float angle) const;
 
-	const double TOLERANCE = 0.00001f;
 	const size_t MULT = 1000000;
 	const size_t SHIFT = 30;
-
-	bool isDeleted_;
-	bool isForced_;
-	size_t id_;
-	size_t maxNeighbors_;
-	float acceleration_;
-    float relaxationTime_;
-	float maxSpeed_;
-    float neighborDist_;
-    float radius_;
-    float timeHorizonObst_;
-    float accelerationCoefficient_;
-    float repulsiveAgent_;
-    float repulsiveAgentFactor_;
-    float repulsiveObstacle_;
-	float repulsiveObstacleFactor_;
-	float obstacleRadius_;
-	float platformFactor_;
-    float perception_;
-	float friction_;
-	double obstaclePressure_;
-	double agentPressure_;
-	Vector2 correction;
-    Vector2 newVelocity_;
-    Vector2 position_;
-    Vector2 prefVelocity_;
-	Vector2 previosPosition_;
-    Vector2 velocity_;
-	Vector2 obstacleTrajectory_;
-	Vector3 oldPlatformVelocity_;
-	std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;
-    std::vector<std::pair<float, const Agent*> > agentNeighbors_;
-	std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
-	std::vector<float> attractiveTimeList_;
-	std::vector<bool> isUsedAttractivePoint_;
-	std::vector<int> attractiveIds_;
-    std::map<size_t, float> speedList_;
-	SFSimulator* sim_;
+	
+		// TODO replace to the new parameter
+		const double TOLERANCE = 0.00001f;
+	
+		bool isDeleted_;														// mark for deleting 
+		bool isForced_;															// mark preventing high speed after meeting with the obstacle 
+		size_t id_;																// unique identifier 
+		size_t maxNeighbors_;													// max count of neighbors
+		float acceleration_;													// acceleration buffer preventing high speed after meeting with the obstacle 
+		float relaxationTime_;													// time of approching the max speed  
+		float maxSpeed_;														// max speed 
+		float neighborDist_;													// min distance for neighbors 
+		float radius_;															// range around agent defined by radius 
+		float timeHorizonObst_;													// iteration time interval
+		float accelerationCoefficient_;											// accelereation factor coefficient for acceleration term 
+		float repulsiveAgent_;													// repulsive exponential agent coefficient for agent repulsive force 
+		float repulsiveAgentFactor_;											// repulsive factor agent coefficient for agent repulsive force 
+		float repulsiveObstacle_;												// repulsive exponential obstacle coefficient for obstacle repulsive force 
+		float repulsiveObstacleFactor_;											// repulsive factor obstacle coefficient for obstacle repulsive force 
+		float obstacleRadius_;													// min agent to obstacle distance 
+		float platformFactor_;													// factor platform coefficient for moving platform force 
+		float perception_;														// angle of perception 
+		float friction_;														// friction platform coefficient for moving platform force
+		double obstaclePressure_;												// total pressure for obstacle repulsive force 
+		double agentPressure_;													// total pressure for agent repulsive force 
+		Vector2 correction;														// current correction vector
+		Vector2 newVelocity_;													// new result vector
+		Vector2 position_;														// current position
+		Vector2 prefVelocity_;													// pre-computed velocity
+		Vector2 previosPosition_;												// saved previous position
+		Vector2 velocity_;														// current result vector
+		Vector2 obstacleTrajectory_;											// graphic representation of result force
+		Vector3 oldPlatformVelocity_;											// saved previous platform velocity
+		std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;		// list of neighbor obstacles
+		std::vector<std::pair<float, const Agent*> > agentNeighbors_;			// list of neighbor agents
+		std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;			// list of neighbor agent identifiers
+		std::vector<float> attractiveTimeList_;									
+		std::vector<bool> isUsedAttractivePoint_;								
+		std::vector<int> attractiveIds_;										// list of attractive agent identifiers
+		std::map<size_t, float> speedList_;										// map of agent speeds
+		SFSimulator* sim_;														// simulator instance
     
-    friend class KdTree;
-    friend class SFSimulator;
-  };
+		friend class KdTree;
+		friend class SFSimulator;
+	};
 }
 
 #endif
