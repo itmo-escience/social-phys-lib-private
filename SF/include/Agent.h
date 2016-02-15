@@ -172,9 +172,6 @@ namespace SF
 		/// <returns> Rotation matrix </returns>
 		SimpleMatrix getRotationZ(float angle) const;
 
-	const size_t MULT = 1000000;
-	const size_t SHIFT = 30;
-	
 		// TODO replace to the new parameter
 		const double TOLERANCE = 0.00001f;
 	
@@ -210,8 +207,6 @@ namespace SF
 		std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;		// list of neighbor obstacles
 		std::vector<std::pair<float, const Agent*> > agentNeighbors_;			// list of neighbor agents
 		std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;			// list of neighbor agent identifiers
-		std::vector<float> attractiveTimeList_;									
-		std::vector<bool> isUsedAttractivePoint_;								
 		std::vector<int> attractiveIds_;										// list of attractive agent identifiers
 		std::map<size_t, float> speedList_;										// map of agent speeds
 		SFSimulator* sim_;														// simulator instance
