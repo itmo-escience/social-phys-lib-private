@@ -2,24 +2,24 @@
 
 namespace SF
 {
-
+	/// <summary> Defines an agent config </summary>
 	AgentPropertyConfig::AgentPropertyConfig(
-		float neighborDist,
-		size_t maxNeighbors,
-		float timeHorizon,
-		float radius,
-		float maxSpeed,
-		float accelerationCoefficient,
-		float relaxationTime,
-		float repulsiveAgent,
-		float repulsiveAgentFactor,
-		float repulsiveObstacle,
-		float repulsiveObstacleFactor,
-		float obstacleRadius,
-		float platformFactor,
-		float perception,
-		float friction,
-		Vector2 velocity
+		float neighborDist,						// min distance for neighbors 
+		size_t maxNeighbors,					// max count of neighbors
+		float timeHorizon,						// iteration time interval
+		float radius,							// range around agent defined by radius 
+		float maxSpeed,							// max speed 
+		float accelerationCoefficient,			// accelereation factor coefficient for acceleration term 
+		float relaxationTime,					// time of approching the max speed  
+		float repulsiveAgent,					// repulsive exponential agent coefficient for agent repulsive force 
+		float repulsiveAgentFactor,				// repulsive factor agent coefficient for agent repulsive force 
+		float repulsiveObstacle,				// repulsive exponential obstacle coefficient for obstacle repulsive force 
+		float repulsiveObstacleFactor,			// repulsive factor obstacle coefficient for obstacle repulsive force 
+		float obstacleRadius,					// min agent to obstacle distance 
+		float platformFactor,					// factor platform coefficient for moving platform force 
+		float perception,						// angle of perception	
+		float friction,							// friction platform coefficient for moving platform force
+		Vector2 velocity						// current result vector
 		) :
 		_neighborDist(neighborDist),
 		_maxNeighbors(maxNeighbors),
@@ -39,7 +39,7 @@ namespace SF
 		_velocity(velocity)
 	{ }
 
-
+	/// <summary> Destructor </summary>
 	AgentPropertyConfig::~AgentPropertyConfig(void)
 	{ }
 
