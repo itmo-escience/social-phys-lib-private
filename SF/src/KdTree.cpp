@@ -1,158 +1,109 @@
-/*
-* KdTree.cpp
-* SF Library
-*
-* Copyright (c) 2008-2010 University of North Carolina at Chapel Hill.
-* All rights reserved.
-*
-* Permission to use, copy, modify, and distribute this software and its
-* documentation for educational, research, and non-profit purposes, without
-* fee, and without a written agreement is hereby granted, provided that the
-* above copyright notice, this paragraph, and the following four paragraphs
-* appear in all copies.
-*
-* Permission to incorporate this software into commercial products may be
-* obtained by contacting the Office of Technology Development at the University
-* of North Carolina at Chapel Hill <otd@unc.edu>.
-*
-* This software program and documentation are copyrighted by the University of
-* North Carolina at Chapel Hill. The software program and documentation are
-* supplied "as is," without any accompanying services from the University of
-* North Carolina at Chapel Hill or the authors. The University of North
-* Carolina at Chapel Hill and the authors do not warrant that the operation of
-* the program will be uninterrupted or error-free. The end-user understands
-* that the program was developed for research purposes and is advised not to
-* rely exclusively on the program for any reason.
-*
-* IN NO EVENT SHALL THE UNIVERSITY OF NORTH CAROLINA AT CHAPEL HILL OR THE
-* AUTHORS BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
-* CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING OUT OF THE USE OF THIS
-* SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF NORTH CAROLINA AT
-* CHAPEL HILL OR THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH
-* DAMAGE.
-*
-* THE UNIVERSITY OF NORTH CAROLINA AT CHAPEL HILL AND THE AUTHORS SPECIFICALLY
-* DISCLAIM ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE AND ANY
-* STATUTORY WARRANTY OF NON-INFRINGEMENT. THE SOFTWARE PROVIDED HEREUNDER IS ON
-* AN "AS IS" BASIS, AND THE UNIVERSITY OF NORTH CAROLINA AT CHAPEL HILL AND THE
-* AUTHORS HAVE NO OBLIGATIONS TO PROVIDE MAINTENANCE, SUPPORT, UPDATES,
-* ENHANCEMENTS, OR MODIFICATIONS.
-*
-* Please send all bug reports to <geom@cs.unc.edu>.
-*
-* The authors may be contacted via:
-*
-* Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
-* Dept. of Computer Science
-* 201 S. Columbia St.
-* Frederick P. Brooks, Jr. Computer Science Bldg.
-* Chapel Hill, N.C. 27599-3175
-* United States of America
-*
-* <http://gamma.cs.unc.edu/RVO2/>
-*/
-
 #include <algorithm>
 
 #include "../include/SFSimulator.h"
-
 #include "../include/KdTree.h"
 #include "../include/Agent.h"
 #include "../include/Obstacle.h"
 
 namespace SF
 {
-  KdTree::KdTree(SFSimulator* sim) : 
-	  agents_(), 
-	  agentTree_(), 
-	  obstacleTree_(nullptr), 
-	  sim_(sim)
-  {
-  }
+	/// <summary> Constructs a kd-tree instance </summary>
+	/// <param name="sim"> The simulator instance </param>
+	KdTree::KdTree(SFSimulator* sim) : 
+		agents_(), 
+		agentTree_(), 
+		obstacleTree_(nullptr), 
+		sim_(sim)
+	{  }
 
-  KdTree::~KdTree()
-  {
-    deleteObstacleTree(obstacleTree_);
-  }
-
-  void KdTree::buildAgentTree()
-  {
-    if (agents_.size() < sim_->agents_.size()) {
-      for (auto i = agents_.size(); i < sim_->agents_.size(); ++i) {
-		  if (!sim_->agents_[i]->isDeleted_)
-		  {
-			  agents_.push_back(sim_->agents_[i]);
-		  }
-      }
-      agentTree_.resize(2 * agents_.size() - 1);
-    }
-    
-    if (!agents_.empty()) {
-      buildAgentTreeRecursive(0, agents_.size(), 0);
-    }
-  }
-
-  void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node)
-  {
-    agentTree_[node].begin = begin;
-    agentTree_[node].end = end;
-    agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
-    agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
-    
-    for (auto i = begin + 1; i < end; ++i) 
+	/// <summary> Destructor </summary>
+	KdTree::~KdTree()
 	{
-		auto tree = agentTree_[node];
-		auto position = agents_[i]->position_;
+		deleteObstacleTree(obstacleTree_);
+	}
 
-		tree.maxX = std::max(tree.maxX, position.x());
-		tree.minX = std::min(tree.minX, position.x());
-		tree.maxY = std::max(tree.maxY, position.y());
-		tree.minY = std::min(tree.minY, position.y());
+	/// <summary> Builds an agent kd-tree </summary>
+	void KdTree::buildAgentTree()
+	{
+		if (agents_.size() < sim_->agents_.size()) 
+		{
+			for (auto i = agents_.size(); i < sim_->agents_.size(); ++i) 
+				if (!sim_->agents_[i]->isDeleted_)
+					agents_.push_back(sim_->agents_[i]);
+			
+			agentTree_.resize(2 * agents_.size() - 1);
+		}
+    
+		if (!agents_.empty()) 
+			buildAgentTreeRecursive(0, agents_.size(), 0);
+	}
 
-		agentTree_[node] = tree;
-    }
+	/// <summary> Builds an agent kd-tree </summary>
+	/// <param name="begin"> Begin node  </param>
+	/// <param name="end"> End node  </param>
+	/// <param name="node"> Selected node  </param>
+	void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node)
+	{
+		agentTree_[node].begin = begin;
+		agentTree_[node].end = end;
+		agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
+		agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
+    
+		for (auto i = begin + 1; i < end; ++i) 
+		{
+			auto tree = agentTree_[node];
+			auto position = agents_[i]->position_;
 
-    if (end - begin > MAX_LEAF_SIZE) {
-      /* No leaf node. */
-      const auto isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
-      const auto splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
+			tree.maxX = std::max(tree.maxX, position.x());
+			tree.minX = std::min(tree.minX, position.x());
+			tree.maxY = std::max(tree.maxY, position.y());
+			tree.minY = std::min(tree.minY, position.y());
 
-	  auto left = begin;
-	  auto right = end;
+			agentTree_[node] = tree;
+		}
 
-      while (left < right) {
-        while (left < right && (isVertical ? agents_[left]->position_.x() : agents_[left]->position_.y()) < splitValue) {
-          ++left;
-        }
+		if (end - begin > MAX_LEAF_SIZE) 
+		{
+			// No leaf node
+			const auto isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
+			const auto splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
 
-        while (right > left && (isVertical ? agents_[right-1]->position_.x() : agents_[right-1]->position_.y()) >= splitValue) {
-          --right;
-        }
+			auto left = begin;
+			auto right = end;
 
-        if (left < right) {
-          std::swap(agents_[left], agents_[right-1]);
-          ++left;
-          --right;
-        }
-      }
+			while (left < right) 
+			{
+				while (left < right && (isVertical ? agents_[left]->position_.x() : agents_[left]->position_.y()) < splitValue) 
+					++left;
+				
+				while (right > left && (isVertical ? agents_[right-1]->position_.x() : agents_[right-1]->position_.y()) >= splitValue)
+					--right;
+				
+				if (left < right) 
+				{
+					std::swap(agents_[left], agents_[right-1]);
+					++left;
+					--right;
+				}
+			}
 
-	  auto leftSize = left - begin;
+			auto leftSize = left - begin;
 
-      if (leftSize == 0) {
-        ++leftSize;
-        ++left;
-        ++right;
-      }
+			if (leftSize == 0) {
+				++leftSize;
+				++left;
+				++right;
+			}
 
-      agentTree_[node].left = node + 1;
-      agentTree_[node].right = node + 1 + (2 * leftSize - 1);
+			agentTree_[node].left = node + 1;
+			agentTree_[node].right = node + 1 + (2 * leftSize - 1);
 
-      buildAgentTreeRecursive(begin, left, agentTree_[node].left);
-      buildAgentTreeRecursive(left, end, agentTree_[node].right);
-    }
-  }
+			buildAgentTreeRecursive(begin, left, agentTree_[node].left);
+			buildAgentTreeRecursive(left, end, agentTree_[node].right);
+		}
+	}
 
+	/// <summary> Builds an obstacle kd-tree </summary>
 	void KdTree::buildObstacleTree()
 	{
 		deleteObstacleTree(obstacleTree_);
@@ -165,6 +116,9 @@ namespace SF
 		obstacleTree_ = buildObstacleTreeRecursive(obstacles);
 	}
 
+	/// <summary> Builds an obstacle kd-tree </summary>
+	/// <param name="obstacles"> Obstacles set  </param>
+	/// <returns> The tree </returns>
 	KdTree::ObstacleTreeNode* KdTree::buildObstacleTreeRecursive(const std::vector<Obstacle*>& obstacles)
 	{
 		if (obstacles.empty())
@@ -264,21 +218,32 @@ namespace SF
 		return node;
 	}
 
-  void KdTree::computeAgentNeighbors(Agent* agent, float& rangeSq) const
-  {
-    queryAgentTreeRecursive(agent, rangeSq, 0);
-  }
+	/// <summary> Computes the agent neighbors of the specified agent </summary>
+	/// <param name="agent"> A pointer to the agent for which agent neighbors are to be computed </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
+	void KdTree::computeAgentNeighbors(Agent* agent, float& rangeSq) const
+	{
+		queryAgentTreeRecursive(agent, rangeSq, 0);
+	}
 
-  void KdTree::computeAgentNeighborsIndexList(Agent* agent, float& rangeSq) const
-  {
-    queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, 0);
-  }
+	/// <summary> Computes the agent ID neighbors of the specified agent </summary>
+	/// <param name="agent"> A pointer to the agent for which agent ID neighbors are to be computed </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
+	void KdTree::computeAgentNeighborsIndexList(Agent* agent, float& rangeSq) const
+	{
+		queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, 0);
+	}
 
+	/// <summary> Computes the obstacle neighbors of the specified agent </summary>
+	/// <param name="agent"> A pointer to the obstacle for which agent neighbors are to be computed </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
 	void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
 	{
 		queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
 	}
 
+	/// <summary> Deletes the specified obstacle tree node </summary>
+	/// <param name="agent"> A pointer to the obstacle tree node to be deleted </param>
 	void KdTree::deleteObstacleTree(ObstacleTreeNode* node) const
 	{
 		if (node != nullptr) 
@@ -289,71 +254,95 @@ namespace SF
 		}
 	}
 
-  void KdTree::queryAgentTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
-  {
-    if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) {
-      for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) {
-		  if(!(agents_[i]->isDeleted_))
-			agent->insertAgentNeighbor(agents_[i], rangeSq);
-      }
-    } else {
-      const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
+	/// <summary> Inserts the specified agent tree node </summary>
+	/// <param name="agent"> A pointer to the agent for which agent neighbors are to be inserted </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
+	/// <param name="node"> The specified node </param>
+	void KdTree::queryAgentTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
+	{
+		if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) 
+		{
+			for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
+			{
+				if(!(agents_[i]->isDeleted_))
+				agent->insertAgentNeighbor(agents_[i], rangeSq);
+			}
+		} 
+		else 
+		{
+			const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
 
-      const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
+			const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
 
-      if (distSqLeft < distSqRight) {
-        if (distSqLeft < rangeSq) {
-          queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
+			if (distSqLeft < distSqRight) 
+			{
+				if (distSqLeft < rangeSq) 
+				{
+					queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
 
-          if (distSqRight < rangeSq) {
-            queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
-          }
-        }
-      } else {
-        if (distSqRight < rangeSq) {
-          queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+					if (distSqRight < rangeSq) 
+						queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+				}
+			} 
+			else 
+			{
+				if (distSqRight < rangeSq) 
+				{
+					queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
 
-          if (distSqLeft < rangeSq) {
-            queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
-          }
-        }
-      }
+					if (distSqLeft < rangeSq) 
+						queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
+				}
+			}
+		}
+	}
 
-    }
-  }
+	/// <summary> Inserts the specified agent ID tree node </summary>
+	/// <param name="agent"> A pointer to the agent for which agent ID neighbors are to be inserted </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
+	/// <param name="node"> The specified node </param>
+	void KdTree::queryAgentNeighborsIndexListTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
+	{
+		if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) 
+		{
+			for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
+			{
+				agent->insertAgentNeighborsIndex(agents_[i], rangeSq);
+			}
+		} 
+		else 
+		{
+			const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
 
-  void KdTree::queryAgentNeighborsIndexListTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
-  {
-    if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) {
-      for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) {
-        agent->insertAgentNeighborsIndex(agents_[i], rangeSq);
-      }
-    } else {
-      const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
+			const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
 
-      const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
+			if (distSqLeft < distSqRight) 
+			{
+				if (distSqLeft < rangeSq) 
+				{
+					queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].left);
 
-      if (distSqLeft < distSqRight) {
-        if (distSqLeft < rangeSq) {
-          queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].left);
+					if (distSqRight < rangeSq) 
+						queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].right);
+				}
+			} 
+			else 
+			{
+				if (distSqRight < rangeSq) 
+				{
+					queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].right);
 
-          if (distSqRight < rangeSq) {
-            queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].right);
-          }
-        }
-      } else {
-        if (distSqRight < rangeSq) {
-          queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].right);
+					if (distSqLeft < rangeSq) 
+						queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].left);
+				}
+			}
+		}
+	}
 
-          if (distSqLeft < rangeSq) {
-            queryAgentNeighborsIndexListTreeRecursive(agent, rangeSq, agentTree_[node].left);
-          }
-        }
-      }
-
-    }
-  }
-
+	/// <summary> Inserts the specified obstacle tree node </summary>
+	/// <param name="agent"> A pointer to the agent for which obstacle neighbors are to be computed </param>
+	/// <param name="rangeSq"> The squared range around the agent </param>
+	/// <param name="node"> The specified node </param>
 	void KdTree::queryObstacleTreeRecursive(Agent* agent, float rangeSq, const ObstacleTreeNode* node) const
 	{
 		if (node == nullptr)
@@ -374,37 +363,50 @@ namespace SF
 		}
 	}
 
-  bool KdTree::queryVisibility(const Vector2& q1, const Vector2& q2, float radius) const
-  {
-    return queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
-  }
+	/// <summary> Queries the visibility between two points within a specified radius </summary>
+	/// <param name="q1"> The first point between which visibility is to be tested </param>
+	/// <param name="q2"> The second point between which visibility is to be tested </param>
+	/// <param name="radius"> The radius within which visibility is to be tested </param>
+	/// <returns> True if q1 and q2 are mutually visible within the radius; false otherwise </returns>
+	bool KdTree::queryVisibility(const Vector2& q1, const Vector2& q2, float radius) const
+	{
+		return queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
+	}
 
-  bool KdTree::queryVisibilityRecursive(const Vector2& q1, const Vector2& q2, float radius, const ObstacleTreeNode* node) const
-  {
-    if (node == nullptr) {
-      return true;
-    } else {
-      const auto obstacle1 = node->obstacle;
-      const auto obstacle2 = obstacle1->nextObstacle;
+	/// <summary> Queries the visibility between two points within a specified radius </summary>
+	/// <param name="q1"> The first point between which visibility is to be tested </param>
+	/// <param name="q2"> The second point between which visibility is to be tested </param>
+	/// <param name="node"> The selected node </param>
+	/// <param name="radius"> The radius within which visibility is to be tested </param>
+	/// <returns> True if q1 and q2 are mutually visible within the radius; false otherwise </returns>
+	bool KdTree::queryVisibilityRecursive(const Vector2& q1, const Vector2& q2, float radius, const ObstacleTreeNode* node) const
+	{
+		if (node == nullptr) 
+			return true;
+		else 
+		{
+			const auto obstacle1 = node->obstacle;
+			const auto obstacle2 = obstacle1->nextObstacle;
 
-      const auto q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q1);
-      const auto q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q2);
-      const auto invLengthI = 1.0f / absSq(obstacle2->point_ - obstacle1->point_);
+			const auto q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q1);
+			const auto q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q2);
+			const auto invLengthI = 1.0f / absSq(obstacle2->point_ - obstacle1->point_);
 
-      if (q1LeftOfI >= 0.0f && q2LeftOfI >= 0.0f) {
-        return queryVisibilityRecursive(q1, q2, radius, node->left) && ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) && sqr(q2LeftOfI) * invLengthI >= sqr(radius)) || queryVisibilityRecursive(q1, q2, radius, node->right));
-      } else if (q1LeftOfI <= 0.0f && q2LeftOfI <= 0.0f) {
-        return queryVisibilityRecursive(q1, q2, radius, node->right) && ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) && sqr(q2LeftOfI) * invLengthI >= sqr(radius)) || queryVisibilityRecursive(q1, q2, radius, node->left));
-      } else if (q1LeftOfI >= 0.0f && q2LeftOfI <= 0.0f) {
-        /* One can see through obstacle from left to right. */
-        return queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right);
-      } else {
-        const auto point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
-        const auto point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
-        const auto invLengthQ = 1.0f / absSq(q2 - q1);
+			if (q1LeftOfI >= 0.0f && q2LeftOfI >= 0.0f)
+				return queryVisibilityRecursive(q1, q2, radius, node->left) && ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) && sqr(q2LeftOfI) * invLengthI >= sqr(radius)) || queryVisibilityRecursive(q1, q2, radius, node->right));
+			else if (q1LeftOfI <= 0.0f && q2LeftOfI <= 0.0f) 
+				return queryVisibilityRecursive(q1, q2, radius, node->right) && ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) && sqr(q2LeftOfI) * invLengthI >= sqr(radius)) || queryVisibilityRecursive(q1, q2, radius, node->left));
+			else if (q1LeftOfI >= 0.0f && q2LeftOfI <= 0.0f)
+				// One can see through obstacle from left to right
+				return queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right);
+			else 
+			{
+				const auto point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
+				const auto point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
+				const auto invLengthQ = 1.0f / absSq(q2 - q1);
 
-        return (point1LeftOfQ * point2LeftOfQ >= 0.0f && sqr(point1LeftOfQ) * invLengthQ > sqr(radius) && sqr(point2LeftOfQ) * invLengthQ > sqr(radius) && queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right));
-      }
-    }
-  }
+				return (point1LeftOfQ * point2LeftOfQ >= 0.0f && sqr(point1LeftOfQ) * invLengthQ > sqr(radius) && sqr(point2LeftOfQ) * invLengthQ > sqr(radius) && queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right));
+			}
+		}
+	}
 }
