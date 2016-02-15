@@ -174,7 +174,6 @@ namespace SF
 		float neighborDist,
 		size_t maxNeighbors, 
 		float timeHorizon,
-		float timeHorizonObst, 
 		float radius, 
 		float maxSpeed, 
 		float accelerationCoefficient, 
