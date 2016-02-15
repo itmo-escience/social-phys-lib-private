@@ -1,6 +1,6 @@
 #include "../include/SimpleMatrix.h"
 
-
+/// <summary> Sets an identity matrix </summary>
 SimpleMatrix::SimpleMatrix(void)
 {
     m11 = m22 = m33 = m44 = 1;
@@ -10,6 +10,7 @@ SimpleMatrix::SimpleMatrix(void)
     m41 = m42 = m43 = 0.0f;
 }
 
+/// <summary> Sets a determined matrix </summary>
 SimpleMatrix::SimpleMatrix(float value)
 {
     m11 = m12 = m13 = m14 =
@@ -18,6 +19,7 @@ SimpleMatrix::SimpleMatrix(float value)
     m41 = m42 = m43 = m44 = value;
 }
 
+/// <summary> Sets a determined matrix </summary>
 SimpleMatrix::SimpleMatrix(
         float out11, float out12, float out13, float out14,
         float out21, float out22, float out23, float out24,
@@ -30,10 +32,13 @@ SimpleMatrix::SimpleMatrix(
     m41 = out41; m42 = out42; m43 = out43; m44 = out44; 
 }
 
+/// <summary> Destructor </summary>
 SimpleMatrix::~SimpleMatrix(void)
 {
 }
 
+/// <summary> Gets an inverted matrix </summary>
+/// <returns> Inverted matrix </returns>
 SimpleMatrix SimpleMatrix::getInvert()
 {
     float b0 = (m31 * m42) - (m32 * m41);
