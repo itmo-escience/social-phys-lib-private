@@ -1,8 +1,3 @@
-/*
- *  Agent.cpp
- *  SF Library.
- */
-
 #include <algorithm>
 
 #include "../include/Agent.h"
@@ -11,55 +6,54 @@
 
 namespace SF
 {
-	// instance constructor
+	/// <summary> Defines an agent in the simulation </summary>
+	/// <param name="sim"> The simulator instance </param>
 	Agent::Agent(SFSimulator* sim) :
-		isDeleted_(false),					// agent mark for deleting {true, false} : bool
-		isForced_(false),					// prevents high speed after meeting with the obstacle {true, false} : bool
-		id_(0),								// unique identifier [0, 1, ... , +inf) : int
-		maxNeighbors_(0),					// max count of neighbors [0, 1, ... , +inf) : int
-		acceleration_(0),					// [0, ... , +inf) : float
-		relaxationTime_(0),					// time of approching the max agent speed  (0, ... , +inf) : float
-		maxSpeed_(0.0f),					// max agent speed (0, ... , +inf) : float
-		neighborDist_(0.0f),				// min distance for agent's neighbors [0, ... , +inf) : float
-		radius_(0.0f),						// agent's zone defined by radius [0, ... , +inf) : float
-		timeHorizonObst_(0.0f),				// [0, ... , +inf) : float
-		accelerationCoefficient_(0),		// accelereation factor coefficient for acceleration term [0, ... , +inf) : float
-		repulsiveAgent_(0),					// repulsive exponential agent coefficient for agent repulsive force [0, ... , +inf) : float
-		repulsiveAgentFactor_(0),			// repulsive factor agent coefficient for agent repulsive force [0, ... , +inf) : float
-		repulsiveObstacle_(0),				// repulsive exponential obstacle coefficient for obstacle repulsive force [0, ... , +inf) : float
-		repulsiveObstacleFactor_(0),		// repulsive factor obstacle coefficient for obstacle repulsive force [0, ... , +inf) : float
-		obstacleRadius_(0.1f),				// min agent<->obstacle distance [0, ... , +inf) : float
-		platformFactor_(0),					// factor platform coefficient for moving platform force [0, ... , +inf) : float
-		perception_(0),						// defines angle of eye perception [0, ... , +inf) : float
-		friction_(0),						// friction platform coefficient [0, ... , +inf) : float
-		obstaclePressure_(),				// total pressure for obstacle repulsive force [0, ... , +inf) : float
-		agentPressure_(),					// total pressure for agent repulsive force [0, ... , +inf) : float
-		correction(),						// current result vector force 
-		newVelocity_(),						// resulting vector force
-		position_(),						// agent's position
-		prefVelocity_(),					// pre-computed agent's desired velocity
-		previosPosition_(INT_MIN, INT_MIN),	// saved previous agent's position
-		velocity_(),						// agent's velocity
-		obstacleTrajectory_(),				// graphic agent's trajectory
+		isDeleted_(false),					// mark for deleting 
+		isForced_(false),					// mark preventing high speed after meeting with the obstacle 
+		id_(0),								// unique identifier 
+		maxNeighbors_(0),					// max count of neighbors
+		acceleration_(0),					// acceleration buffer preventing high speed after meeting with the obstacle 
+		relaxationTime_(0),					// time of approching the max speed  
+		maxSpeed_(0.0f),					// max speed 
+		neighborDist_(0.0f),				// min distance for neighbors 
+		radius_(0.0f),						// range around agent defined by radius 
+		timeHorizonObst_(0.0f),				// iteration time interval
+		accelerationCoefficient_(0),		// accelereation factor coefficient for acceleration term 
+		repulsiveAgent_(0),					// repulsive exponential agent coefficient for agent repulsive force 
+		repulsiveAgentFactor_(0),			// repulsive factor agent coefficient for agent repulsive force 
+		repulsiveObstacle_(0),				// repulsive exponential obstacle coefficient for obstacle repulsive force 
+		repulsiveObstacleFactor_(0),		// repulsive factor obstacle coefficient for obstacle repulsive force 
+		obstacleRadius_(0.1f),				// min agent to obstacle distance 
+		platformFactor_(0),					// factor platform coefficient for moving platform force 
+		perception_(0),						// angle of perception 
+		friction_(0),						// friction platform coefficient for moving platform force
+		obstaclePressure_(),				// total pressure for obstacle repulsive force 
+		agentPressure_(),					// total pressure for agent repulsive force 
+		correction(),						// current correction vector
+		newVelocity_(),						// new result vector
+		position_(),						// current position
+		prefVelocity_(),					// pre-computed velocity
+		previosPosition_(INT_MIN, INT_MIN),	// saved previous position
+		velocity_(),						// current result vector
+		obstacleTrajectory_(),				// graphic representation of result force
 		oldPlatformVelocity_(),				// saved previous platform velocity
-		obstacleNeighbors_(),				// vector of neighbor obstacles
-		agentNeighbors_(),					// vector of neighbor agents
-		agentNeighborsIndexList_(),			// vector of neighbor agent identifiers
-		attractiveTimeList_(),				// vector of attractive point times
-		isUsedAttractivePoint_(false),		// mark for used attractive points {true, false} : bool
-		attractiveIds_(),					// vector of attractive agent identifiers
-		speedList_(),						// map with agent apeeds
-		sim_(sim)							// simulator interface
+		obstacleNeighbors_(),				// list of neighbor obstacles
+		agentNeighbors_(),					// list of neighbor agents
+		agentNeighborsIndexList_(),			// list of neighbor agent identifiers
+		attractiveIds_(),					// list of attractive agent identifiers
+		speedList_(),						// map of agent speeds
+		sim_(sim)							// simulator instance
 	{ 
 		
 	  setNullSpeed(id_);
 	}
 
-	// destructor
+	/// <summary> Destructor </summary>
 	Agent::~Agent()
 	{ }
 
-	// computing obstacle & agent neighbors
+	/// <summary> Computes the neighbors of this agent </summary>
 	void Agent::computeNeighbors()
 	{
 		// obstacle section
@@ -76,7 +70,9 @@ namespace SF
 		}
 	}
 
-	// sets value corresponding identifier in the speed map
+	/// <summary> Updates speed list containing speed values corresponding each agent  </summary>
+	/// <param name="index"> Agent ID </param>
+	/// <param name="value"> New speed value </param>
 	void Agent::setSpeedList(size_t index, float value)
 	{
 		if (speedList_.count(index) < 1)
@@ -85,23 +81,30 @@ namespace SF
 			speedList_[index] = value;
 	}
 
-	// null-initialization
+	/// <summary> Null-initialization for speed list </summary>
+	/// <param name="id"> Agent ID </param>
 	void Agent::setNullSpeed(size_t id)
 	{
 		if (speedList_.count(id) < 1)
 			setSpeedList(id, 0.0f);
 	}
 
-	// returns value corresponding the angle of eye perception
-	float Agent::getPerception(Vector2 *arg1, Vector2 *arg2) const
+	/// <summary> Finds perception of some point </summary>
+	/// <param name="from"> Agent position </param>
+	/// <param name="to"> Position of percepted point </param>
+	/// <returns> The angle of perception </returns>
+	float Agent::getPerception(Vector2 *from, Vector2 *to) const
 	{
-		if (getLength(*arg1) * getLength(*arg2) * getCos(*arg1, *arg2) > 0)
+		if (getLength(*from) * getLength(*to) * getCos(*from, *to) > 0)
 			return 1;
 
 		return perception_;
 	}
 
-	// returns the normalized speed
+	/// <summary> Normalizing the velocity </summary>
+	/// <param name="currentSpeed"> Current speed </param>
+	/// <param name="maxSpeed"> Max speed </param>
+	/// <returns> Normalized speed </returns>
 	float Agent::getNormalizedSpeed(float currentSpeed, float maxSpeed) const
 	{
         if (currentSpeed <= maxSpeed)
@@ -110,7 +113,7 @@ namespace SF
         return maxSpeed / currentSpeed;
     }
 
-	// acceleration term method
+	/// <summary> Acceleration term method </summary>
 	void Agent::getAccelerationTerm()
 	{
 		setNullSpeed(id_);
@@ -202,7 +205,7 @@ namespace SF
 
 	}
 
-	// repulsive agent force
+	/// <summary> Repulsive agent force </summary>
 	void Agent::getRepulsiveAgentForce()
 	{
 		double pressure = 0;
@@ -251,7 +254,7 @@ namespace SF
 		correction += forceSum;
 	}
 
-	// repulsive obstacle force
+	/// <summary> Repulsive obstacle force </summary>
 	void Agent::getRepulsiveObstacleForce()
 	{
 		auto forceSum = Vector2();
@@ -362,7 +365,7 @@ namespace SF
 			obstacleTrajectory_ = position_;
 	}
 
-	// attractive force
+	/// <summary> Attractive force </summary>
 	void Agent::getAttractiveForce()
 	{
 		if(attractiveIds_.size() > 0)
@@ -387,7 +390,7 @@ namespace SF
 		}
 	}
 
-	// moving platform force
+	/// <summary> Moving platform force </summary>
 	void Agent::getMovingPlatformForce()
 	{
 		if (sim_->rotationFuture_ != Vector3())
@@ -549,7 +552,7 @@ namespace SF
 		}
 	}
 
-	// search for the best new velocity
+	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
 		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
@@ -569,7 +572,9 @@ namespace SF
 		newVelocity_ += correction;
 	}
 
-	// safe inserting agents into agent neighbor vector
+	/// <summary> Inserts an agent neighbor into the set of neighbors of this agent </summary>
+	/// <param name="agent"> A pointer to the agent to be inserted </param>
+	/// <param name="rangeSq"> The squared range around this agent </param>
 	void Agent::insertAgentNeighbor(const Agent* agent, float& rangeSq)
 	{
 		if (this != agent) 
@@ -597,7 +602,9 @@ namespace SF
 		}
 	}
 
-	// safe inserting obstacles into obstacle neighbor vector
+	/// <summary> Inserts a static obstacle neighbor into the set of neighbors of this agent </summary>
+	/// <param name="agent"> A pointer to the obstacle to be inserted </param>
+	/// <param name="rangeSq"> The squared range around this agent </param>
 	void Agent::insertObstacleNeighbor(const Obstacle* obstacle, float rangeSq)
 	{
 		const Obstacle* const nextObstacle = obstacle->nextObstacle;
@@ -619,7 +626,9 @@ namespace SF
 		}
 	}
 
-	// safe inserting agent index into agent identifier neighbor vector
+	/// <summary> Inserts an neighbor agent identifier into the set of neighbors of this agent </summary>
+	/// <param name="agent"> A pointer to the agent ID to be inserted </param>
+	/// <param name="rangeSq"> The squared range around this agent </param>
 	void Agent::insertAgentNeighborsIndex(const Agent* agent, float& rangeSq)
 	{
 		if (this != agent) 
@@ -642,7 +651,11 @@ namespace SF
 		}
 	}
 
-	// computing the nearest point for two other points
+	/// <summary> Gets point on line nearest to selected position  </summary>
+	/// <param name="start"> Position of start of line </param>
+	/// <param name="end"> Position of end of line </param>
+	/// <param name="point"> Selected point </param>
+	/// <returns> The nearest point </returns>
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
 		auto relativeEndPoint = *end - *start;
@@ -657,20 +670,26 @@ namespace SF
 			return *start + static_cast<float>(lambda) * relativeEndPoint;
 	}
 
-	// service min computing
+	/// <summary> Returns the smaller of two float numbers </summary>
+	/// <param name="end"> First number </param>
+	/// <param name="point"> Second number </param>
+	/// <returns> Smaller number </returns>
 	inline float getMinFloat(float a, float b)
 	{
 		return a < b ? a : b;
 	}
 
-	// used for acceleration term method calling
-	// TODO: you can improve some logic
+	/// <summary> Used for acceleration term method calling </summary>
 	void Agent::update()
 	{
+		// TODO: you can improve some logic
 		getAccelerationTerm();
 	}
 
-	// matrix cross for moving platform
+	/// <summary> Matrix cross for moving platform </summary>
+	/// <param name="left"> Left matrix </param>
+	/// <param name="right"> Right matrix </param>
+	/// <returns> Result matrix </returns>
 	Vector3 Agent::getCross(const Vector3 &left, const Vector3 &right) const
 	{
 		float 
@@ -685,19 +704,26 @@ namespace SF
 		return Vector3(X, Y, Z);
 	}
 
-	// service degrees->radians method
+	/// <summary> Degree-to-radian conversion </summary>
+	/// <param name="degree"> Degree value </param>
+	/// <returns> Radian value </returns>
 	double Agent::degreesToRadians(float degree) const
 	{
         return degree * (M_PI / 180.0f);
     }
 
-	// service radians->degrees method
+	/// <summary> Radian-to-degree conversion </summary>
+	/// <param name="radian"> Radian value </param>
+	/// <returns> Degree value </returns>
 	double Agent::radiansToDegrees(float radian) const
 	{
         return radian * (180.0f / M_PI);
     }
 
-	// returns current roll
+	/// <summary> Gets current roll </summary>
+	/// <param name="pt"> Rotation projection type </param>
+	/// <param name="tt"> Rotation time type </param>
+	/// <returns> Roll </returns>
 	Vector3 Agent::getRoll(ParameterType pt, TimeType tt) const
 	{
 		Vector3 rotation;
@@ -726,7 +752,10 @@ namespace SF
 		return Vector3(value, value, value);
 	}
 
-	// returns the omega value
+	/// <summary> Gets Omega matrix </summary>
+	/// <param name="pt"> Rotation projection type </param>
+	/// <param name="tt"> Rotation time type </param>
+	/// <returns> Omega matrix </returns>
 	Vector3 Agent::getOmega(ParameterType pt, TimeType tt)
 	{
 		float value = 0;
@@ -750,7 +779,10 @@ namespace SF
 		return Vector3();
 	}
 
-	// returns the dOmega value
+	/// <summary> Gets DOmega matrix </summary>
+	/// <param name="pt"> Rotation projection type </param>
+	/// <param name="tt"> Rotation time type </param>
+	/// <returns> DOmega matrix </returns>
 	Vector3 Agent::getDOmega(ParameterType pt, TimeType tt)
 	{
 		float value = 0;
@@ -770,7 +802,12 @@ namespace SF
 		return Vector3();
 	}
 
-	// has intersection computing method
+	/// <summary> Has intersection computing method </summary>
+	/// <param name="a"> Start of first line </param>
+	/// <param name="b"> End of first line </param>
+	/// <param name="c"> Start of second line </param>
+	/// <param name="d"> End of second line </param>
+	/// <returns> True if two lines has intersection, false elsewhere </returns>
 	bool Agent::isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
 		auto v1 = (d.x() - c.x())*(a.y() - c.y()) - (d.y() - c.y())*(a.x() - c.x());
@@ -781,7 +818,12 @@ namespace SF
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
 	}
 
-	// returns intersection point method
+	/// <summary> Gets intersection point </summary>
+	/// <param name="a"> Start of first line </param>
+	/// <param name="b"> End of first line </param>
+	/// <param name="c"> Start of second line </param>
+	/// <param name="d"> End of second line </param>
+	/// <returns> Intersection point </returns>
 	Vector2 Agent::getIntersection(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
 		float 
@@ -800,7 +842,9 @@ namespace SF
 		return Vector2(x, y);
 	}
 
-	// returns rotation X matrix for movement platform
+	/// <summary> Gets rotation X matrix </summary>
+	/// <param name="angle"> Rotation angle </param>
+	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationX(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
@@ -816,7 +860,9 @@ namespace SF
 		return result;
 	}
 
-	// returns rotation Y matrix for movement platform
+	/// <summary> Gets rotation Y matrix </summary>
+	/// <param name="angle"> Rotation angle </param>
+	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationY(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
@@ -832,7 +878,9 @@ namespace SF
 		return result;
 	}
 
-	// returns rotation Z matrix for movement platform
+	/// <summary> Gets rotation Z matrix </summary>
+	/// <param name="angle"> Rotation angle </param>
+	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationZ(float angle) const
 	{
 		auto result = SimpleMatrix();	// identity
