@@ -18,7 +18,6 @@ namespace SF2D {
 		float NeighborDist;
 		int MaxNeighbors;
 		float TimeHorizon;
-		float ObsHorizon;
 		float Radius;
 		float MaxSpeed;
 		float AccelerationCoefficient;
@@ -39,7 +38,6 @@ namespace SF2D {
 			float neighborDist, 
 			int maxNeighbors, 
 			float timeHorizon,
-			float obsHorizon,
 			float radius, 
 			float maxSpeed, 
 			float accelerationCoefficient,
@@ -59,7 +57,6 @@ namespace SF2D {
 		float _neighborDist;
 		int _maxNeighbors;
 		float _timeHorizon;
-		float _obsHorizon;
 		float _radius;
 		float _maxSpeed;
 		float _accelerationCoefficient;
@@ -90,7 +87,6 @@ namespace SF2D {
 					SFVector2 position, 
 					float neighborDist, 
 					int maxNeighbors, 
-					float timeHorizon,
 					float timeHorizonObst, 
 					float radius, 
 					float maxSpeed, 

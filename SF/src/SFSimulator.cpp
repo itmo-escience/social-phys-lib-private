@@ -162,7 +162,6 @@ namespace SF
 		const Vector2& position,
 		float neighborDist,
 		size_t maxNeighbors,
-		float timeHorizon,		// never used
 		float timeHorizonObst,
 		float radius,
 		float maxSpeed,
