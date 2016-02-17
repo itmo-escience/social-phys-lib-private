@@ -785,6 +785,10 @@ namespace SF
 			}
 		}
 
+		defaultAgent_->repulsiveAgent_ = newRepulsiveAgent_;
+		defaultAgent_->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
+		defaultAgent_->repulsiveObstacle_ = newRepulsiveObstacle_;
+		defaultAgent_->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
 	}
 
 	/// <summary> Returns the agent pressure</summary>
