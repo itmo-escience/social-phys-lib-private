@@ -180,15 +180,15 @@ namespace SF
 			auto difference = p - previosPosition_;
 			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
 
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= 2)
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
 			{
-				if (m >= 0 && m <= 1)
+				if (m >= 0 && m <= TOLERANCE / 2)
 					position_ = previosPosition_ + difference * m;
 				else
 					position_ = previosPosition_;
 			}
 
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) > 2)
+			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
 				position_ = previosPosition_;
 
 			if (getLength(difference) <= obstacleRadius_)
