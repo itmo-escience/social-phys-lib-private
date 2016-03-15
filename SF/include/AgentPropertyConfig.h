@@ -8,8 +8,8 @@ namespace SF
 	class AgentPropertyConfig
 	{
 	public:
-		float _neighborDist;				// min distance for neighbors 
 		size_t _maxNeighbors;				// max count of neighbors
+		float _neighborDist;				// min distance for neighbors 
 		float _timeHorizon;					// iteration time interval
 		float _radius;						// range around agent defined by radius 
 		float _maxSpeed;					// max speed 
