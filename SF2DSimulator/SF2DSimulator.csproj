@@ -70,6 +70,12 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SF2DWrapper\SF2DWrapper.vcxproj">
+      <Project>{25bb6d66-3cf0-4819-ab32-770204463b99}</Project>
+      <Name>SFWrapper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
