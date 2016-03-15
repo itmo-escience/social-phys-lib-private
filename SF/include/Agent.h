@@ -54,7 +54,7 @@ namespace SF
 		/// <summary> Inserts an neighbor agent identifier into the set of neighbors of this agent </summary>
 		/// <param name="agent"> A pointer to the agent ID to be inserted </param>
 		/// <param name="rangeSq"> The squared range around this agent </param>
-		void insertAgentNeighborsIndex(const Agent* agent, float& rangeSq);
+		void insertAgentNeighborsIndex(const Agent* agent, const float& rangeSq);
 
 		/// <summary> Inserts a static obstacle neighbor into the set of neighbors of this agent </summary>
 		/// <param name="agent"> A pointer to the obstacle to be inserted </param>
