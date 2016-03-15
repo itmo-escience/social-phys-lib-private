@@ -84,8 +84,7 @@ int SFSimulator::addAgent(
 	return _sim->addAgent(
 		pos,
 		neighborDist, 
-		maxNeighbors, 
-		timeHorizon, 
+		maxNeighbors,
 		timeHorizonObst,
 		radius, 
 		maxSpeed, 
@@ -211,7 +210,6 @@ void SFSimulator::setAgentDefaults(AgentProperty^ ap)
 		ap->NeighborDist, 
 		ap->MaxNeighbors,
 		ap->TimeHorizon,
-		ap->ObsHorizon,
 		ap->Radius,
 		ap->MaxSpeed,
 		ap->AccelerationCoefficient,
