@@ -620,11 +620,12 @@ namespace SF
 	/// <param name="idFoeDelete"> The attractive agent ID </param>
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		for (std::vector<int>::iterator i = agents_[id]->attractiveIds_.begin(); i != agents_[id]->attractiveIds_.end(); ++i)
+		auto aais = agents_[id]->attractiveIds_;
+		for (std::vector<int>::iterator i = aais.begin(); i != aais.end(); ++i)
 		{
 			if (*i == idForDelete)
 			{
-				agents_[id]->attractiveIds_.erase(i);
+				aais.erase(i);
 				break;
 			}
 		}
