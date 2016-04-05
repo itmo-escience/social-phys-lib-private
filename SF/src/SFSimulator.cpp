@@ -792,6 +792,32 @@ namespace SF
 		defaultAgent_->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
 	}
 
+	/// <summary> Computes grid separation for specified zone count </summary>
+	/// <param name="zoneCount"> Count of zones </param>
+	/// <returns> Pair of sides </returns>
+	std::vector<int> SFSimulator::getGridSidePair(int zoneCount) const
+	{
+		auto columnCount = static_cast<int>(sqrt(zoneCount));
+		auto rowCount = zoneCount / columnCount;
+
+		for (size_t i = columnCount; i > 0; i--)
+		{
+			if (zoneCount % i == 0)
+			{
+				columnCount = i;
+				rowCount = zoneCount / columnCount;
+
+				break;
+			}
+		}
+
+		auto result = new std::vector<int>();
+		result->push_back(columnCount);
+		result->push_back(rowCount);
+
+		return *result;
+	}
+
 	/// <summary> Returns the agent pressure</summary>
 	/// <param name="index"> The number of the agent </param>
 	/// <returns> The agent pressure </returns>
