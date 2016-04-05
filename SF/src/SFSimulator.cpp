@@ -795,7 +795,7 @@ namespace SF
 	/// <summary> Computes grid separation for specified zone count </summary>
 	/// <param name="zoneCount"> Count of zones </param>
 	/// <returns> Pair of sides </returns>
-	std::vector<int> SFSimulator::getGridSidePair(int zoneCount)
+	std::vector<int> SFSimulator::getGridSidePair(int zoneCount) const
 	{
 		auto columnCount = static_cast<int>(sqrt(zoneCount));
 		auto rowCount = zoneCount / columnCount;

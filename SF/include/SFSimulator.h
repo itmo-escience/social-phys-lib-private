@@ -386,7 +386,9 @@ namespace SF
 		/// <summary> Computes grid separation for specified zone count </summary>
 		/// <param name="zoneCount"> Count of zones </param>
 		/// <returns> Pair of sides </returns>
-		std::vector<int> getGridSidePair(int zoneCount);
+		std::vector<int> getGridSidePair(int zoneCount) const;
+
+
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
