@@ -855,25 +855,53 @@ namespace SF
 
 		for (size_t i = 0; i < agents_.size(); i++)
 		{
-			auto v = getZone(zoneCenters, agents_[i]->position_.x());
+			auto zone = getZone(zoneCenters, agents_[i]->position_.x());
 
-			auto findIterator = std::find(zoneNumbers.begin(), zoneNumbers.end(), v);
+			auto findIterator = std::find(zoneNumbers.begin(), zoneNumbers.end(), zone);
 			if (findIterator == zoneNumbers.end())
 			{
-				zoneNumbers.push_back(v);
+				zoneNumbers.push_back(zone);
 
 				auto voidList = std::vector<Agent*>();
 				voidList.push_back(agents_[i]);
-				result.insert_or_assign(v, voidList);
+				result.insert_or_assign(zone, voidList);
 			}
 			else
 			{
-				auto fullList = result[v];
+				auto fullList = result[zone];
 				fullList.push_back(agents_[i]);
-				result[v] = fullList;
+				result[zone] = fullList;
 			}
 		}
 
+		return result;
+	}
+
+	/// <summary> Computes division by latitude </summary>
+	/// <param name="agentList"> Current agent array </param>
+	/// <param name="rowCount"> Row count </param>
+	/// <param name="index"> Shift for longitude division </param>
+	/// <returns> Associative array of zone numbers </returns>
+	std::map<int, int> SFSimulator::divideByLatitude(std::vector<Agent*> agentList, int rowCount, int index)
+	{
+		auto latitudes = std::vector<double>();
+		auto result = std::map<int, int>();
+
+		for (size_t i = 0; i < agentList.size(); i++)
+			latitudes.push_back(agentList[i]->position_.y());
+		
+		std::sort(latitudes.begin(), latitudes.end());
+		
+		auto indexStep = latitudes.size() / rowCount;
+		auto zoneCenters = std::vector<double>();
+		for (size_t i = 1; i < rowCount; i++)
+			zoneCenters.push_back(latitudes[indexStep * i]);
+
+		std::sort(zoneCenters.begin(), zoneCenters.end());
+
+		for (size_t i = 0; i < agentList.size(); i++)
+			result[agentList[i]->id_] = getZone(zoneCenters, agentList[i]->position_.y()) + index;
+		
 		return result;
 	}
 
