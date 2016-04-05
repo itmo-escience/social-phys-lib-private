@@ -402,6 +402,13 @@ namespace SF
 		/// <returns> Associative array of precomputed zone numbers for future latitude division </returns>
 		std::map<int, std::vector<Agent*>> divideByLongitude(int columnCount);
 
+		/// <summary> Computes division by latitude </summary>
+		/// <param name="agentList"> Current agent array </param>
+		/// <param name="rowCount"> Row count </param>
+		/// <param name="index"> Shift for longitude division </param>
+		/// <returns> Associative array of zone numbers </returns>
+		std::map<int, int> divideByLatitude(std::vector<Agent*> agentList, int rowCount, int index);
+
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
 		Vector3 rotationPast2Now_;
