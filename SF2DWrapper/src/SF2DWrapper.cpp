@@ -515,3 +515,14 @@ void SFSimulator::updateSFParameters(float newRepulsiveAgent, float newRepulsive
 {
 	_sim->updateSFParameters(newRepulsiveAgent, newRepulsiveAgentFactor, newRepulsiveObstacle, newRepulsiveObstacleFactor);
 }
+
+System::Collections::Generic::Dictionary<int, int>^ SFSimulator::separate(int zoneCount)
+{
+	System::Collections::Generic::Dictionary<int, int>^ out = gcnew System::Collections::Generic::Dictionary<int, int>();
+	std::map<int, int> agents =	_sim->separate(zoneCount);
+
+	for (int i = 0; i < agents.size(); i++)
+		out->Add(i, agents[i]);
+
+	return out;
+}
