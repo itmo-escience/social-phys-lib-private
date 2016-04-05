@@ -795,7 +795,7 @@ namespace SF
 	/// <summary> Computes grid separation for specified zone count </summary>
 	/// <param name="zoneCount"> Count of zones </param>
 	/// <returns> Pair of sides </returns>
-	std::vector<int> SFSimulator::getGridSidePair(int zoneCount) const
+	std::vector<int> SFSimulator::getGrid(int zoneCount) const
 	{
 		auto columnCount = static_cast<int>(sqrt(zoneCount));
 		auto rowCount = zoneCount / columnCount;
@@ -857,8 +857,8 @@ namespace SF
 		{
 			auto zone = getZone(zoneCenters, agents_[i]->position_.x());
 
-			auto findIterator = std::find(zoneNumbers.begin(), zoneNumbers.end(), zone);
-			if (findIterator == zoneNumbers.end())
+			auto it = std::find(zoneNumbers.begin(), zoneNumbers.end(), zone);
+			if (it == zoneNumbers.end())
 			{
 				zoneNumbers.push_back(zone);
 
@@ -902,6 +902,36 @@ namespace SF
 		for (size_t i = 0; i < agentList.size(); i++)
 			result[agentList[i]->id_] = getZone(zoneCenters, agentList[i]->position_.y()) + index;
 		
+		return result;
+	}
+
+	std::map<int, int> SFSimulator::separate(int zoneCount)
+	{
+		auto grid = getGrid(zoneCount);
+		auto columnCount = grid[0];
+		auto rowCount = grid[1];
+
+		auto result = std::map<int, int>();
+
+		if (columnCount > 1)
+		{
+			auto columnSeparation = divideByLongitude(columnCount);
+
+			for (size_t column = 1; column < columnCount + 1; column++)
+			{
+				auto it = columnSeparation.find(column);
+				if (it != columnSeparation.end())
+				{
+					auto columnAgentList = divideByLatitude(columnSeparation[column], rowCount, rowCount * (column - 1));
+
+					for (auto agent : columnAgentList)
+						result._Insert_or_assign(agent.first, agent.second);
+				}
+			}
+		}
+		else
+			result = divideByLatitude(agents_, rowCount);
+
 		return result;
 	}
 
