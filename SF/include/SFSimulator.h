@@ -392,7 +392,7 @@ namespace SF
 		/// <param name="list"> Control position list </param>
 		/// <param name="currentCoord"> Current coord </param>
 		/// <returns> Zone number for coord </returns>
-		int getZone(std::vector<double> list, float currentCoord);
+		int getZone(std::vector<double> list, float currentCoord) const;
 
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
