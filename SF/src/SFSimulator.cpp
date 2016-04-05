@@ -14,7 +14,6 @@
 #if HAVE_OPENMP || _OPENMP
 #include <omp.h>
 #endif
-#include <algorithm>
 
 namespace SF
 {

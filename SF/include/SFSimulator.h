@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 #include "Vector2.h"
 #include "Vector3.h"
