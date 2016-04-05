@@ -3,12 +3,14 @@
 
 #include <limits>
 #include <vector>
+#include <map>
 #include <algorithm>
 
 #include "Vector2.h"
 #include "Vector3.h"
 #include "AgentPropertyConfig.h"
 #include "RotationDegreeSet.h"
+
 
 namespace SF
 {
@@ -390,11 +392,15 @@ namespace SF
 		std::vector<int> getGridSidePair(int zoneCount) const;
 
 		/// <summary> Returns zone number corresponding the position of agent </summary>
-		/// <param name="list"> Control position list </param>
+		/// <param name="coordList"> Control position list </param>
 		/// <param name="currentCoord"> Current coord </param>
 		/// <returns> Zone number for coord </returns>
-		int getZone(std::vector<double> list, float currentCoord) const;
+		int getZone(std::vector<double> coordList, float currentCoord) const;
 
+		/// <summary> Computes division by longitude </summary>
+		/// <param name="columnCount"> Column count </param>
+		/// <returns> Associative array of precomputed zone numbers for future latitude division </returns>
+		std::map<int, std::vector<Agent*>> divideByLongitude(int columnCount);
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				

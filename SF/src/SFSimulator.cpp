@@ -819,16 +819,62 @@ namespace SF
 	}
 
 	/// <summary> Returns zone number corresponding the position of agent </summary>
-	/// <param name="list"> Control position list </param>
+	/// <param name="coordList"> Control position list </param>
 	/// <param name="currentCoord"> Current coord </param>
 	/// <returns> Zone number for coord </returns>
-	int SFSimulator::getZone(std::vector<double> list, float currentCoord) const
+	int SFSimulator::getZone(std::vector<double> coordList, float currentCoord) const
 	{
-		list.push_back(currentCoord);
-		std::sort(list.begin(), list.end());
-		list.pop_back();
+		coordList.push_back(currentCoord);
+		std::sort(coordList.begin(), coordList.end());
+		coordList.pop_back();
 
-		return std::find(list.begin(), list.end(), currentCoord) - list.begin() + 1;
+		return std::find(coordList.begin(), coordList.end(), currentCoord) - coordList.begin() + 1;
+	}
+
+	/// <summary> Computes division by longitude </summary>
+	/// <param name="columnCount"> Column count </param>
+	/// <returns> Associative array of precomputed zone numbers for future latitude division </returns>
+	std::map<int, std::vector<Agent*>> SFSimulator::divideByLongitude(int columnCount)
+	{
+		auto longitudes = std::vector<double>();
+		auto result = std::map<int, std::vector<Agent*>>();
+
+		for (size_t i = 0; i < agents_.size(); i++)
+			longitudes.push_back(agents_[i]->position_.x());
+		
+		std::sort(longitudes.begin(), longitudes.end());
+
+		auto indexStep = longitudes.size() / columnCount;
+		auto zoneCenters = std::vector<double>();
+		for (size_t i = 1; i < columnCount; i++)
+			zoneCenters.push_back(longitudes[indexStep * i]);
+
+		std::sort(zoneCenters.begin(), zoneCenters.end());
+
+		auto zoneNumbers = std::vector<int>();
+
+		for (size_t i = 0; i < agents_.size(); i++)
+		{
+			auto v = getZone(zoneCenters, agents_[i]->position_.x());
+
+			auto findIterator = std::find(zoneNumbers.begin(), zoneNumbers.end(), v);
+			if (findIterator == zoneNumbers.end())
+			{
+				zoneNumbers.push_back(v);
+
+				auto voidList = std::vector<Agent*>();
+				voidList.push_back(agents_[i]);
+				result.insert_or_assign(v, voidList);
+			}
+			else
+			{
+				auto fullList = result[v];
+				fullList.push_back(agents_[i]);
+				result[v] = fullList;
+			}
+		}
+
+		return result;
 	}
 
 	/// <summary> Returns the agent pressure</summary>
