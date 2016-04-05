@@ -389,7 +389,7 @@ namespace SF
 		/// <summary> Computes grid separation for specified zone count </summary>
 		/// <param name="zoneCount"> Count of zones </param>
 		/// <returns> Pair of sides </returns>
-		std::vector<int> getGridSidePair(int zoneCount) const;
+		std::vector<int> getGrid(int zoneCount) const;
 
 		/// <summary> Returns zone number corresponding the position of agent </summary>
 		/// <param name="coordList"> Control position list </param>
@@ -407,7 +407,12 @@ namespace SF
 		/// <param name="rowCount"> Row count </param>
 		/// <param name="index"> Shift for longitude division </param>
 		/// <returns> Associative array of zone numbers </returns>
-		std::map<int, int> divideByLatitude(std::vector<Agent*> agentList, int rowCount, int index);
+		std::map<int, int> divideByLatitude(std::vector<Agent*> agentList, int rowCount, int index = 0);
+
+		/// <summary> Computes grid separation for specified zone count </summary>
+		/// <param name="zoneCount"> Count of zones </param>
+		/// <returns> Associative array of agent's IDs & zone numbers </returns>
+		std::map<int, int> separate(int zoneCount);
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
