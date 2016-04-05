@@ -818,6 +818,19 @@ namespace SF
 		return *result;
 	}
 
+	/// <summary> Returns zone number corresponding the position of agent </summary>
+	/// <param name="list"> Control position list </param>
+	/// <param name="currentCoord"> Current coord </param>
+	/// <returns> Zone number for coord </returns>
+	int SFSimulator::getZone(std::vector<double> list, float currentCoord) const
+	{
+		list.push_back(currentCoord);
+		std::sort(list.begin(), list.end());
+		list.pop_back();
+
+		return std::find(list.begin(), list.end(), currentCoord) - list.begin() + 1;
+	}
+
 	/// <summary> Returns the agent pressure</summary>
 	/// <param name="index"> The number of the agent </param>
 	/// <returns> The agent pressure </returns>

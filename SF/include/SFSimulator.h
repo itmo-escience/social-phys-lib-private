@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 #include "Vector2.h"
 #include "Vector3.h"
@@ -388,6 +389,11 @@ namespace SF
 		/// <returns> Pair of sides </returns>
 		std::vector<int> getGridSidePair(int zoneCount) const;
 
+		/// <summary> Returns zone number corresponding the position of agent </summary>
+		/// <param name="list"> Control position list </param>
+		/// <param name="currentCoord"> Current coord </param>
+		/// <returns> Zone number for coord </returns>
+		int getZone(std::vector<double> list, float currentCoord) const;
 
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
