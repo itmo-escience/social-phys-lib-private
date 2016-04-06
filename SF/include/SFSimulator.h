@@ -397,6 +397,12 @@ namespace SF
 		/// <returns> Zone number for coord </returns>
 		int getZone(std::vector<double> coordList, float currentCoord) const;
 
+		/// <summary> Returns zone number & border coords corresponding the position of agent </summary>
+		/// <param name="coordList"> Control position list </param>
+		/// <param name="currentCoord"> Current coord </param>
+		/// <returns> Pair of zone number & borders for coord </returns>
+		std::pair<int, std::pair<double, double>> getZoneInfo(std::vector<double> coordList, float currentCoord);
+
 		/// <summary> Computes division by longitude </summary>
 		/// <param name="columnCount"> Column count </param>
 		/// <returns> Associative array of precomputed zone numbers for future latitude division </returns>
