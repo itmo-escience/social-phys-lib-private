@@ -412,7 +412,12 @@ namespace SF
 		/// <summary> Computes grid separation for specified zone count </summary>
 		/// <param name="zoneCount"> Count of zones </param>
 		/// <returns> Associative array of agent's IDs & zone numbers </returns>
-		std::map<int, int> separate(int zoneCount);
+		std::map<int, int> separateByAgents(int zoneCount);
+
+		/// <summary> Computes grid separation for specified zone count groupping by zone </summary>
+		/// <param name="zoneCount"> Count of zones </param>
+		/// <returns> Associative array of zone numbers & list of corresponding agent's ID </returns>
+		std::map<int, std::vector<int>> separateByZones(int zoneCount);
 
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
