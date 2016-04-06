@@ -188,6 +188,7 @@ namespace SF2D {
 
 				void updateSFParameters(float newRepulsiveAgent, float newRepulsiveAgentFactor, float newRepulsiveObstacle, float newRepulsiveObstacleFactor);
 
-				System::Collections::Generic::Dictionary<int, int>^ separate(int zoneCount);
+				System::Collections::Generic::Dictionary<int, int>^ separateByAgents(int zoneCount);
+				System::Collections::Generic::Dictionary<int, System::Collections::Generic::List<int>^>^ separateByZones(int zoneCount);
 	};
 }

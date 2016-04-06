@@ -516,13 +516,34 @@ void SFSimulator::updateSFParameters(float newRepulsiveAgent, float newRepulsive
 	_sim->updateSFParameters(newRepulsiveAgent, newRepulsiveAgentFactor, newRepulsiveObstacle, newRepulsiveObstacleFactor);
 }
 
-System::Collections::Generic::Dictionary<int, int>^ SFSimulator::separate(int zoneCount)
+System::Collections::Generic::Dictionary<int, int>^ SFSimulator::separateByAgents(int zoneCount)
 {
 	System::Collections::Generic::Dictionary<int, int>^ out = gcnew System::Collections::Generic::Dictionary<int, int>();
-	std::map<int, int> agents =	_sim->separate(zoneCount);
+	std::map<int, int> agentData =
+		_sim->separateByAgents(zoneCount);
 
-	for (int i = 0; i < agents.size(); i++)
-		out->Add(i, agents[i]);
+	for (int i = 0; i < agentData.size(); i++)
+		out->Add(i, agentData[i]);
 
 	return out;
 }
+
+System::Collections::Generic::Dictionary<int, System::Collections::Generic::List<int>^>^ SFSimulator::separateByZones(int zoneCount)
+{
+	System::Collections::Generic::Dictionary<int, System::Collections::Generic::List<int>^>^ out = gcnew System::Collections::Generic::Dictionary<int, System::Collections::Generic::List<int>^>();
+
+	std::map<int, std::vector<int>> zoneData = _sim->separateByZones(zoneCount);
+
+	for each (auto zone in zoneData)
+	{
+		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
+
+		for each (auto id in zone.second)
+			list->Add(id);
+
+		out->Add(zone.first, list);
+	}
+
+	return out;
+}
+
