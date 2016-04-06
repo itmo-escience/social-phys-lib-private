@@ -905,7 +905,10 @@ namespace SF
 		return result;
 	}
 
-	std::map<int, int> SFSimulator::separate(int zoneCount)
+	/// <summary> Computes grid separation for specified zone count </summary>
+	/// <param name="zoneCount"> Count of zones </param>
+	/// <returns> Associative array of agent's IDs & zone numbers </returns>
+	std::map<int, int> SFSimulator::separateByAgents(int zoneCount)
 	{
 		auto grid = getGrid(zoneCount);
 		auto columnCount = grid[0];
@@ -931,6 +934,37 @@ namespace SF
 		}
 		else
 			result = divideByLatitude(agents_, rowCount);
+
+		return result;
+	}
+
+	/// <summary> Computes grid separation for specified zone count groupping by zone </summary>
+	/// <param name="zoneCount"> Count of zones </param>
+	/// <returns> Associative array of zone numbers & list of corresponding agent's ID </returns>
+	std::map<int, std::vector<int>> SFSimulator::separateByZones(int zoneCount)
+	{
+		auto result = std::map<int, std::vector<int>>();
+		auto agentData = separateByAgents(zoneCount);
+
+		for (auto a : agentData)
+		{
+			auto id = a.first;
+			auto zone = a.second;
+
+			auto it = result.find(zone);
+			if (it == result.end())
+			{
+				auto emptyVector = std::vector<int>();
+				emptyVector.push_back(id);
+				result._Insert_or_assign(zone, emptyVector);
+			}
+			else
+			{
+				auto fullVector = result[zone];
+				fullVector.push_back(id);
+				result[zone] = fullVector;
+			}
+		}
 
 		return result;
 	}
