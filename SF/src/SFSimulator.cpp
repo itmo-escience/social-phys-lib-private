@@ -831,6 +831,25 @@ namespace SF
 		return std::find(coordList.begin(), coordList.end(), currentCoord) - coordList.begin() + 1;
 	}
 
+	/// <summary> Returns zone number & border coords corresponding the position of agent </summary>
+	/// <param name="coordList"> Control position list </param>
+	/// <param name="currentCoord"> Current coord </param>
+	/// <returns> Pair of zone number & borders for coord </returns>
+	std::pair<int, std::pair<double, double>> SFSimulator::getZoneInfo(std::vector<double> coordList, float currentCoord)
+	{
+		coordList.push_back(currentCoord);
+		std::sort(coordList.begin(), coordList.end());
+		coordList.resize(std::unique(coordList.begin(), coordList.end()) - coordList.begin());
+
+		auto zone = std::find(coordList.begin(), coordList.end(), currentCoord) - coordList.begin() + 1;
+
+		auto left = zone - 2 < 0 ? DBL_MIN : coordList[zone - 2];
+		auto right = zone >= coordList.size() ? DBL_MAX : coordList[zone];
+		auto borderPair = std::make_pair(left, right);
+
+		return std::make_pair(zone, borderPair);
+	}
+
 	/// <summary> Computes division by longitude </summary>
 	/// <param name="columnCount"> Column count </param>
 	/// <returns> Associative array of precomputed zone numbers for future latitude division </returns>
