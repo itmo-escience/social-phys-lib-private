@@ -294,7 +294,7 @@ namespace SF
 
 		/// <summary> Returns the velocity of platform </summary>
 		/// <returns> The platform velocity </returns>
-		Vector3 getPlatformVelocity();
+		Vector3 getPlatformVelocity() const;
 
 		/// <summary> Returns the agent friction of platform </summary>
 		/// <param name="agentNo"> The number of the agent whose friction is to be retrieved </param>
@@ -312,7 +312,7 @@ namespace SF
 
 		/// <summary> Returns the angle set </summary>
 		/// <returns> The angle set </returns>
-		RotationDegreeSet getRotationDegreeSet();
+		RotationDegreeSet getRotationDegreeSet() const;
 
 		/// <summary> Adds the platform rotation on XY axis </summary>
 		/// <param name="value"> The new rotation value </param>

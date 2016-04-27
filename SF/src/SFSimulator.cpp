@@ -500,7 +500,7 @@ namespace SF
 
 	/// <summary> Returns the velocity of platform </summary>
 	/// <returns> The platform velocity </returns>
-	Vector3 SFSimulator::getPlatformVelocity()
+	Vector3 SFSimulator::getPlatformVelocity() const
 	{
 		return platformVelocity_;
 	}
@@ -523,7 +523,7 @@ namespace SF
 
 	/// <summary> Returns the angle set </summary>
 	/// <returns> The angle set </returns>
-	RotationDegreeSet SFSimulator::getRotationDegreeSet()
+	RotationDegreeSet SFSimulator::getRotationDegreeSet() const
 	{
 		return angleSet_;
 	}
