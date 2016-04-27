@@ -532,7 +532,7 @@ namespace SF
 			auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
 			// heave
-			// TODO heave
+			// TODO good heave
 			auto platformVeclocity = sim_->getPlatformVelocity();
 			
 			float
