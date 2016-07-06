@@ -348,8 +348,14 @@ namespace SF
 		
 		std::vector<float> forceWeightList;
 		forceWeightList.clear();
-		for(auto force: forces)
-			forceWeightList.push_back(getLength(force) / lengthSum);
+		for (auto force : forces) 
+		{
+			if (lengthSum == 0)
+				forceWeightList.push_back(0);
+			else
+				forceWeightList.push_back(getLength(force) / lengthSum);
+		}
+		
 		
 		auto total = Vector2();
 		for (size_t i = 0; i < forces.size(); i++)
