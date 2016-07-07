@@ -36,7 +36,8 @@ namespace SF
 		prefVelocity_(),					// pre-computed velocity
 		previosPosition_(INT_MIN, INT_MIN),	// saved previous position
 		velocity_(),						// current result vector
-		obstacleTrajectory_(),				// graphic representation of result force
+		obstacleForce_(),					// graphic representation of obst force
+		agentForce_(),						// graphic representation of agent force
 		oldPlatformVelocity_(),				// saved previous platform velocity
 		obstacleNeighbors_(),				// list of neighbor obstacles
 		agentNeighbors_(),					// list of neighbor agents
@@ -147,54 +148,58 @@ namespace SF
 		{
 			auto obstacle = on.second;
 
-			if (isIntersect(
-				position_,
-				previosPosition_,
-				obstacle->point_,
-				obstacle->nextObstacle->point_
-				))
+//			std::printf("%s", "\n----------- ID: \n");
+//			std::printf("%z", obstacle->id_);
+//			std::printf("%s", "\nisConvex_: ");
+//			std::printf("%b", obstacle->isConvex_);
+//			std::printf("%s", "\npoint_.x: ");
+//			std::printf("%f", obstacle->point_.x());
+//			std::printf("%s", "\npoint_.y: ");
+//			std::printf("%f", obstacle->point_.y());
+//			std::printf("%s", "\nnextObstacle: ");
+//			std::printf("%z", obstacle->nextObstacle->id_);
+//			std::printf("%s", "\nprevObstacle: ");
+//			std::printf("%z", obstacle->prevObstacle->id_);
+//			std::printf("%s", "\n-----------\n");
+
+			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
 			{
 				if (!hasIntersection)
 					hasIntersection = true;
-
-				auto intersection = getIntersection(
-					position_,
-					previosPosition_,
-					obstacle->point_,
-					obstacle->nextObstacle->point_
-					);
-
-				auto l = getLength(intersection - previosPosition_);
-				p = intersection;
+				auto intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
+				auto l = getLength(intersectionPoint - previosPosition_);
+				p = intersectionPoint;
 
 				if (l < minLength)
 				{
 					minLength = l;
-					p = intersection;
+					p = intersectionPoint;
 				}
 			}
 		}
 
 		if (hasIntersection)
 		{
-			auto difference = p - previosPosition_;
-			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
-
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
-			{
-				if (m >= 0 && m <= TOLERANCE / 2)
-					position_ = previosPosition_ + difference * m;
-				else
-					position_ = previosPosition_;
-			}
-
-			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
-				position_ = previosPosition_;
-
-			if (getLength(difference) <= obstacleRadius_)
-				position_ = previosPosition_;
-
-			isForced_ = true;
+//			auto difference = p - previosPosition_;
+//			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+//
+//			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
+//			{
+//				if (m >= 0 && m <= TOLERANCE / 2)
+//					position_ = previosPosition_ + difference * m;
+//				else
+//					position_ = previosPosition_;
+//			}
+//
+//			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
+//				position_ = previosPosition_;
+//
+//			if (getLength(difference) <= obstacleRadius_)
+//				position_ = previosPosition_;
+//
+//			isForced_ = true;
+			position_ = previosPosition_;
+			std::printf("%z", id_);
 		}
 		else
 			isForced_ = false;
@@ -252,6 +257,8 @@ namespace SF
 		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
 
 		correction += forceSum;
+
+		agentForce_ = position_ + forceSum;
 	}
 
 	/// <summary> Repulsive obstacle force </summary>
@@ -351,7 +358,7 @@ namespace SF
 		for (auto force : forces) 
 		{
 			if (lengthSum == 0)
-				forceWeightList.push_back(0);
+				forceWeightList.push_back(getLength(force) / std::numeric_limits<double>::min());
 			else
 				forceWeightList.push_back(getLength(force) / lengthSum);
 		}
@@ -366,9 +373,9 @@ namespace SF
 
 		if (forces.size() > 0)
 			// TODO: coeff of smth else
-			obstacleTrajectory_ = position_ + total * 10;
+			obstacleForce_ = position_ + total * 10;
 		else
-			obstacleTrajectory_ = position_;
+			obstacleForce_ = position_;
 	}
 
 	/// <summary> Attractive force </summary>

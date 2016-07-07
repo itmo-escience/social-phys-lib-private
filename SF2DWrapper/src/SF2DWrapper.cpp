@@ -459,6 +459,14 @@ SF2D::SFVector2 SFSimulator::getObstacleTrajectory(int index)
 	return SF2D::SFVector2(ot.x(), ot.y());
 }
 
+SF2D::SFVector2 SFSimulator::getAgentRepulsiveForce(int index)
+{
+	SF::Vector2 ot = _sim->getAgentRepulsiveForce(index);
+
+	return SF2D::SFVector2(ot.x(), ot.y());
+}
+
+
 System::Collections::Generic::List<double>^ SFSimulator::getAgentPressureList()
 {
 	System::Collections::Generic::List<double>^ out = gcnew System::Collections::Generic::List<double>();

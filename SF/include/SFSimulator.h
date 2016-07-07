@@ -353,6 +353,11 @@ namespace SF
 		/// <returns> The the obstacle trajectory vector </returns>
 		Vector2 getObstacleTrajectory(size_t index);
 
+		/// <summary> Returns the agent repulsive force </summary>
+		/// <param name="index"> The number of the agent </param>
+		/// <returns> The the agent repulsive force vector </returns>
+		Vector2 getAgentRepulsiveForce(size_t index);
+
 		/// <summary> Returns a list of indices into a specified radius agents </summary>
 		/// <param name="index"> The number of the agent </param>
 		/// <param name="radius"> The specified radius </param>

@@ -202,10 +202,11 @@ namespace SF
 		Vector2 prefVelocity_;													// pre-computed velocity
 		Vector2 previosPosition_;												// saved previous position
 		Vector2 velocity_;														// current result vector
-		Vector2 obstacleTrajectory_;											// graphic representation of result force
+		Vector2 obstacleForce_;													// graphic representation of osbt force
+		Vector2 agentForce_;													// graphic representation of agent force
 		Vector3 oldPlatformVelocity_;											// saved previous platform velocity
-		std::vector<std::pair<float, const Obstacle*> > obstacleNeighbors_;		// list of neighbor obstacles
-		std::vector<std::pair<float, const Agent*> > agentNeighbors_;			// list of neighbor agents
+		std::vector<std::pair<long, const Obstacle*> > obstacleNeighbors_;		// list of neighbor obstacles
+		std::vector<std::pair<long, const Agent*> > agentNeighbors_;			// list of neighbor agents
 		std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;			// list of neighbor agent identifiers
 		std::vector<int> attractiveIds_;										// list of attractive agent identifiers
 		std::map<size_t, float> speedList_;										// map of agent speeds
