@@ -42,7 +42,13 @@ namespace SF
 	/// <returns> Positive when the point c lies to the left of the line ab </returns>
 	inline float leftOf(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
-		return det(a - c, b - a);
+
+		auto prod1 = (a.y() - b.y())*c.x() + (b.x() - a.x())*c.y() + (a.x()*b.y() - b.x()*a.y());
+		auto prod2 = sqrt((b.x()-a.x())*(b.x() - a.x()) + (b.y()-a.y())*(b.y() - a.y()));
+		auto dist_a_b_to_c = prod1 / prod2;
+		return dist_a_b_to_c;
+
+		//return det(a - c, b - a);
 	}
 
 	/// <summary> Computes the square of a float </summary>
