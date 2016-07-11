@@ -182,6 +182,7 @@ namespace SF
 		float acceleration_;													// acceleration buffer preventing high speed after meeting with the obstacle 
 		float relaxationTime_;													// time of approching the max speed  
 		float maxSpeed_;														// max speed 
+		float force_;															// force
 		float neighborDist_;													// min distance for neighbors 
 		float radius_;															// range around agent defined by radius 
 		float timeHorizonObst_;													// iteration time interval

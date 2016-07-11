@@ -100,6 +100,7 @@ namespace SF
 		agent->position_ = position;
 		agent->maxNeighbors_ = defaultAgent_->maxNeighbors_;
 		agent->maxSpeed_ = defaultAgent_->maxSpeed_;
+		agent->force_ = defaultAgent_->force_;
 		agent->neighborDist_ = defaultAgent_->neighborDist_;
 		agent->radius_ = defaultAgent_->radius_;
 		agent->timeHorizonObst_ = defaultAgent_->timeHorizonObst_;
@@ -148,6 +149,7 @@ namespace SF
 		float timeHorizonObst,
 		float radius,
 		float maxSpeed,
+		float force,
 		float accelerationCoefficient,
 		float relaxationTime,
 		float repulsiveAgent,
@@ -166,6 +168,7 @@ namespace SF
 		agent->position_ = position;
 		agent->maxNeighbors_ = maxNeighbors;
 		agent->maxSpeed_ = maxSpeed;
+		agent->force_ = force;
 		agent->neighborDist_ = neighborDist;
 		agent->radius_ = radius;
 		agent->timeHorizonObst_ = timeHorizonObst;
@@ -404,6 +407,7 @@ namespace SF
 
 		defaultAgent_->maxNeighbors_ = apc._maxNeighbors;
 		defaultAgent_->maxSpeed_ = apc._maxSpeed;
+		defaultAgent_->force_ = apc._force;
 		defaultAgent_->neighborDist_ = apc._neighborDist;
 		defaultAgent_->radius_ = apc._radius;
 		defaultAgent_->timeHorizonObst_ = apc._timeHorizon;
@@ -434,6 +438,12 @@ namespace SF
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
 		agents_[agentNo]->maxSpeed_ = maxSpeed;
+	}
+
+
+	void SFSimulator::setAgentForce(size_t agentNo, float force)
+	{
+		agents_[agentNo]->force_ = force;
 	}
 
 	/// <summary> Sets the maximum neighbor distance of a specified agent </summary>

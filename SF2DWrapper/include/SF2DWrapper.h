@@ -20,6 +20,7 @@ namespace SF2D {
 		float TimeHorizon;
 		float Radius;
 		float MaxSpeed;
+		float Force;
 		float AccelerationCoefficient;
 		float RelaxationTime;
 		float RepulsiveAgent;
@@ -40,6 +41,7 @@ namespace SF2D {
 			float timeHorizon,
 			float radius, 
 			float maxSpeed, 
+			float force,
 			float accelerationCoefficient,
 			float relaxationTime,
 			float repulsiveAgent, 
@@ -59,6 +61,7 @@ namespace SF2D {
 		float _timeHorizon;
 		float _radius;
 		float _maxSpeed;
+		float _force;
 		float _accelerationCoefficient;
 		float _relaxationTime;
 		float _repulsiveAgent;
@@ -90,6 +93,7 @@ namespace SF2D {
 					float timeHorizonObst, 
 					float radius, 
 					float maxSpeed, 
+					float force,
 					float accelerationCoefficient, 
 					float relaxationTime,
 					float repulsiveAgent, 
@@ -121,6 +125,7 @@ namespace SF2D {
 				void setAgentDefaults(AgentProperty^ ap);
 				void setAgentMaxNeighbors(int agentNo, int maxNeighbors);
 				void setAgentMaxSpeed(int agentNo, float maxSpeed);
+				void setAgentForce(int agentNo, float force);
 				void setAgentNeighborDist(int agentNo, float neighborDist);
 				void setAgentPosition(int agentNo,  SFVector2 position);
 				void setAgentPrefVelocity(int agentNo,  SFVector2 prefVelocity);

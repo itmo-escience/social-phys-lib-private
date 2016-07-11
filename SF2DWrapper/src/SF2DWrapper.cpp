@@ -13,7 +13,8 @@ AgentProperty::AgentProperty(
 	int maxNeighbors, 
 	float timeHorizon,
 	float radius, 
-	float maxSpeed, 
+	float maxSpeed,
+	float force,
 	float accelerationCoefficient, 
 	float relaxationTime,
 	float repulsiveAgent, 
@@ -31,6 +32,7 @@ AgentProperty::AgentProperty(
 	TimeHorizon(timeHorizon),
 	Radius(radius),
 	MaxSpeed(maxSpeed),
+	Force(force),
 	AccelerationCoefficient(accelerationCoefficient),
 	RelaxationTime(relaxationTime),
 	RepulsiveAgent(repulsiveAgent),
@@ -62,7 +64,8 @@ int SFSimulator::addAgent(
 	int maxNeighbors, 
 	float timeHorizonObst,
 	float radius, 
-	float maxSpeed, 
+	float maxSpeed,
+	float force,
 	float accelerationCoefficient,
 	float relaxationTime,
 	float repulsiveAgent, 
@@ -85,7 +88,8 @@ int SFSimulator::addAgent(
 		maxNeighbors, 
 		timeHorizonObst,
 		radius, 
-		maxSpeed, 
+		maxSpeed,
+		force,
 		accelerationCoefficient, 
 		relaxationTime,
 		repulsiveAgent, 
@@ -204,6 +208,7 @@ void SFSimulator::setAgentDefaults(AgentProperty^ ap)
 		ap->TimeHorizon,
 		ap->Radius,
 		ap->MaxSpeed,
+		ap->Force,
 		ap->AccelerationCoefficient,
 		ap->RelaxationTime,
 		ap->RepulsiveAgent,
@@ -228,6 +233,11 @@ void SFSimulator::setAgentMaxNeighbors(int agentNo, int maxNeighbors)
 void SFSimulator::setAgentMaxSpeed(int agentNo, float maxSpeed)
 {
 	_sim->setAgentMaxSpeed(agentNo,maxSpeed);
+}
+
+void SFSimulator::setAgentForce(int agentNo, float force)
+{
+	_sim->setAgentForce(agentNo, force);
 }
 
 void SFSimulator::setAgentNeighborDist(int agentNo, float neighborDist)

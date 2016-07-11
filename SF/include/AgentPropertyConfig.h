@@ -13,6 +13,7 @@ namespace SF
 		float _timeHorizon;					// iteration time interval
 		float _radius;						// range around agent defined by radius 
 		float _maxSpeed;					// max speed 
+		float _force;						// force
 		float _accelerationCoefficient;		// accelereation factor coefficient for acceleration term 
 		float _relaxationTime;				// time of approching the max speed  
 		float _repulsiveAgent;				// repulsive exponential agent coefficient for agent repulsive force 
@@ -32,6 +33,7 @@ namespace SF
 			float timeHorizon,
 			float radius,
 			float maxSpeed,
+			float force,
 			float accelerationCoefficient,
 			float relaxationTime,
 			float repulsiveAgent,

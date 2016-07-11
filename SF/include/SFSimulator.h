@@ -51,6 +51,7 @@ namespace SF
 		/// <param name="timeHorizon"> The minimal amount of time for which this agent's velocities that are computed by the simulation are safe with respect to other agents.The larger this number, the sooner this agent will respond to the presence of other agents, but the less freedom this agent has in choosing its velocities. Must be positive </param>
 		/// <param name="radius"> The radius of this agent </param>
 		/// <param name="maxSpeed"> The maximal speed of this agent </param>
+		/// <param name="force"> The agent repulsive force of this agent </param>
 		/// <param name="velocity"> The initial two-dimensional linear velocity of this agent (optional) </param>
 		/// <param name="accelerationCoefficient"> Accelereation factor coefficient for acceleration term </param>
 		/// <param name="relaxationTime"> Time of approching the max speed </param>
@@ -70,6 +71,7 @@ namespace SF
 			float timeHorizon,
 			float radius, 
 			float maxSpeed, 
+			float force,
 			float accelerationCoefficient, 
 			float relaxationTime,
 			float repulsiveAgent, 
@@ -211,6 +213,12 @@ namespace SF
 		/// <param name="agentNo"> The number of the agent whose maximum speed is to be modified </param>
 		/// <param name="maxSpeed"> The replacement maximum speed. Must be non - negative </param>
 		void setAgentMaxSpeed(size_t agentNo, float maxSpeed);
+
+		
+		/// <summary> Sets the force of a specified agent </summary>
+		/// <param name="agentNo"> The number of the agent whose maximum speed is to be modified </param>
+		/// <param name="maxSpeed"> The replacement maximum speed. Must be non - negative </param>
+		void setAgentForce(size_t agentNo, float force);
 
 		/// <summary> Sets the maximum neighbor distance of a specified agent </summary>
 		/// <param name="agentNo"> The number of the agent whose maximum neighbor distance is to be modified </param>

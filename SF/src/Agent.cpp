@@ -16,6 +16,7 @@ namespace SF
 		acceleration_(0),					// acceleration buffer preventing high speed after meeting with the obstacle 
 		relaxationTime_(0),					// time of approching the max speed  
 		maxSpeed_(0.0f),					// max speed 
+		force_(1.0f),					// force
 		neighborDist_(0.0f),				// min distance for neighbors 
 		radius_(0.0f),						// range around agent defined by radius 
 		timeHorizonObst_(0.0f),				// iteration time interval
@@ -226,7 +227,7 @@ namespace SF
 			if (maxForceLength < length)
 				maxForceLength = length;
 
-			forceSum += force;
+			forceSum += force * an.second->force_;
 		}
 
 		auto forceSumLength = getLength(forceSum);
@@ -242,7 +243,7 @@ namespace SF
 
 		correction += forceSum;
 
-		agentForce_ = position_ + forceSum;
+		agentForce_ = forceSum;
 	}
 
 	/// <summary> Repulsive obstacle force </summary>
