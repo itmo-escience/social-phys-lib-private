@@ -90,6 +90,11 @@ namespace SF
 		/// <returns> The number of the first vertex of the obstacle, or SF::SF_ERROR when the number of vertices is less than two</returns>
 		size_t addObstacle(const std::vector<Vector2>& vertices);
 
+		/// <summary> Delete an obstacle from the simulation </summary>
+		/// <param name="objectId"> Object ID in simulation</param>
+		/// <returns> Return the result. True is object with an ID has exist</returns>
+		bool deleteObstacle(size_t objectId);
+
 		/// <summary> Lets the simulator perform a simulation step and updates the two - dimensional position and two - dimensional velocity of each agent </summary>
 		void doStep();
 

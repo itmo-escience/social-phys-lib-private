@@ -232,6 +232,31 @@ namespace SF
 		return obstacleNo;
 	}
 
+	bool SFSimulator::deleteObstacle(size_t objectId)
+	{
+		bool isFound = false;
+
+		for (int i = 0; i < obstacles_.size(); i++)
+		{
+			if (obstacles_[i]->id_ == objectId)
+			{
+				int pointsInObstacle = 1;
+				auto currentObstacle = obstacles_[i]->nextObstacle;
+				while (currentObstacle != obstacles_[i])
+				{
+					pointsInObstacle++;
+					currentObstacle = currentObstacle->nextObstacle;
+				}
+
+				isFound = true;
+				obstacles_.erase(obstacles_.begin() + i, obstacles_.begin() + i + pointsInObstacle);
+				break;
+			}
+		}
+
+		return isFound;
+	}
+
 	/// <summary> Lets the simulator perform a simulation step and updates the two - dimensional position and two - dimensional velocity of each agent </summary>
 	void SFSimulator::doStep()
 	{

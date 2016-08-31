@@ -309,6 +309,11 @@ int SFSimulator::addObstacle(array<SFVector2>^ vertices)
 	return _sim->addObstacle(vert);
 }
 
+bool SFSimulator::deleteObstacle(size_t objectId)
+{
+	return _sim->deleteObstacle(objectId);
+}
+
 void SFSimulator::processObstacles()
 {
 	_sim->processObstacles();

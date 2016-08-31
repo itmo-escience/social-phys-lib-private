@@ -176,6 +176,7 @@ namespace SF2D {
 				SF3D::SFRotationDegreeSet getRotationDegreeSet();
 				int addObstacle(array<SFVector2>^ vertices);
 				int addObstacle(System::Collections::Generic::List<SFVector2>^ vertices);
+				bool deleteObstacle(size_t objectId);
 				void processObstacles();
 				bool queryVisibility(SFVector2 point1, SFVector2 point2, float radius) ;
 				float getAgentTimeHorizonObst(int agentNo) ;
