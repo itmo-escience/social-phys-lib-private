@@ -106,6 +106,7 @@ namespace SF
 	/// <summary> Builds an obstacle kd-tree </summary>
 	void KdTree::buildObstacleTree()
 	{
+		mtx.lock();
 		deleteObstacleTree(obstacleTree_);
 
 		std::vector<Obstacle*> obstacles(sim_->obstacles_.size());
@@ -114,6 +115,8 @@ namespace SF
 			obstacles[i] = sim_->obstacles_[i];
 
 		obstacleTree_ = buildObstacleTreeRecursive(obstacles);
+
+		mtx.unlock();
 	}
 
 	/// <summary> Builds an obstacle kd-tree </summary>
@@ -239,7 +242,9 @@ namespace SF
 	/// <param name="rangeSq"> The squared range around the agent </param>
 	void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
 	{
+		mtx.lock();
 		queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
+		mtx.unlock();
 	}
 
 	/// <summary> Deletes the specified obstacle tree node </summary>
@@ -370,7 +375,10 @@ namespace SF
 	/// <returns> True if q1 and q2 are mutually visible within the radius; false otherwise </returns>
 	bool KdTree::queryVisibility(const Vector2& q1, const Vector2& q2, float radius) const
 	{
-		return queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
+		mtx.lock();
+		auto visibility = queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
+		mtx.unlock();
+		return visibility;
 	}
 
 	/// <summary> Queries the visibility between two points within a specified radius </summary>
