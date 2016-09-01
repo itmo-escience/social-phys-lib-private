@@ -227,17 +227,16 @@ namespace SF
 			if (maxForceLength < length)
 				maxForceLength = length;
 
-			forceSum += force * an.second->force_ ;
+			forceSum += force * an.second->force_;
 		}
 
-//		auto forceSumLength = getLength(forceSum);
+		auto forceSumLength = getLength(forceSum);
 
-//		if (forceSumLength > maxForceLength)
-//		{
-//			auto coeff = maxForceLength / forceSumLength;
-//			forceSum *= coeff;
-//		}
-
+		if (forceSumLength > maxForceLength)
+		{
+			auto coeff = maxForceLength / forceSumLength;
+			forceSum *= coeff;
+		}
 
 		auto maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
 		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
