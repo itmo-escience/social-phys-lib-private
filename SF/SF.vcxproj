@@ -30,8 +30,10 @@
     <ClInclude Include="include\SimpleMatrix.h" />
     <ClInclude Include="include\Vector2.h" />
     <ClInclude Include="include\Vector3.h" />
+    <ClInclude Include="MPIAgent.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MPIAgent.cpp" />
     <ClCompile Include="src\Agent.cpp" />
     <ClCompile Include="src\AgentPropertyConfig.cpp" />
     <ClCompile Include="src\KdTree.cpp" />

@@ -8,6 +8,7 @@
 #include "Vector3.h"
 #include "AgentPropertyConfig.h"
 #include "RotationDegreeSet.h"
+#include "../MPIAgent.h"
 
 namespace SF
 {
@@ -84,6 +85,16 @@ namespace SF
 			float friction,
 			const Vector2& velocity = Vector2()
 		);
+
+		/// <summary> Adds an external agent to the simulation </summary>
+		/// <param name="newAgent"> Pointer to external agent </param>
+		/// <returns> The number of the agent</returns>
+		size_t addAgent( Agent* newAgent );
+
+		/// <summary> Return Agent by agent ID </summary>
+		/// <param name="agentId">Agent ID </param>
+		/// <returns> The Agent</returns>
+		Agent* getAgent(size_t agentId);
 				
 		/// <summary> Adds a new obstacle to the simulation </summary>
 		/// <param name="vertices"> List of the vertices of the polygonal obstacle in counterclockwise order </param>

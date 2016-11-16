@@ -53,6 +53,18 @@ namespace SF
 		delete kdTree_;
 	}
 
+	Agent* SFSimulator::getAgent(size_t agentId)
+	{
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			if(agents_[i]->id_ == agentId)
+			{
+				return agents_[i];
+			}
+		}
+		return nullptr;
+	}
+
 	/// <summary> Returns the count of agent neighbors taken into account to compute the current velocity for the specified agent </summary>
 	/// <param name="agentNo"> The number of the agent whose count of agent neighbors is to be retrieved </param>
 	/// <returns> The count of agent neighbors taken into account to compute the current velocity for the specified agent </returns>
@@ -189,6 +201,17 @@ namespace SF
 		agents_.push_back(agent);
 
 		return agents_.size() - 1;
+	}
+
+	/// <summary> Adds an external agent to the simulation </summary>
+	/// <param name="newAgent"> Pointer to external agent </param>
+	/// <returns> The number of the agent</returns>
+	size_t SFSimulator::addAgent(Agent* newAgent)
+	{
+		newAgent->id_ = agents_.size();
+		agents_.push_back(newAgent);
+		newAgent->sim_ = this;
+		return newAgent->id_;
 	}
 
 	/// <summary> Adds a new obstacle to the simulation </summary>

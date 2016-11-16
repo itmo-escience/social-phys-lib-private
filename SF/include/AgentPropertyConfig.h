@@ -47,8 +47,23 @@ namespace SF
 			Vector2 velocity
 		);
 
+		/// <summary> Defines an agent config in the simulation </summary>
+		AgentPropertyConfig();
+
+		/// <summary> Serialize agent properties </summary>
+		/// <returns> Serialized agent properties </returns>
+		unsigned char * Serialize() const;
+
+		/// <summary> Deserialize agent properties from array </summary>
+		/// <param name="angle"> array that contains serialized agent properties </param>
+		/// <returns> deserialized agent properties </returns>
+		static AgentPropertyConfig* Deseriaize(unsigned char * array);
+
 		/// <summary> Destructor </summary>
 		~AgentPropertyConfig(void);
+
+		/// <summary> Print default agent properties </summary>
+		void PrintDefaultProperties(void) const;
 	};
 
 }
