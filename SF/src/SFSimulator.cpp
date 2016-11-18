@@ -5,6 +5,7 @@
 #include "../include/Obstacle.h"
 #include "../include/AgentPropertyConfig.h"
 #include "../include/RotationDegreeSet.h"
+#include <iostream>
 
 
 #ifdef HAVE_CONFIG_H
@@ -55,7 +56,7 @@ namespace SF
 
 	Agent* SFSimulator::getAgent(size_t agentId)
 	{
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			if(agents_[i]->id_ == agentId)
 			{
@@ -133,6 +134,16 @@ namespace SF
 		agents_.push_back(agent);
 
 		return agents_.size() - 1;
+	}
+
+	/// <summary> Print agents info </summary>
+	void SFSimulator::printAgentsInfo() const
+	{
+		std::cout << "Agents count: " << agents_.size() << std::endl;
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			std::cout << "ID: " << agents_[i]->id_ << " X: " << agents_[i]->position_.x() << " Y: " << agents_[i]->position_.y() <<std::endl;
+		}
 	}
 
 	/// <summary> Adds a new agent to the simulation </summary>

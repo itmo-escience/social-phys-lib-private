@@ -45,6 +45,9 @@ namespace SF
 		/// <returns> The number of the agent, or SF::SF_ERROR when the agent defaults have not been set </returns>
 		size_t addAgent(const Vector2& position);
 
+		/// <summary> Print agents info </summary>
+		void printAgentsInfo() const;
+
 		/// <summary> Adds a new agent to the simulation </summary>
 		/// <param name="position"> The two-dimensional starting position of this agent </param>
 		/// <param name="neighborDist"> The maximal distance (center point to center point) to other agents this agent takes into account in the navigation. The larger this number, the longer the running time of the simulation. If the number is too low, the simulation will not be safe. Must be non - negative </param>
