@@ -175,11 +175,11 @@ namespace SF
 		/// <returns> Rotation matrix </returns>
 		SimpleMatrix getRotationZ(float angle) const;
 
+	public:
 		/// <summary> Serialize agent </summary>
 		/// <returns> Serialized agent array </returns>
 		unsigned char * Serialize() const;
 
-	public:
 		/// <summary> Deserialize agent from array </summary>
 		/// <param name="angle"> array that contains serialized agent </param>
 		/// <returns> deserialized agent </returns>
@@ -188,9 +188,9 @@ namespace SF
 
 	private:
 		// TODO replace to the new parameter
-		const double TOLERANCE = 0.00001f;
+		const double TOLERANCE;// = 0.00001f;
 	
-		bool isDeleted_ = true;														// mark for deleting 
+		bool isDeleted_;														// mark for deleting 
 		bool isForced_;															// mark preventing high speed after meeting with the obstacle 
 		size_t id_;																// unique identifier 
 		size_t maxNeighbors_;													// max count of neighbors

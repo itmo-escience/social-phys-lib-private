@@ -2,7 +2,7 @@
 #define KD_TREE_H
 
 #include "Definitions.h"
-#include <mutex>          // std::mutex
+//#include <mutex>          // std::mutex
 #include <allocators>
 
 namespace SF
@@ -11,7 +11,8 @@ namespace SF
 	class KdTree
 	{
 	private:
-		mutable std::mutex mtx; //Mutex to prevent call KDTree during its building
+		//pthread_t threads[NO_PROCESS];
+		//mutable stdext::threads::mutex mtx; //Mutex to prevent call KDTree during its building
 
 		/// <summary> Defines an agent kd-tree node </summary>
 		struct AgentTreeNode 

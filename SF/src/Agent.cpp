@@ -45,7 +45,8 @@ namespace SF
 		agentNeighborsIndexList_(),			// list of neighbor agent identifiers
 		attractiveIds_(),					// list of attractive agent identifiers
 		speedList_(),						// map of agent speeds
-		sim_(sim)							// simulator instance
+		sim_(sim),							// simulator instance
+		TOLERANCE(0.00001f)
 	{ 
 		
 	  setNullSpeed(id_);
@@ -145,9 +146,10 @@ namespace SF
 		auto p = Vector2();
 		auto hasIntersection = false;
 
-		for(auto on: obstacleNeighbors_)
+		//for(auto on: obstacleNeighbors_)
+		for(int i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			auto obstacle = on.second;
+			auto obstacle = obstacleNeighbors_[i].second;
 			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
 			{
 				if (!hasIntersection)
@@ -202,19 +204,20 @@ namespace SF
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
-		for(auto an: agentNeighbors_)
+		//for(auto an: agentNeighbors_)
+		for(int i = 0; i < agentNeighbors_.size(); i++)
 		{
-			setNullSpeed(an.second->id_);
-			auto pos = an.second->position_;
+			setNullSpeed(agentNeighbors_[i].second->id_);
+			auto pos = agentNeighbors_[i].second->position_;
 
 			if (position_ == pos)
 				continue;
 
-			auto velocity = an.second->velocity_;
+			auto velocity = agentNeighbors_[i].second->velocity_;
 
-			auto y = an.second->velocity_ * speedList_[an.second->id_] * sim_->timeStep_;
+			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
 			auto d = position_ - pos;
-			auto radius = speedList_[an.second->id_] * sim_->timeStep_;
+			auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
 			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
 			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
 			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
@@ -227,7 +230,7 @@ namespace SF
 			if (maxForceLength < length)
 				maxForceLength = length;
 
-			forceSum += force * an.second->force_;
+			forceSum += force * agentNeighbors_[i].second->force_;
 		}
 
 		auto forceSumLength = getLength(forceSum);
@@ -261,20 +264,22 @@ namespace SF
 		std::vector<Vector2> forces;
 		forces.clear();
 
-		for (auto on : obstacleNeighbors_)
+		//for (auto on : obstacleNeighbors_)
+		for (int i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			setNullSpeed(id_);
 
-			auto obstacle = on.second;
+			auto obstacle = obstacleNeighbors_[i].second;
 			auto start = obstacle->point_;
 			auto end = obstacle->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
 
 			auto hasSuchClosestPoint = false;
 
-			for (auto nop : nearestObstaclePointList)
+			//for (auto nop : nearestObstaclePointList)
+			for (int j = 0; j < nearestObstaclePointList.size(); j++)
 			{
-				auto l = nop - closestPoint;
+				auto l = nearestObstaclePointList[j] - closestPoint;
 				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
 				{
 					hasSuchClosestPoint = true;
@@ -288,9 +293,10 @@ namespace SF
 			nearestObstaclePointList.push_back(closestPoint);
 		}
 
-		for (auto on : obstacleNeighbors_)
+		//for (auto on : obstacleNeighbors_)
+		for (int i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			auto obstacle = on.second;
+			auto obstacle = obstacleNeighbors_[i].second;
 			auto start = obstacle->point_;
 			auto end = obstacle->nextObstacle->point_;
 			auto closestPoint = getNearestPoint(&start, &end, &position_);
@@ -310,9 +316,10 @@ namespace SF
 			}
 		}
 
-		for (auto nop : nearestObstaclePointList)
+		//for (auto nop : nearestObstaclePointList)
+		for (int i = 0; i < nearestObstaclePointList.size(); i++)
 		{
-			auto closestPoint = nop;
+			auto closestPoint = nearestObstaclePointList[i];
 
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
@@ -335,17 +342,21 @@ namespace SF
 		}
 
 		float lengthSum = 0;
-		for (auto force : forces)
-			lengthSum += getLength(force);
+		//for (auto force : forces)
+		for(int i = 0; i < forces.size(); i++)
+		{
+			lengthSum += getLength(forces[i]);
+		}
 
 		std::vector<float> forceWeightList;
 		forceWeightList.clear();
-		for (auto force : forces)
+		//for (auto force : forces)
+		for(int i = 0; i < forces.size(); i++)
 		{
 			if (lengthSum == 0)
-				forceWeightList.push_back(getLength(force) / std::numeric_limits<double>::min());
+				forceWeightList.push_back(getLength(forces[i]) / std::numeric_limits<double>::min());
 			else
-				forceWeightList.push_back(getLength(force) / lengthSum);
+				forceWeightList.push_back(getLength(forces[i]) / lengthSum);
 		}
 
 
@@ -482,12 +493,13 @@ namespace SF
 	{
 		if(attractiveIds_.size() > 0)
 		{
-			for(auto ai: attractiveIds_)
+			//for(auto ai: attractiveIds_)
+			for(int i = 0; i < attractiveIds_.size(); i++)
 			{
-				if (ai == id_)
+				if (attractiveIds_[i] == id_)
 					continue;
 
-				auto anp = sim_->agents_[ai]->position_;
+				auto anp = sim_->agents_[attractiveIds_[i]]->position_;
 
 				auto pairPosition = anp;
 				auto normalizedDistance = normalize(position_ - anp);
@@ -1012,152 +1024,139 @@ namespace SF
 	/// <returns> Serialized agent array </returns>
 	unsigned char* Agent::Serialize() const
 	{
-		int bufferSize = sizeof(size_t) + sizeof(*this);
+		size_t bufferSize = sizeof(size_t) + sizeof(*this);
 		// The buffer we will be writing bytes into
 		unsigned char* outBuf = new unsigned char[bufferSize];
 
 		// A pointer we will advance whenever we write data
 		unsigned char* p = outBuf;
 
-		memcpy(p, &bufferSize, sizeof(bufferSize));
-		p += sizeof(bufferSize);
+		memcpy(p, &bufferSize, sizeof(size_t));
+		p += sizeof(size_t);
 
-		memcpy(p, &this->isDeleted_, sizeof(isDeleted_));
-		p += sizeof(isDeleted_);
+		memcpy(p, &this->isDeleted_, sizeof(bool));
+		p += sizeof(bool);
 
 		//bool isForced_;
-		memcpy(p, &this->isForced_, sizeof(isForced_));
-		p += sizeof(isForced_);
+		memcpy(p, &this->isForced_, sizeof(bool));
+		p += sizeof(bool);
 
 		//size_t id_;
-		memcpy(p, &this->id_, sizeof(id_));
-		p += sizeof(id_);
+		memcpy(p, &this->id_, sizeof(size_t));
+		p += sizeof(size_t);
 
 		size_t maxNeighbors_;
-		memcpy(p, &this->maxNeighbors_, sizeof(maxNeighbors_));
-		p += sizeof(maxNeighbors_);
+		memcpy(p, &this->maxNeighbors_, sizeof(size_t));
+		p += sizeof(size_t);
 
 		//float acceleration_;
-		memcpy(p, &this->acceleration_, sizeof(acceleration_));
-		p += sizeof(acceleration_);
+		memcpy(p, &this->acceleration_, sizeof(float));
+		p += sizeof(float);
 
 		//float relaxationTime_;
-		memcpy(p, &this->relaxationTime_, sizeof(relaxationTime_));
-		p += sizeof(relaxationTime_);
+		memcpy(p, &this->relaxationTime_, sizeof(float));
+		p += sizeof(float);
 
 		//float maxSpeed_;
-		memcpy(p, &this->maxSpeed_, sizeof(maxSpeed_));
-		p += sizeof(maxSpeed_);
+		memcpy(p, &this->maxSpeed_, sizeof(float));
+		p += sizeof(float);
 
 		//float force_;
-		memcpy(p, &this->force_, sizeof(force_));
-		p += sizeof(force_);
+		memcpy(p, &this->force_, sizeof(float));
+		p += sizeof(float);
 
 		//float neighborDist_;
-		memcpy(p, &this->neighborDist_, sizeof(neighborDist_));
-		p += sizeof(neighborDist_);
+		memcpy(p, &this->neighborDist_, sizeof(float));
+		p += sizeof(float);
 
 		//float radius_;
-		memcpy(p, &this->radius_, sizeof(radius_));
-		p += sizeof(radius_);
+		memcpy(p, &this->radius_, sizeof(float));
+		p += sizeof(float);
 
 		//float timeHorizonObst_;
-		memcpy(p, &this->timeHorizonObst_, sizeof(timeHorizonObst_));
-		p += sizeof(timeHorizonObst_);
+		memcpy(p, &this->timeHorizonObst_, sizeof(float));
+		p += sizeof(float);
 
 		//float accelerationCoefficient_;
-		memcpy(p, &this->accelerationCoefficient_, sizeof(accelerationCoefficient_));
-		p += sizeof(accelerationCoefficient_);
+		memcpy(p, &this->accelerationCoefficient_, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveAgent_;
-		memcpy(p, &this->repulsiveAgent_, sizeof(repulsiveAgent_));
-		p += sizeof(repulsiveAgent_);
+		memcpy(p, &this->repulsiveAgent_, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveAgentFactor_;
-		memcpy(p, &this->relaxationTime_, sizeof(relaxationTime_));
-		p += sizeof(relaxationTime_);
+		memcpy(p, &this->repulsiveAgentFactor_, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveObstacle_;
-		memcpy(p, &this->repulsiveObstacle_, sizeof(repulsiveObstacle_));
-		p += sizeof(repulsiveObstacle_);
+		memcpy(p, &this->repulsiveObstacle_, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveObstacleFactor_;
-		memcpy(p, &this->repulsiveObstacleFactor_, sizeof(repulsiveObstacleFactor_));
-		p += sizeof(repulsiveObstacleFactor_);
+		memcpy(p, &this->repulsiveObstacleFactor_, sizeof(float));
+		p += sizeof(float);
 
 		//float obstacleRadius_;
-		memcpy(p, &this->obstacleRadius_, sizeof(obstacleRadius_));
-		p += sizeof(obstacleRadius_);
+		memcpy(p, &this->obstacleRadius_, sizeof(float));
+		p += sizeof(float);
 
 		//float platformFactor_;
-		memcpy(p, &this->platformFactor_, sizeof(platformFactor_));
-		p += sizeof(platformFactor_);
+		memcpy(p, &this->platformFactor_, sizeof(float));
+		p += sizeof(float);
 
 		//float perception_;
-		memcpy(p, &this->perception_, sizeof(perception_));
-		p += sizeof(perception_);
+		memcpy(p, &this->perception_, sizeof(float));
+		p += sizeof(float);
 
 		//float friction_;
-		memcpy(p, &this->friction_, sizeof(friction_));
-		p += sizeof(friction_);
+		memcpy(p, &this->friction_, sizeof(float));
+		p += sizeof(float);
 
 		//double obstaclePressure_;
-		memcpy(p, &this->obstaclePressure_, sizeof(obstaclePressure_));
-		p += sizeof(obstaclePressure_);
+		memcpy(p, &this->obstaclePressure_, sizeof(double));
+		p += sizeof(double);
 
 		//double agentPressure_;
-		memcpy(p, &this->agentPressure_, sizeof(agentPressure_));
-		p += sizeof(agentPressure_);
+		memcpy(p, &this->agentPressure_, sizeof(double));
+		p += sizeof(double);
 
 
 		//Vector2 correction;
-		memcpy(p, &this->correction, sizeof(correction));
-		p += sizeof(correction);
+		memcpy(p, &this->correction, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 newVelocity_;
-		memcpy(p, &this->newVelocity_, sizeof(newVelocity_));
-		p += sizeof(newVelocity_);
+		memcpy(p, &this->newVelocity_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 position_;
-		memcpy(p, &this->position_, sizeof(position_));
-		p += sizeof(position_);
+		memcpy(p, &this->position_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 prefVelocity_;
-		memcpy(p, &this->prefVelocity_, sizeof(prefVelocity_));
-		p += sizeof(prefVelocity_);
+		memcpy(p, &this->prefVelocity_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 previosPosition_;
-		memcpy(p, &this->previosPosition_, sizeof(previosPosition_));
-		p += sizeof(previosPosition_);
+		memcpy(p, &this->previosPosition_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 velocity_;
-		memcpy(p, &this->velocity_, sizeof(velocity_));
-		p += sizeof(velocity_);
+		memcpy(p, &this->velocity_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 obstacleForce_;
-		memcpy(p, &this->obstacleForce_, sizeof(obstacleForce_));
-		p += sizeof(obstacleForce_);
+		memcpy(p, &this->obstacleForce_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 agentForce_;
-		memcpy(p, &this->agentForce_, sizeof(agentForce_));
-		p += sizeof(agentForce_);
+		memcpy(p, &this->agentForce_, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector3 oldPlatformVelocity_;
-		memcpy(p, &this->oldPlatformVelocity_, sizeof(oldPlatformVelocity_));
-		p += sizeof(oldPlatformVelocity_);
-
-		//std::vector<std::pair<long, const Obstacle*> > obstacleNeighbors_;
-		//std::vector<std::pair<long, const Agent*> > agentNeighbors_;
-		//std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
-
-
-		//std::vector<int> attractiveIds_;
-		memcpy(p, &this->attractiveIds_, sizeof(attractiveIds_));
-		p += sizeof(attractiveIds_);
-
-		//std::map<size_t, float> speedList_;
-		memcpy(p, &this->speedList_, sizeof(speedList_));
-		p += sizeof(speedList_);
+		memcpy(p, &this->oldPlatformVelocity_, sizeof(Vector3));
+		p += sizeof(Vector3);
 		
 		return outBuf;
 		//SFSimulator* sim_;
@@ -1173,145 +1172,132 @@ namespace SF
 		unsigned char* p = arr;
 
 		size_t buffSize = 0;
-		memcpy(&buffSize, p, sizeof(buffSize));
-		p += sizeof(buffSize);
+		memcpy(&buffSize, p, sizeof(size_t));
+		p += sizeof(size_t);
 
-		memcpy(&ag->isDeleted_, p, sizeof(isDeleted_));
-		p += sizeof(isDeleted_);
+		memcpy(&ag->isDeleted_, p, sizeof(bool));
+		p += sizeof(bool);
 
 		//bool isForced_;
-		memcpy(&ag->isForced_, p, sizeof(isForced_));
-		p += sizeof(isForced_);
+		memcpy(&ag->isForced_, p, sizeof(bool));
+		p += sizeof(bool);
 
 		//size_t id_;
-		memcpy(&ag->id_, p, sizeof(id_));
-		p += sizeof(id_);
+		memcpy(&ag->id_, p, sizeof(size_t));
+		p += sizeof(size_t);
 
 		size_t maxNeighbors_;
-		memcpy(&ag->maxNeighbors_, p, sizeof(maxNeighbors_));
-		p += sizeof(maxNeighbors_);
+		memcpy(&ag->maxNeighbors_, p, sizeof(size_t));
+		p += sizeof(size_t);
 
 		//float acceleration_;
-		memcpy(&ag->acceleration_, p, sizeof(acceleration_));
-		p += sizeof(acceleration_);
+		memcpy(&ag->acceleration_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float relaxationTime_;
-		memcpy(&ag->relaxationTime_, p, sizeof(relaxationTime_));
-		p += sizeof(relaxationTime_);
+		memcpy(&ag->relaxationTime_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float maxSpeed_;
-		memcpy(&ag->maxSpeed_, p, sizeof(maxSpeed_));
-		p += sizeof(maxSpeed_);
+		memcpy(&ag->maxSpeed_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float force_;
-		memcpy(&ag->force_, p, sizeof(force_));
-		p += sizeof(force_);
+		memcpy(&ag->force_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float neighborDist_;
-		memcpy(&ag->neighborDist_, p, sizeof(neighborDist_));
-		p += sizeof(neighborDist_);
+		memcpy(&ag->neighborDist_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float radius_;
-		memcpy(&ag->radius_, p, sizeof(radius_));
-		p += sizeof(radius_);
+		memcpy(&ag->radius_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float timeHorizonObst_;
-		memcpy(&ag->timeHorizonObst_, p, sizeof(timeHorizonObst_));
-		p += sizeof(timeHorizonObst_);
+		memcpy(&ag->timeHorizonObst_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float accelerationCoefficient_;
-		memcpy(&ag->accelerationCoefficient_, p, sizeof(accelerationCoefficient_));
-		p += sizeof(accelerationCoefficient_);
+		memcpy(&ag->accelerationCoefficient_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveAgent_;
-		memcpy(&ag->repulsiveAgent_, p, sizeof(repulsiveAgent_));
-		p += sizeof(repulsiveAgent_);
+		memcpy(&ag->repulsiveAgent_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveAgentFactor_;
-		memcpy(&ag->relaxationTime_, p, sizeof(relaxationTime_));
-		p += sizeof(relaxationTime_);
+		memcpy(&ag->repulsiveAgentFactor_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveObstacle_;
-		memcpy(&ag->repulsiveObstacle_, p, sizeof(repulsiveObstacle_));
-		p += sizeof(repulsiveObstacle_);
+		memcpy(&ag->repulsiveObstacle_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float repulsiveObstacleFactor_;
-		memcpy(&ag->repulsiveObstacleFactor_, p, sizeof(repulsiveObstacleFactor_));
-		p += sizeof(repulsiveObstacleFactor_);
+		memcpy(&ag->repulsiveObstacleFactor_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float obstacleRadius_;
-		memcpy(&ag->obstacleRadius_, p, sizeof(obstacleRadius_));
-		p += sizeof(obstacleRadius_);
+		memcpy(&ag->obstacleRadius_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float platformFactor_;
-		memcpy(&ag->platformFactor_, p, sizeof(platformFactor_));
-		p += sizeof(platformFactor_);
+		memcpy(&ag->platformFactor_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float perception_;
-		memcpy(&ag->perception_, p, sizeof(perception_));
-		p += sizeof(perception_);
+		memcpy(&ag->perception_, p, sizeof(float));
+		p += sizeof(float);
 
 		//float friction_;
-		memcpy(&ag->friction_, p, sizeof(friction_));
-		p += sizeof(friction_);
+		memcpy(&ag->friction_, p, sizeof(float));
+		p += sizeof(float);
 
 		//double obstaclePressure_;
-		memcpy(&ag->obstaclePressure_, p, sizeof(obstaclePressure_));
-		p += sizeof(obstaclePressure_);
+		memcpy(&ag->obstaclePressure_, p, sizeof(double));
+		p += sizeof(double);
 
 		//double agentPressure_;
-		memcpy(&ag->agentPressure_, p, sizeof(agentPressure_));
-		p += sizeof(agentPressure_);
+		memcpy(&ag->agentPressure_, p, sizeof(double));
+		p += sizeof(double);
 
 
 		//Vector2 correction;
-		memcpy(&ag->correction, p, sizeof(correction));
-		p += sizeof(correction);
+		memcpy(&ag->correction, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 newVelocity_;
-		memcpy(&ag->newVelocity_, p, sizeof(newVelocity_));
-		p += sizeof(newVelocity_);
+		memcpy(&ag->newVelocity_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 position_;
-		memcpy(&ag->position_, p, sizeof(position_));
-		p += sizeof(position_);
+		memcpy(&ag->position_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 prefVelocity_;
-		memcpy(&ag->prefVelocity_, p, sizeof(prefVelocity_));
-		p += sizeof(prefVelocity_);
+		memcpy(&ag->prefVelocity_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 previosPosition_;
-		memcpy(&ag->previosPosition_, p, sizeof(previosPosition_));
-		p += sizeof(previosPosition_);
+		memcpy(&ag->previosPosition_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 velocity_;
-		memcpy(&ag->velocity_, p, sizeof(velocity_));
-		p += sizeof(velocity_);
+		memcpy(&ag->velocity_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 obstacleForce_;
-		memcpy(&ag->obstacleForce_, p, sizeof(obstacleForce_));
-		p += sizeof(obstacleForce_);
+		memcpy(&ag->obstacleForce_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector2 agentForce_;
-		memcpy(&ag->agentForce_, p, sizeof(agentForce_));
-		p += sizeof(agentForce_);
+		memcpy(&ag->agentForce_, p, sizeof(Vector2));
+		p += sizeof(Vector2);
 
 		//Vector3 oldPlatformVelocity_;
-		memcpy(&ag->oldPlatformVelocity_, p, sizeof(oldPlatformVelocity_));
-		p += sizeof(oldPlatformVelocity_);
-
-		//std::vector<std::pair<long, const Obstacle*> > obstacleNeighbors_;
-		//std::vector<std::pair<long, const Agent*> > agentNeighbors_;
-		//std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;
-
-
-		//std::vector<int> attractiveIds_;
-		memcpy(&ag->attractiveIds_, p, sizeof(attractiveIds_));
-		p += sizeof(attractiveIds_);
-
-		//std::map<size_t, float> speedList_;
-		memcpy(&ag->speedList_, p, sizeof(speedList_));
-		p += sizeof(speedList_);
+		memcpy(&ag->oldPlatformVelocity_, p, sizeof(Vector3));
+		p += sizeof(Vector3);
 
 		return ag;
 	}

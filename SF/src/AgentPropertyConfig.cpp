@@ -147,56 +147,56 @@ namespace SF
 		memcpy(&buffSize, p, sizeof(buffSize));
 		p += sizeof(buffSize);
 
-		memcpy(&agentPropertyConfig->_neighborDist, p, sizeof(_neighborDist));
-		p += sizeof(_neighborDist);
+		memcpy(&agentPropertyConfig->_neighborDist, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_maxNeighbors, p, sizeof(_maxNeighbors));
-		p += sizeof(_maxNeighbors);
+		memcpy(&agentPropertyConfig->_maxNeighbors, p, sizeof(size_t));
+		p += sizeof(size_t);
 
-		memcpy(&agentPropertyConfig->_timeHorizon, p, sizeof(_timeHorizon));
-		p += sizeof(_timeHorizon);
+		memcpy(&agentPropertyConfig->_timeHorizon, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_radius, p, sizeof(_radius));
-		p += sizeof(_radius);
+		memcpy(&agentPropertyConfig->_radius, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_maxSpeed, p, sizeof(_maxSpeed));
-		p += sizeof(_maxSpeed);
+		memcpy(&agentPropertyConfig->_maxSpeed, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_force, p, sizeof(_force));
-		p += sizeof(_force);
+		memcpy(&agentPropertyConfig->_force, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_accelerationCoefficient, p, sizeof(_accelerationCoefficient));
-		p += sizeof(_accelerationCoefficient);
+		memcpy(&agentPropertyConfig->_accelerationCoefficient, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_relaxationTime, p, sizeof(_relaxationTime));
-		p += sizeof(_relaxationTime);
+		memcpy(&agentPropertyConfig->_relaxationTime, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_repulsiveAgent, p, sizeof(_repulsiveAgent));
-		p += sizeof(_repulsiveAgent);
+		memcpy(&agentPropertyConfig->_repulsiveAgent, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_repulsiveAgentFactor, p, sizeof(_repulsiveAgentFactor));
-		p += sizeof(_repulsiveAgentFactor);
+		memcpy(&agentPropertyConfig->_repulsiveAgentFactor, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_repulsiveObstacle, p, sizeof(_repulsiveObstacle));
-		p += sizeof(_repulsiveObstacle);
+		memcpy(&agentPropertyConfig->_repulsiveObstacle, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_repulsiveObstacleFactor, p, sizeof(_repulsiveObstacleFactor));
-		p += sizeof(_repulsiveObstacleFactor);
+		memcpy(&agentPropertyConfig->_repulsiveObstacleFactor, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_obstacleRadius, p, sizeof(_obstacleRadius));
-		p += sizeof(_obstacleRadius);
+		memcpy(&agentPropertyConfig->_obstacleRadius, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_platformFactor, p, sizeof(_platformFactor));
-		p += sizeof(_platformFactor);
+		memcpy(&agentPropertyConfig->_platformFactor, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_perception, p, sizeof(_perception));
-		p += sizeof(_perception);
+		memcpy(&agentPropertyConfig->_perception, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_friction, p, sizeof(_friction));
-		p += sizeof(_friction);
+		memcpy(&agentPropertyConfig->_friction, p, sizeof(float));
+		p += sizeof(float);
 
-		memcpy(&agentPropertyConfig->_velocity, p, sizeof(_velocity));
-		p += sizeof(_velocity);
+		memcpy(&agentPropertyConfig->_velocity, p, sizeof(float) * 2);
+		p += sizeof(sizeof(float) * 2);
 
 		return agentPropertyConfig;
 	}
@@ -205,19 +205,19 @@ namespace SF
 	void AgentPropertyConfig::PrintDefaultProperties(void) const
 	{
 		std::string propertiesString = "";
-		propertiesString += "Acceleration coeff: " + std::to_string(this->_accelerationCoefficient) + "\n";
-		propertiesString += "Friction: " + std::to_string(this->_friction) + "\n";
-		propertiesString += "Radius: " + std::to_string(this->_radius) + "\n";
-		propertiesString += "Perception: " + std::to_string(this->_perception) + "\n";
-		propertiesString += "Force: " + std::to_string(this->_force) + "\n";
-		propertiesString += "Max neigh: " + std::to_string(this->_maxNeighbors) + "\n";
-		propertiesString += "Max speed: " + std::to_string(this->_maxSpeed) + "\n";
-		propertiesString += "Obstacle radius: " + std::to_string(this->_obstacleRadius) + "\n";
-		propertiesString += "Relax time: " + std::to_string(this->_relaxationTime) + "\n";
-		propertiesString += "Repulsive agent: " + std::to_string(this->_repulsiveAgent) + "\n";
-		propertiesString += "Repulsive agent factor: " + std::to_string(this->_repulsiveAgentFactor) + "\n";
-		propertiesString += "Repulsive obstacle: " + std::to_string(this->_repulsiveObstacle) + "\n";
-		propertiesString += "Repulsive obstacle factor: " + std::to_string(this->_repulsiveObstacleFactor) + "\n";
+		propertiesString += "Acceleration coeff: " + std::to_string((long double)this->_accelerationCoefficient) + "\n";
+		propertiesString += "Friction: " + std::to_string((long double)this->_friction) + "\n";
+		propertiesString += "Radius: " + std::to_string((long double)this->_radius) + "\n";
+		propertiesString += "Perception: " + std::to_string((long double)this->_perception) + "\n";
+		propertiesString += "Force: " + std::to_string((long double)this->_force) + "\n";
+		propertiesString += "Max neigh: " + std::to_string((long double)this->_maxNeighbors) + "\n";
+		propertiesString += "Max speed: " + std::to_string((long double)this->_maxSpeed) + "\n";
+		propertiesString += "Obstacle radius: " + std::to_string((long double)this->_obstacleRadius) + "\n";
+		propertiesString += "Relax time: " + std::to_string((long double)this->_relaxationTime) + "\n";
+		propertiesString += "Repulsive agent: " + std::to_string((long double)this->_repulsiveAgent) + "\n";
+		propertiesString += "Repulsive agent factor: " + std::to_string((long double)this->_repulsiveAgentFactor) + "\n";
+		propertiesString += "Repulsive obstacle: " + std::to_string((long double)this->_repulsiveObstacle) + "\n";
+		propertiesString += "Repulsive obstacle factor: " + std::to_string((long double)this->_repulsiveObstacleFactor) + "\n";
 		std::cout << propertiesString << std::endl;
 	}
 }

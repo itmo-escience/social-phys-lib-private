@@ -6,6 +6,7 @@
 #include "../include/AgentPropertyConfig.h"
 #include "../include/RotationDegreeSet.h"
 #include <iostream>
+#include <algorithm>
 
 
 #ifdef HAVE_CONFIG_H
@@ -142,7 +143,7 @@ namespace SF
 		std::cout << "Agents count: " << agents_.size() << std::endl;
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			std::cout << "ID: " << agents_[i]->id_ << " X: " << agents_[i]->position_.x() << " Y: " << agents_[i]->position_.y() <<std::endl;
+			std::cout << "ID: " << agents_[i]->id_ << " X: " << agents_[i]->position_.x() << " Y: " << agents_[i]->position_.y() << " VelX: " << agents_[i]->velocity_.x() << " VelY: " << agents_[i]->velocity_.y() <<std::endl;
 		}
 	}
 
@@ -294,8 +295,6 @@ namespace SF
 	/// <summary> Lets the simulator perform a simulation step and updates the two - dimensional position and two - dimensional velocity of each agent </summary>
 	void SFSimulator::doStep()
 	{
-		size_t s = agents_.size();
-
 		kdTree_->buildAgentTree();
 
 		if (agents_.size() > 0)
@@ -680,8 +679,12 @@ namespace SF
 	/// <param name="attractiveIds"> The list of attractive agent ID</param>
 	void SFSimulator::addAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
-		for (auto ai : attractiveIds)
-			addAttractiveId(id, ai);
+		//for (auto ai : attractiveIds)
+		for( int i = 0; i < attractiveIds.size(); i++)
+		{
+			addAttractiveId(id, attractiveIds[i]);
+		}
+
 	}
 
 	/// <summary> The deleting of special attractive agent </summary>
@@ -705,8 +708,11 @@ namespace SF
 	/// <param name="attractiveIds"> The list of attractive agent ID</param>
 	void SFSimulator::deleteAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
-		for(auto ai: attractiveIds)
-			deleteAttractiveId(id, ai);
+		//for(auto ai: attractiveIds)
+		for(int i = 0; i < attractiveIds.size(); i++)
+		{
+			deleteAttractiveId(id, attractiveIds[i]);	
+		}
 	}
 
 	/// <summary> Adds the platform rotation on XY axis </summary>
@@ -785,8 +791,11 @@ namespace SF
 				agent->agentNeighborsIndexList_.clear();
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
-				for (auto an : agent->agentNeighborsIndexList_)
-					result.push_back(an.first);
+				//for (auto an : agent->agentNeighborsIndexList_)
+				for(int i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+				{
+					result.push_back(agent->agentNeighborsIndexList_[i].first);	
+				}
 			}
 		}
 		else
@@ -808,9 +817,13 @@ namespace SF
 	{
 		auto result = std::vector<size_t>();
 
-		for (auto a : agents_)
-			if (a->isDeleted_)
-				result.push_back(a->id_);
+		//for (auto a : agents_)
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			if (agents_[i]->isDeleted_)
+				result.push_back(agents_[i]->id_);
+		}
+
 
 		return result;
 	}
@@ -825,8 +838,12 @@ namespace SF
 			alive = 0,
 			dead = 0;
 
-		for (auto a : agents_)
-			a->isDeleted_ ? dead++ : alive++;
+		//for (auto a : agents_)
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			agents_[i]->isDeleted_ ? dead++ : alive++;
+		}
+		//a->isDeleted_ ? dead++ : alive++;
 					
 		result.push_back(agents_.size());
 		result.push_back(alive);
