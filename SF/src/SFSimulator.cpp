@@ -67,6 +67,25 @@ namespace SF
 		return nullptr;
 	}
 
+	/// <summary> Get list of agents who are not in modeling areas </summary>
+	/// <param name="leftBotPoint"> Pointer to external agent </param>
+	/// <param name="rightTopPoint"> Pointer to external agent </param>
+	/// <returns> Vector of agent who are not in modeling area</returns>
+	std::vector<Agent* > SFSimulator::getAgentsWhoNotInArea(Vector2 leftBotPoint, Vector2 rightTopPoint)
+	{
+		std::vector<Agent* > agentsOutsideOfArea;
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			if(agents_[i]->position_.x() < leftBotPoint.x() || agents_[i]->position_.x() > leftBotPoint.x() //If outside of modeling area
+			|| agents_[i]->position_.y() < leftBotPoint.y() || agents_[i]->position_.y() > leftBotPoint.y()) 
+			{
+				agentsOutsideOfArea.push_back(agents_[i]);
+			}
+		}
+
+		return agentsOutsideOfArea; 
+	}
+
 	/// <summary> Returns the count of agent neighbors taken into account to compute the current velocity for the specified agent </summary>
 	/// <param name="agentNo"> The number of the agent whose count of agent neighbors is to be retrieved </param>
 	/// <returns> The count of agent neighbors taken into account to compute the current velocity for the specified agent </returns>

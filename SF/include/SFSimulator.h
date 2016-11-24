@@ -98,6 +98,12 @@ namespace SF
 		/// <param name="agentId">Agent ID </param>
 		/// <returns> The Agent</returns>
 		Agent* getAgent(size_t agentId);
+
+		/// <summary> Get list of agents who are not in modeling areas </summary>
+		/// <param name="leftBotPoint"> Pointer to external agent </param>
+		/// <param name="rightTopPoint"> Pointer to external agent </param>
+		/// <returns> Vector of agent who are not in modeling area</returns>
+		std::vector<Agent* > getAgentsWhoNotInArea(Vector2 leftBotPoint, Vector2 rightTopPoint);
 				
 		/// <summary> Adds a new obstacle to the simulation </summary>
 		/// <param name="vertices"> List of the vertices of the polygonal obstacle in counterclockwise order </param>
