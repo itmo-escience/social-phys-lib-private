@@ -49,10 +49,15 @@ namespace SF
 		for (size_t i = 0; i < agents_.size(); ++i)
 			delete agents_[i];
 
+		for(size_t i = 0; i < tmpAgents_.size(); ++i)
+			delete tmpAgents_[i];
+
 		for (size_t i = 0; i < obstacles_.size(); ++i)
 			delete obstacles_[i];
 
 		delete kdTree_;
+
+
 	}
 
 	Agent* SFSimulator::getAgent(size_t agentId)
@@ -245,6 +250,17 @@ namespace SF
 		return newAgent->id_;
 	}
 
+	/// <summary> Adds an external agent to the simulation that will be deleted after a step</summary>
+	/// <param name="newAgent"> Pointer to external agent </param>
+	/// <returns> The number of the agent</returns>
+	size_t SFSimulator::addTempAgent( Agent* newAgent )
+	{
+		newAgent->id_ = tmpAgents_.size();
+		tmpAgents_.push_back(newAgent);
+		newAgent->sim_ = this;
+		return newAgent->id_;
+	}
+
 	/// <summary> Adds a new obstacle to the simulation </summary>
 	/// <param name="vertices"> List of the vertices of the polygonal obstacle in counterclockwise order </param>
 	/// <returns> The number of the first vertex of the obstacle, or SF::SF_ERROR when the number of vertices is less than two</returns>
@@ -322,22 +338,32 @@ namespace SF
 			addPlatformRotationYZ(getRotationDegreeSet().getRotationOX());
 		}
 
-#pragma omp parallel for
-
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-		{
-			if (!(agents_[i]->isDeleted_))
+		#pragma omp parallel
+		{ 
+			#pragma omp for
+			for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
-				agents_[i]->computeNeighbors();
-				agents_[i]->computeNewVelocity();
+				if (!(agents_[i]->isDeleted_))
+				{
+					agents_[i]->computeNeighbors();
+					agents_[i]->computeNewVelocity();
+				}
+			}
+
+			#pragma omp for
+			for(int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			{
+				if(!(agents_[i]->isDeleted_))
+					agents_[i]->update();
 			}
 		}
 
-#pragma omp parallel for
+		for(size_t i = 0; i < tmpAgents_.size(); i++)
+		{
+			delete tmpAgents_[i];
+		}
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
-			if(!(agents_[i]->isDeleted_))
-				agents_[i]->update();
+		tmpAgents_.clear();
 
 		globalTime_ += timeStep_;
 	}

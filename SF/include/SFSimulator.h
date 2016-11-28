@@ -94,6 +94,11 @@ namespace SF
 		/// <returns> The number of the agent</returns>
 		size_t addAgent( Agent* newAgent );
 
+		/// <summary> Adds an external agent to the simulation that will be deleted after a step</summary>
+		/// <param name="newAgent"> Pointer to external agent </param>
+		/// <returns> The number of the agent</returns>
+		size_t addTempAgent( Agent* newAgent );
+
 		/// <summary> Return Agent by agent ID </summary>
 		/// <param name="agentId">Agent ID </param>
 		/// <returns> The Agent</returns>
@@ -440,6 +445,7 @@ namespace SF
 
 	private:
 		std::vector<Agent*> agents_;		// all agents list
+		std::vector<Agent*> tmpAgents_;		// temporary list of agents from adjacent areas
 		Agent* defaultAgent_;				// default setting
 		float globalTime_;					// the global timer
 		KdTree* kdTree_;					// the global tree 
