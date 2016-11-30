@@ -25,22 +25,21 @@ namespace SF
 	/// <summary> Builds an agent kd-tree </summary>
 	void KdTree::buildAgentTree()
 	{
-		//if (agents_.size() < sim_->agents_.size()) 
-		//{
-			agents_.clear();
-			for (auto i = 0; i < sim_->agents_.size(); ++i) 
-				if (!sim_->agents_[i]->isDeleted_)
-					agents_.push_back(sim_->agents_[i]);
+		agents_.clear();
+		agentTree_.clear();
+		for (auto i = 0; i < sim_->agents_.size(); ++i) 
+			if (!sim_->agents_[i]->isDeleted_)
+				agents_.push_back(sim_->agents_[i]);
 
-			for(auto i = 0; i < sim_->tmpAgents_.size(); i++)
-				if(!sim_->tmpAgents_[i]->isDeleted_)
-					agents_.push_back(sim_->tmpAgents_[i]);
-			
+		for(auto i = 0; i < sim_->tmpAgents_.size(); i++)
+			if(!sim_->tmpAgents_[i]->isDeleted_)
+				agents_.push_back(sim_->tmpAgents_[i]);
+
+		if (!agents_.empty())
+		{
 			agentTree_.resize(2 * agents_.size() - 1);
-		//}
-    
-		if (!agents_.empty()) 
-			buildAgentTreeRecursive(0, agents_.size(), 0);
+			buildAgentTreeRecursive(0, agents_.size(), 0);	
+		}
 	}
 
 	/// <summary> Builds an agent kd-tree </summary>
