@@ -23,6 +23,7 @@
     <ClInclude Include="include\AgentPropertyConfig.h" />
     <ClInclude Include="include\Definitions.h" />
     <ClInclude Include="include\KdTree.h" />
+    <ClInclude Include="include\mpiagent.h" />
     <ClInclude Include="include\Obstacle.h" />
     <ClInclude Include="include\RotationDegreeSet.h" />
     <ClInclude Include="include\SF.h" />
@@ -30,13 +31,12 @@
     <ClInclude Include="include\SimpleMatrix.h" />
     <ClInclude Include="include\Vector2.h" />
     <ClInclude Include="include\Vector3.h" />
-    <ClInclude Include="MPIAgent.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MPIAgent.cpp" />
     <ClCompile Include="src\Agent.cpp" />
     <ClCompile Include="src\AgentPropertyConfig.cpp" />
     <ClCompile Include="src\KdTree.cpp" />
+    <ClCompile Include="src\MPIAgent.cpp" />
     <ClCompile Include="src\Obstacle.cpp" />
     <ClCompile Include="src\SFSimulator.cpp" />
     <ClCompile Include="src\SimpleMatrix.cpp" />
@@ -57,7 +57,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>

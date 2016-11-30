@@ -184,7 +184,7 @@ namespace SF
     */
     Vector2 operator/(float s) const
     {
-      const auto invS = 1.0f / s;
+      const float invS = 1.0f / s;
 
       return Vector2(x_ * invS, y_ * invS);
     }
@@ -267,7 +267,7 @@ namespace SF
     */
     Vector2& operator/=(float s)
     {
-      const auto invS = 1.0f / s;
+      const float invS = 1.0f / s;
       x_ *= invS;
       y_ *= invS;
 
@@ -318,7 +318,7 @@ namespace SF
 	*/
 	Vector2 normalized()
     {
-		auto length = sqrt(pow(x_, 2) + pow(y_, 2));
+		float length = sqrt(pow(x_, 2) + pow(y_, 2));
 
         if(length < FLT_EPSILON)
             return *this;
@@ -334,10 +334,10 @@ namespace SF
 
     double angleTo(Vector2 *other) const
     {
-		auto angleThis = polarAngle();
-		auto angleOther = other->polarAngle();
+		double angleThis = polarAngle();
+		double angleOther = other->polarAngle();
 
-		auto diffAngle = angleOther - angleThis;
+		double diffAngle = angleOther - angleThis;
             
         if(diffAngle > M_PI)
             diffAngle -= M_PI;

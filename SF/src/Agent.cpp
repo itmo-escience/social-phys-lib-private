@@ -3,6 +3,7 @@
 #include "../include/Agent.h"
 #include "../include/Obstacle.h"
 #include "../include/KdTree.h"
+#include "../include/MPIAgent.h"
 
 namespace SF
 {
@@ -61,7 +62,7 @@ namespace SF
 	{
 		// obstacle section
 		obstacleNeighbors_.clear();
-		auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+		float rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
 		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
 		// agent section
@@ -124,7 +125,19 @@ namespace SF
 		if ((fabs(previosPosition_.x() - INT_MIN) < SF_EPSILON) && (fabs(previosPosition_.y() - INT_MIN) < SF_EPSILON))
 			previosPosition_ = position_;
 
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
+
 		velocity_ = newVelocity_;
+
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
 
 		if (fabs(prefVelocity_.x()) < TOLERANCE && fabs(prefVelocity_.y()) < TOLERANCE)
 		{
@@ -132,9 +145,9 @@ namespace SF
 			setSpeedList(id_, 0.0f);
 		}
 
-		auto speed = speedList_[id_];
-		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+		float speed = speedList_[id_];
+		float mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+		float tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
 
 		if (!isForced_)
 			acceleration_ += tempAcceleration;
@@ -142,20 +155,26 @@ namespace SF
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
 
-		auto minLength = DBL_MAX;
-		auto p = Vector2();
-		auto hasIntersection = false;
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
+
+		double minLength = DBL_MAX;
+		Vector2 p = Vector2();
+		bool hasIntersection = false;
 
 		//for(auto on: obstacleNeighbors_)
 		for(int i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			auto obstacle = obstacleNeighbors_[i].second;
+			const Obstacle* obstacle = obstacleNeighbors_[i].second;
 			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
 			{
 				if (!hasIntersection)
 					hasIntersection = true;
-				auto intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
-				auto l = getLength(intersectionPoint - previosPosition_);
+				Vector2 intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
+				float l = getLength(intersectionPoint - previosPosition_);
 				p = intersectionPoint;
 
 				if (l < minLength)
@@ -194,57 +213,87 @@ namespace SF
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
 		previosPosition_ = position_;
-
 	}
 
 	/// <summary> Repulsive agent force </summary>
 	void Agent::getRepulsiveAgentForce()
 	{
 		double pressure = 0;
-		auto forceSum = Vector2();
-		auto maxForceLength = FLT_MIN;
+		Vector2 forceSum = Vector2();
+		float maxForceLength = FLT_MIN;
 
 		//for(auto an: agentNeighbors_)
 		for(int i = 0; i < agentNeighbors_.size(); i++)
 		{
 			setNullSpeed(agentNeighbors_[i].second->id_);
-			auto pos = agentNeighbors_[i].second->position_;
+			Vector2 pos = agentNeighbors_[i].second->position_;
 
 			if (position_ == pos)
 				continue;
 
-			auto velocity = agentNeighbors_[i].second->velocity_;
+			Vector2 velocity = agentNeighbors_[i].second->velocity_;
 
-			auto y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-			auto d = position_ - pos;
-			auto radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
-			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+			Vector2 y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+			Vector2 d = position_ - pos;
+			float radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
 
-			auto length = getLength(force);
+			float b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+			float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+			float ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+			Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
+			Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+
+			if(force.x() != force.x() //Is NAN check
+			|| force.y() != force.y())
+			{
+				printf("error!\n");
+			}
+
+			float length = getLength(force);
 			pressure += length;
 
 			if (maxForceLength < length)
 				maxForceLength = length;
 
+			if(force.x() != force.x() //Is NAN check
+			|| force.y() != force.y())
+			{
+				printf("error!\n");
+			}
+
 			forceSum += force * agentNeighbors_[i].second->force_;
+
+			if(forceSum.x() != forceSum.x() //Is NAN check
+			|| forceSum.y() != forceSum.y())
+			{
+				printf("error!\n");
+			}
 		}
 
-		auto forceSumLength = getLength(forceSum);
+		float forceSumLength = getLength(forceSum);
 
 		if (forceSumLength > maxForceLength)
 		{
-			auto coeff = maxForceLength / forceSumLength;
+			float coeff = maxForceLength / forceSumLength;
 			forceSum *= coeff;
+
+			if(forceSum.x() != forceSum.x() //Is NAN check
+			|| forceSum.y() != forceSum.y())
+			{
+				printf("error!\n");
+			}
 		}
 
-		auto maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
+		float maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
 		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
 
 		correction += forceSum;
+
+		if(correction.x() != correction.x() //Is NAN check
+		|| correction.y() != correction.y())
+		{
+			printf("error!\n");
+		}
 
 		agentForce_ = forceSum;
 	}
@@ -252,9 +301,9 @@ namespace SF
 	/// <summary> Repulsive obstacle force </summary>
 	void Agent::getRepulsiveObstacleForce()
 	{
-		auto forceSum = Vector2();
-		auto maxForceLength = FLT_MIN;
-		auto minDistanceToObstacle = FLT_MAX;
+		Vector2 forceSum = Vector2();
+		float maxForceLength = FLT_MIN;
+		float minDistanceToObstacle = FLT_MAX;
 
 		std::vector<Vector2> nearestObstaclePointList;
 		nearestObstaclePointList.clear();
@@ -269,17 +318,17 @@ namespace SF
 		{
 			setNullSpeed(id_);
 
-			auto obstacle = obstacleNeighbors_[i].second;
-			auto start = obstacle->point_;
-			auto end = obstacle->nextObstacle->point_;
-			auto closestPoint = getNearestPoint(&start, &end, &position_);
+			const Obstacle* obstacle = obstacleNeighbors_[i].second;
+			Vector2 start = obstacle->point_;
+			Vector2 end = obstacle->nextObstacle->point_;
+			Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
 
-			auto hasSuchClosestPoint = false;
+			bool hasSuchClosestPoint = false;
 
 			//for (auto nop : nearestObstaclePointList)
 			for (int j = 0; j < nearestObstaclePointList.size(); j++)
 			{
-				auto l = nearestObstaclePointList[j] - closestPoint;
+				Vector2 l = nearestObstaclePointList[j] - closestPoint;
 				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
 				{
 					hasSuchClosestPoint = true;
@@ -296,16 +345,16 @@ namespace SF
 		//for (auto on : obstacleNeighbors_)
 		for (int i = 0; i < obstacleNeighbors_.size(); i++)
 		{
-			auto obstacle = obstacleNeighbors_[i].second;
-			auto start = obstacle->point_;
-			auto end = obstacle->nextObstacle->point_;
-			auto closestPoint = getNearestPoint(&start, &end, &position_);
+			const Obstacle* obstacle = obstacleNeighbors_[i].second;
+			Vector2 start = obstacle->point_;
+			Vector2 end = obstacle->nextObstacle->point_;
+			Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
 
 			size_t j = 0;
 			for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 			{
-				auto nop = nearestObstaclePointList[i];
-				auto l = nop - closestPoint;
+				Vector2 nop = nearestObstaclePointList[i];
+				Vector2 l = nop - closestPoint;
 				if (l.GetLengthSquared() > TOLERANCE)
 				{
 					if ((nop - start).GetLengthSquared() < TOLERANCE || (nop - end).GetLengthSquared() < TOLERANCE)
@@ -319,23 +368,23 @@ namespace SF
 		//for (auto nop : nearestObstaclePointList)
 		for (int i = 0; i < nearestObstaclePointList.size(); i++)
 		{
-			auto closestPoint = nearestObstaclePointList[i];
+			Vector2 closestPoint = nearestObstaclePointList[i];
 
-			auto diff = position_ - closestPoint;
-			auto distanceSquared = diff.GetLengthSquared();
-			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
-			auto distance = absoluteDistanceToObstacle - radius_;
+			Vector2 diff = position_ - closestPoint;
+			float distanceSquared = diff.GetLengthSquared();
+			float absoluteDistanceToObstacle = sqrt(distanceSquared);
+			float distance = absoluteDistanceToObstacle - radius_;
 
 			if (absoluteDistanceToObstacle < minDistanceToObstacle)
 				minDistanceToObstacle = absoluteDistanceToObstacle;
 
-			auto forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-			auto force = forceAmount * diff.normalized();
+			float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+			Vector2 force = forceAmount * diff.normalized();
 
 			forces.push_back(force);
 			forceSum += force;
 
-			auto length = getLength(force);
+			float length = getLength(force);
 
 			if (maxForceLength < length)
 				maxForceLength = length;
@@ -360,7 +409,7 @@ namespace SF
 		}
 
 
-		auto total = Vector2();
+		Vector2 total = Vector2();
 		for (size_t i = 0; i < forces.size(); i++)
 			total += forces[i] * forceWeightList[i];
 
@@ -499,17 +548,23 @@ namespace SF
 				if (attractiveIds_[i] == id_)
 					continue;
 
-				auto anp = sim_->agents_[attractiveIds_[i]]->position_;
+				Vector2 anp = sim_->agents_[attractiveIds_[i]]->position_;
 
-				auto pairPosition = anp;
-				auto normalizedDistance = normalize(position_ - anp);
+				Vector2 pairPosition = anp;
+				Vector2 normalizedDistance = normalize(position_ - anp);
 
-				auto first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->repulsiveRange_);
-				auto second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->attractiveRange_);
+				float first = sim_->repulsiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->repulsiveRange_);
+				float second = sim_->attractiveStrength_ * exp((2 * radius_ - getLength(normalizedDistance)) / sim_->attractiveRange_);
 
-				auto add = (first - second) * getPerception(&position_, &(anp)) * normalizedDistance;
+				Vector2 add = (first - second) * getPerception(&position_, &(anp)) * normalizedDistance;
 
 				correction += add;
+
+				if(correction.x() != correction.x() //Is NAN check
+				|| correction.y() != correction.y())
+				{
+					printf("error!\n");
+				}
 			}
 		}
 	}
@@ -546,7 +601,7 @@ namespace SF
 
 			if (fabs(sim_->rotationNow_.x()) > 0.001f)
 			{
-				auto parameterType = X;
+				ParameterType parameterType = X;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
 
@@ -599,7 +654,7 @@ namespace SF
 
 			if (fabs(sim_->rotationNow_.y()) > 0.001f)
 			{
-				auto parameterType = Y;
+				ParameterType parameterType = Y;
 				omega = getOmega(parameterType, NOW);
 				dOmega = getDOmega(parameterType, NOW);
 				
@@ -653,17 +708,17 @@ namespace SF
 				newVY = Vector2(A.x(), A.y());
 			}
 
-			auto result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+			Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
 
 			// heave
 			// TODO good heave
-			auto platformVeclocity = sim_->getPlatformVelocity();
+			Vector3 platformVeclocity = sim_->getPlatformVelocity();
 			
 			float
 				accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
 				oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
 
-			auto difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+			float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
 
 			if (difference > 0)	
 				result = result * (1 + fabs(difference));
@@ -673,18 +728,42 @@ namespace SF
 			oldPlatformVelocity_ = platformVeclocity;
 
 			correction += result * platformFactor_;
+
+			if(correction.x() != correction.x() //Is NAN check
+			|| correction.y() != correction.y())
+			{
+				printf("error!\n");
+			}
 		}
 	}
 
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
+
 		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
 			newVelocity_ = normalize(prefVelocity_) * radius_;
 		else
 			newVelocity_ = prefVelocity_;
 
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
+
 		correction = Vector2();
+
+		if(correction.x() != correction.x() //Is NAN check
+		|| correction.y() != correction.y())
+		{
+			printf("error!\n");
+		}
 
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
@@ -692,8 +771,20 @@ namespace SF
 
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
+
+		if(correction.x() != correction.x() //Is NAN check
+		|| correction.y() != correction.y())
+		{
+			printf("error!\n");
+		}
     
 		newVelocity_ += correction;
+
+		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
+		|| newVelocity_.y() != newVelocity_.y())
+		{
+			printf("error!\n");
+		}
 	}
 
 	/// <summary> Inserts an agent neighbor into the set of neighbors of this agent </summary>
@@ -703,14 +794,14 @@ namespace SF
 	{
 		if (this != agent) 
 		{
-			const auto distSq = absSq(position_ - agent->position_);
+			const float distSq = absSq(position_ - agent->position_);
 
 			if (distSq < rangeSq) 
 			{
 				if (agentNeighbors_.size() < maxNeighbors_) 
 					agentNeighbors_.push_back(std::make_pair(distSq,agent));
 				
-				auto i = agentNeighbors_.size() - 1;
+				size_t i = agentNeighbors_.size() - 1;
 			
 				while (i != 0 && distSq < agentNeighbors_[i-1].first) 
 				{
@@ -733,13 +824,13 @@ namespace SF
 	{
 		const Obstacle* const nextObstacle = obstacle->nextObstacle;
 
-		const auto distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+		const float distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
 		if (distSq < rangeSq) 
 		{
 			obstacleNeighbors_.push_back(std::make_pair(distSq,obstacle));
       
-			auto i = obstacleNeighbors_.size() - 1;
+			size_t i = obstacleNeighbors_.size() - 1;
 			while (i != 0 && distSq < obstacleNeighbors_[i-1].first) 
 			{
 				obstacleNeighbors_[i] = obstacleNeighbors_[i-1];
@@ -757,12 +848,12 @@ namespace SF
 	{
 		if (this != agent) 
 		{
-			const auto distSq = absSq(position_ - agent->position_);
+			const float distSq = absSq(position_ - agent->position_);
 
 			if (distSq < rangeSq) 
 			{
 				agentNeighborsIndexList_.push_back(std::make_pair(agent->id_, distSq));
-				auto i = agentNeighborsIndexList_.size() - 1;
+				size_t i = agentNeighborsIndexList_.size() - 1;
         
 				while (i != 0 && distSq < agentNeighborsIndexList_[i-1].second) 
 				{
@@ -782,8 +873,8 @@ namespace SF
 	/// <returns> The nearest point </returns>
 	Vector2 Agent::getNearestPoint(Vector2 *start, Vector2 *end, Vector2 *point) const
 	{
-		auto relativeEndPoint = *end - *start;
-		auto relativePoint = *point - *start;
+		Vector2 relativeEndPoint = *end - *start;
+		Vector2 relativePoint = *point - *start;
 		double lambda = relativePoint * relativeEndPoint / relativeEndPoint.GetLengthSquared();
 
 		if(lambda <= 0)
@@ -934,10 +1025,10 @@ namespace SF
 	/// <returns> True if two lines has intersection, false elsewhere </returns>
 	bool Agent::isIntersect(Vector2 a, Vector2 b, Vector2 c, Vector2 d) const
 	{
-		auto v1 = (d.x() - c.x())*(a.y() - c.y()) - (d.y() - c.y())*(a.x() - c.x());
-		auto v2 = (d.x() - c.x())*(b.y() - c.y()) - (d.y() - c.y())*(b.x() - c.x());
-		auto v3 = (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
-		auto v4 = (b.x() - a.x())*(d.y() - a.y()) - (b.y() - a.y())*(d.x() - a.x());
+		float v1 = (d.x() - c.x())*(a.y() - c.y()) - (d.y() - c.y())*(a.x() - c.x());
+		float v2 = (d.x() - c.x())*(b.y() - c.y()) - (d.y() - c.y())*(b.x() - c.x());
+		float v3 = (b.x() - a.x())*(c.y() - a.y()) - (b.y() - a.y())*(c.x() - a.x());
+		float v4 = (b.x() - a.x())*(d.y() - a.y()) - (b.y() - a.y())*(d.x() - a.x());
 		
 		return (v1 * v2 < TOLERANCE) && (v3 * v4 < 0);
 	}
@@ -960,8 +1051,8 @@ namespace SF
 			y3 = c.y(), 
 			y4 = d.y();
 
-		auto x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
-		auto y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
+		float x = ((x3*y4 - x4*y3)*(x2 - x1) - (x1*y2 - x2*y1)*(x4 - x3)) / ((y1 - y2)*(x4 - x3) - (y3 - y4)*(x2 - x1));
+		float y = ((y3 - y4)*x - (x3*y4 - x4*y3)) / (x4 - x3);
 
 		return Vector2(x, y);
 	}
@@ -971,10 +1062,10 @@ namespace SF
 	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationX(float angle) const
 	{
-		auto result = SimpleMatrix();	// identity
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-		auto c = cos(angle);
-		auto s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
 		result.m22 = c;
 		result.m23 = s;
@@ -989,10 +1080,10 @@ namespace SF
 	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationY(float angle) const
 	{
-		auto result = SimpleMatrix();	// identity
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-		auto c = cos(angle);
-		auto s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
 		result.m11 = c;
 		result.m13 = -s;
@@ -1007,10 +1098,10 @@ namespace SF
 	/// <returns> Rotation matrix </returns>
 	SimpleMatrix Agent::getRotationZ(float angle) const
 	{
-		auto result = SimpleMatrix();	// identity
+		SimpleMatrix result = SimpleMatrix();	// identity
 
-		auto c = cos(angle);
-		auto s = sin(angle);
+		float c = cos(angle);
+		float s = sin(angle);
 
 		result.m11 = c;
 		result.m12 = s;

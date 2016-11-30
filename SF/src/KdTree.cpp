@@ -27,11 +27,11 @@ namespace SF
 	{
 		agents_.clear();
 		agentTree_.clear();
-		for (auto i = 0; i < sim_->agents_.size(); ++i) 
+		for (size_t i = 0; i < sim_->agents_.size(); ++i) 
 			if (!sim_->agents_[i]->isDeleted_)
 				agents_.push_back(sim_->agents_[i]);
 
-		for(auto i = 0; i < sim_->tmpAgents_.size(); i++)
+		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
 			if(!sim_->tmpAgents_[i]->isDeleted_)
 				agents_.push_back(sim_->tmpAgents_[i]);
 
@@ -53,10 +53,10 @@ namespace SF
 		agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
 		agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
     
-		for (auto i = begin + 1; i < end; ++i) 
+		for (size_t i = begin + 1; i < end; ++i) 
 		{
-			auto tree = agentTree_[node];
-			auto position = agents_[i]->position_;
+			AgentTreeNode tree = agentTree_[node];
+			Vector2 position = agents_[i]->position_;
 
 			tree.maxX = std::max(tree.maxX, position.x());
 			tree.minX = std::min(tree.minX, position.x());
@@ -69,11 +69,11 @@ namespace SF
 		if (end - begin > MAX_LEAF_SIZE) 
 		{
 			// No leaf node
-			const auto isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
-			const auto splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
+			const bool isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
+			const float splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
 
-			auto left = begin;
-			auto right = end;
+			size_t left = begin;
+			size_t right = end;
 
 			while (left < right) 
 			{
@@ -91,7 +91,7 @@ namespace SF
 				}
 			}
 
-			auto leftSize = left - begin;
+			size_t leftSize = left - begin;
 
 			if (leftSize == 0) {
 				++leftSize;
@@ -131,11 +131,11 @@ namespace SF
 		if (obstacles.empty())
 			return nullptr;
 
-		const auto node = new ObstacleTreeNode;
+		ObstacleTreeNode* node = new ObstacleTreeNode;
 
 		size_t optimalSplit = 0;
-		auto minLeft = obstacles.size();
-		auto minRight = minLeft;
+		size_t minLeft = obstacles.size();
+		size_t minRight = minLeft;
 
 		for (size_t i = 0; i < obstacles.size(); ++i) 
 		{
@@ -153,8 +153,8 @@ namespace SF
 				const Obstacle* const obstacleJ1 = obstacles[j];
 				const Obstacle* const obstacleJ2 = obstacleJ1->nextObstacle;
 
-				const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
-				const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
+				const float j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
+				const float j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
 
 				if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON) 
 					++leftSize;
@@ -193,11 +193,11 @@ namespace SF
 			if (i == j)
 				continue;
 
-			const auto obstacleJ1 = obstacles[j];
-			const auto obstacleJ2 = obstacleJ1->nextObstacle;
+			Obstacle* obstacleJ1 = obstacles[j];
+			Obstacle* obstacleJ2 = obstacleJ1->nextObstacle;
 
-			const auto j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
-			const auto j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
+			const float j1LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
+			const float j2LeftOfI = leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ2->point_);
 
 			if (j1LeftOfI >= -SF_EPSILON && j2LeftOfI >= -SF_EPSILON)
 				leftObstacles[leftCounter++] = obstacleJ1;
@@ -271,7 +271,7 @@ namespace SF
 	{
 		if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) 
 		{
-			for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
+			for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
 			{
 				if(!(agents_[i]->isDeleted_))
 				agent->insertAgentNeighbor(agents_[i], rangeSq);
@@ -279,9 +279,9 @@ namespace SF
 		} 
 		else 
 		{
-			const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
+			const float distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
 
-			const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
+			const float distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
 
 			if (distSqLeft < distSqRight) 
 			{
@@ -314,16 +314,16 @@ namespace SF
 	{
 		if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) 
 		{
-			for (auto i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
+			for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
 			{
 				agent->insertAgentNeighborsIndex(agents_[i], rangeSq);
 			}
 		} 
 		else 
 		{
-			const auto distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
+			const float distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
 
-			const auto distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
+			const float distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
 
 			if (distSqLeft < distSqRight) 
 			{
@@ -357,13 +357,13 @@ namespace SF
 		if (node == nullptr)
 			return;
 		
-		const auto obstacle1 = node->obstacle;
-		const auto obstacle2 = obstacle1->nextObstacle;
-		const auto agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
+		const Obstacle* obstacle1 = node->obstacle;
+		const Obstacle* obstacle2 = obstacle1->nextObstacle;
+		const float agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
 
 		queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
 			
-		const auto distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
+		const float distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
 
 		if (distSqLine < rangeSq) 
 		{
@@ -380,7 +380,7 @@ namespace SF
 	bool KdTree::queryVisibility(const Vector2& q1, const Vector2& q2, float radius) const
 	{
 		//mtx.lock();
-		auto visibility = queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
+		bool visibility = queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
 		//mtx.unlock();
 		return visibility;
 	}
@@ -397,12 +397,12 @@ namespace SF
 			return true;
 		else 
 		{
-			const auto obstacle1 = node->obstacle;
-			const auto obstacle2 = obstacle1->nextObstacle;
+			const Obstacle* obstacle1 = node->obstacle;
+			const Obstacle* obstacle2 = obstacle1->nextObstacle;
 
-			const auto q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q1);
-			const auto q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q2);
-			const auto invLengthI = 1.0f / absSq(obstacle2->point_ - obstacle1->point_);
+			const float q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q1);
+			const float q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q2);
+			const float invLengthI = 1.0f / absSq(obstacle2->point_ - obstacle1->point_);
 
 			if (q1LeftOfI >= 0.0f && q2LeftOfI >= 0.0f)
 				return queryVisibilityRecursive(q1, q2, radius, node->left) && ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) && sqr(q2LeftOfI) * invLengthI >= sqr(radius)) || queryVisibilityRecursive(q1, q2, radius, node->right));
@@ -413,9 +413,9 @@ namespace SF
 				return queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right);
 			else 
 			{
-				const auto point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
-				const auto point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
-				const auto invLengthQ = 1.0f / absSq(q2 - q1);
+				const float point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
+				const float point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
+				const float invLengthQ = 1.0f / absSq(q2 - q1);
 
 				return (point1LeftOfQ * point2LeftOfQ >= 0.0f && sqr(point1LeftOfQ) * invLengthQ > sqr(radius) && sqr(point2LeftOfQ) * invLengthQ > sqr(radius) && queryVisibilityRecursive(q1, q2, radius, node->left) && queryVisibilityRecursive(q1, q2, radius, node->right));
 			}

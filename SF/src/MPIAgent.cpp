@@ -1,6 +1,7 @@
-#include "MPIAgent.h"
 #include <string>
 #include <iostream>
+#include "../include/MPIAgent.h"
+#include "../include/Agent.h"
 
 SF::MPIAgent::MPIAgent()
 {

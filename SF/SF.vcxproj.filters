@@ -44,7 +44,7 @@
     <ClInclude Include="include\SimpleMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MPIAgent.h">
+    <ClInclude Include="include\mpiagent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -67,7 +67,7 @@
     <ClCompile Include="src\SimpleMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MPIAgent.cpp">
+    <ClCompile Include="src\MPIAgent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

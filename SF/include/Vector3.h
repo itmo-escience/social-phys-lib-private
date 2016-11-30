@@ -167,7 +167,7 @@ public:
 	 */
 	Vector3 operator/(float scalar) const
 	{
-		const auto invScalar = 1.0f / scalar;
+		const float invScalar = 1.0f / scalar;
 
 		return Vector3(val_[0] * invScalar, val_[1] * invScalar, val_[2] * invScalar);
 	}
@@ -239,7 +239,7 @@ public:
 	 */
 	Vector3& operator/=(float scalar)
 	{
-		const auto invScalar = 1.0f / scalar;
+		const float invScalar = 1.0f / scalar;
 
 		val_[0] *= invScalar;
 		val_[1] *= invScalar;

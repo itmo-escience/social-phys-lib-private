@@ -43,9 +43,9 @@ namespace SF
 	inline float leftOf(const Vector2& a, const Vector2& b, const Vector2& c)
 	{
 
-		auto prod1 = (a.y() - b.y())*c.x() + (b.x() - a.x())*c.y() + (a.x()*b.y() - b.x()*a.y());
-		auto prod2 = sqrt((b.x()-a.x())*(b.x() - a.x()) + (b.y()-a.y())*(b.y() - a.y()));
-		auto dist_a_b_to_c = prod1 / prod2;
+		float prod1 = (a.y() - b.y())*c.x() + (b.x() - a.x())*c.y() + (a.x()*b.y() - b.x()*a.y());
+		float prod2 = sqrt((b.x()-a.x())*(b.x() - a.x()) + (b.y()-a.y())*(b.y() - a.y()));
+		float dist_a_b_to_c = prod1 / prod2;
 		return dist_a_b_to_c;
 
 		//return det(a - c, b - a);

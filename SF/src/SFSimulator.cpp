@@ -133,7 +133,7 @@ namespace SF
 		if (defaultAgent_ == 0)
 			return SF_ERROR;
 
-		auto agent = new Agent(this);
+		Agent* agent = new Agent(this);
 
 		agent->position_ = position;
 		agent->maxNeighbors_ = defaultAgent_->maxNeighbors_;
@@ -211,7 +211,7 @@ namespace SF
 		const Vector2& velocity
 		)
 	{
-		auto agent = new Agent(this);
+		Agent* agent = new Agent(this);
 
 		agent->position_ = position;
 		agent->maxNeighbors_ = maxNeighbors;
@@ -269,10 +269,10 @@ namespace SF
 		if (vertices.size() < 2)
 			return SF_ERROR;
 
-		auto obstacleNo = obstacles_.size();
+		size_t obstacleNo = obstacles_.size();
 
 		for (size_t i = 0; i < vertices.size(); ++i) {
-			auto obstacle = new Obstacle();
+			Obstacle* obstacle = new Obstacle();
 			obstacle->point_ = vertices[i];
 
 			if (i != 0)
@@ -311,7 +311,7 @@ namespace SF
 			if (obstacles_[i]->id_ == objectId)
 			{
 				int pointsInObstacle = 1;
-				auto currentObstacle = obstacles_[i]->nextObstacle;
+				Obstacle* currentObstacle = obstacles_[i]->nextObstacle;
 				while (currentObstacle != obstacles_[i])
 				{
 					pointsInObstacle++;
@@ -714,7 +714,7 @@ namespace SF
 	/// <param name="newID"> The attractive agent ID </param>
 	void SFSimulator::addAttractiveId(int id, int newId)
 	{
-		auto ail = agents_[id]->attractiveIds_;
+		std::vector<int> ail = agents_[id]->attractiveIds_;
 		if(std::find(ail.begin(), ail.end(), newId) == ail.end())
 			agents_[id]->attractiveIds_.push_back(newId);
 	}
@@ -737,7 +737,7 @@ namespace SF
 	/// <param name="idFoeDelete"> The attractive agent ID </param>
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		auto aais = agents_[id]->attractiveIds_;
+		std::vector<int> aais = agents_[id]->attractiveIds_;
 		for (std::vector<int>::iterator i = aais.begin(); i != aais.end(); ++i)
 		{
 			if (*i == idForDelete)
@@ -764,7 +764,7 @@ namespace SF
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationXY(float value)
 	{
-		auto futureSum = platformRotationXY_ + value;
+		double futureSum = platformRotationXY_ + value;
 
 		if (futureSum >= 2 * M_PI)
 			platformRotationXY_ = futureSum - 2 * M_PI;
@@ -776,7 +776,7 @@ namespace SF
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationXZ(float value)
 	{
-		auto futureSum = platformRotationXZ_ + value;
+		double futureSum = platformRotationXZ_ + value;
 
 		if (futureSum >= 2 * M_PI)
 			platformRotationXZ_ = futureSum - 2 * M_PI;
@@ -788,7 +788,7 @@ namespace SF
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationYZ(float value)
 	{
-		auto futureSum = platformRotationYZ_ + value;
+		double futureSum = platformRotationYZ_ + value;
 
 		if (futureSum >= 2 * M_PI)
 			platformRotationYZ_ = futureSum - 2 * M_PI;
@@ -830,8 +830,8 @@ namespace SF
 				result.push_back(0);
 			else
 			{
-				auto agent = agents_[index];
-				auto rangeSq = sqr(radius);
+				Agent* agent = agents_[index];
+				float rangeSq = sqr(radius);
 
 				agent->agentNeighborsIndexList_.clear();
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
@@ -860,7 +860,7 @@ namespace SF
 	/// <returns> The list containing IDs of deleted agents </returns>
 	std::vector<size_t> SFSimulator::getDeletedIDList()
 	{
-		auto result = std::vector<size_t>();
+		std::vector<size_t> result = std::vector<size_t>();
 
 		//for (auto a : agents_)
 		for(int i = 0; i < agents_.size(); i++)
@@ -877,7 +877,7 @@ namespace SF
 	/// <returns> The list containing counts of alive and dead agents </returns>
 	std::vector<size_t> SFSimulator::getCountOfAliveAndDead()
 	{
-		auto result = std::vector<size_t>();
+		std::vector<size_t> result = std::vector<size_t>();
 
 		size_t
 			alive = 0,

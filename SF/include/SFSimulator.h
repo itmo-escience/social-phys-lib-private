@@ -8,7 +8,7 @@
 #include "Vector3.h"
 #include "AgentPropertyConfig.h"
 #include "RotationDegreeSet.h"
-#include "../MPIAgent.h"
+#include "MPIAgent.h"
 
 namespace SF
 {
