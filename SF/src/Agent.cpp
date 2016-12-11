@@ -230,7 +230,7 @@ namespace SF
 						fromIntersectionVector *= coeff;
 					}
 
-//					position_ = previosPosition_ + fromIntersectionVector;
+					position_ = previosPosition_ + fromIntersectionVector;
 
 
 //				}
@@ -285,19 +285,19 @@ namespace SF
 		// 2 prevpos
 		// 3 desired vel
 
-		auto dx1 = position_.x() - previosPosition_.x();
-		auto dy1 = position_.y() - previosPosition_.y();
-		auto dx2 = prefVelocity_.x() - previosPosition_.x();
-		auto dy2 = prefVelocity_.y() - previosPosition_.y();
-		auto a = dx1*dy2 - dy1*dx2;
-		auto b = dx1*dx2 + dy1*dy2;			
-		auto angle = atan2(a, b);
+//		auto dx1 = position_.x() - previosPosition_.x();
+//		auto dy1 = position_.y() - previosPosition_.y();
+//		auto dx2 = prefVelocity_.x() - previosPosition_.x();
+//		auto dy2 = prefVelocity_.y() - previosPosition_.y();
+//		auto a = dx1*dy2 - dy1*dx2;
+//		auto b = dx1*dx2 + dy1*dy2;			
+//		auto angle = atan2(a, b);
 
 //		printf("angle: ");
 //		printf("%g", angle / M_PI * 180);
 //		printf("\r\n");
 
-		auto decangle = angle / M_PI * 180;
+//		auto decangle = angle / M_PI * 180;
 		
 //		if (fabs(decangle) > 130)
 //			position_ = previosPosition_;
@@ -836,12 +836,43 @@ namespace SF
 
 		correction = Vector2();
 
-//		getRepulsiveAgentForce();
-//		getRepulsiveObstacleForce();
+		getRepulsiveAgentForce();
+		getRepulsiveObstacleForce();
 //		getAttractiveForce();
 
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
+
+
+
+
+		//TODO this is test 'antishaking' stopping rule
+
+
+		// 1 pos
+		// 2 prevpos
+		// 3 desired vel
+
+		auto dx1 = prefVelocity_.x() + correction.x();
+		auto dy1 = prefVelocity_.y() + correction.y();
+		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
+		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
+		auto a = dx1*dy2 - dy1*dx2;
+		auto b = dx1*dx2 + dy1*dy2;
+		auto angle = atan2(a, b);
+
+//				printf("angle: ");
+//				printf("%g", angle / M_PI * 180);
+//				printf("\r\n");
+
+		auto decangle = angle / M_PI * 180;
+
+		if (fabs(decangle) > 70)
+			newVelocity_ = *new Vector2(0, 0);
+//			position_ = previosPosition_;
+
+
+
     
 		newVelocity_ += correction;
 	}
