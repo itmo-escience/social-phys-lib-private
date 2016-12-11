@@ -134,14 +134,44 @@ namespace SF
 //		auto speed = speedList_[id_];
 //		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
 //		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+
+		
 //
 //		if (!isForced_)
 //			acceleration_ += tempAcceleration;
 //		else acceleration_ = 0;
 
-		acceleration_ = 1.0f;
 
-		position_ += velocity_ * sim_->timeStep_ * acceleration_;
+		//relaxation time temp
+		auto speed = speedList_[id_];
+		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+		if (speed < maxSpeed_) {
+			speed = speed + (maxSpeed_ - speed) / relaxationTime_ * sim_->timeStep_;
+
+//			setSpeedList(id_, speed);
+		}
+		else {
+			speed = maxSpeed_;
+
+//			setSpeedList(id_, speed);
+		}
+//		speed = 1.0f;
+
+
+//		printf("speed: ");
+//		printf("%g", maxSpeed_);
+//		printf(" - ");
+//		printf("%g", speed);
+//		printf("\r\n");
+
+//		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+//		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+//		acceleration_ += tempAcceleration;
+
+//		acceleration_ = 1.0f;
+
+//		previosPosition_ = position_;
+		position_ += velocity_ * sim_->timeStep_ * speed;
 
 		auto minLength = DBL_MAX;
 		auto p = Vector2();
@@ -391,7 +421,7 @@ namespace SF
 		auto maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
 		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
 
-		correction += forceSum;
+		//correction += forceSum;
 
 		agentForce_ = forceSum;
 	}
@@ -516,7 +546,7 @@ namespace SF
 
 
 		obstaclePressure_ = getLength(total);
-		correction += total;
+//		correction += total;
 
 		obstacleForce_ = position_ - total;
 	}
@@ -826,6 +856,8 @@ namespace SF
 		}
 	}
 
+
+	int counter = 0;
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
@@ -867,11 +899,23 @@ namespace SF
 
 		auto decangle = angle / M_PI * 180;
 
-		if (fabs(decangle) > 70)
+		if (fabs(decangle) > 60 | isForced_) {
 			newVelocity_ = *new Vector2(0, 0);
-//			position_ = previosPosition_;
+//			obstacleForce_ = position_;
 
+			isForced_ = true;
+			counter++;
 
+			// параметр нетерпеливости
+			if (counter > 0)
+				isForced_ = false;
+			//			position_ = previosPosition_;
+		}
+
+		correction += agentForce_;
+		correction += position_ - obstacleForce_;
+
+//		obstacleForce_ = position_ - total;
 
     
 		newVelocity_ += correction;
