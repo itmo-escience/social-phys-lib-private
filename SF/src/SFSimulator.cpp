@@ -278,6 +278,7 @@ namespace SF
 			{
 				agents_[i]->computeNeighbors();
 				agents_[i]->computeNewVelocity();
+//				agents_[i]->update();
 			}
 		}
 

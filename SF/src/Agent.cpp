@@ -61,7 +61,7 @@ namespace SF
 		// obstacle section
 		obstacleNeighbors_.clear();
 		auto rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
+		sim_->kdTree_->computeObstacleNeighbors(this, 900);
 
 		// agent section
 		agentNeighbors_.clear();
@@ -131,13 +131,15 @@ namespace SF
 			setSpeedList(id_, 0.0f);
 		}
 
-		auto speed = speedList_[id_];
-		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+//		auto speed = speedList_[id_];
+//		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+//		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+//
+//		if (!isForced_)
+//			acceleration_ += tempAcceleration;
+//		else acceleration_ = 0;
 
-		if (!isForced_)
-			acceleration_ += tempAcceleration;
-		else acceleration_ = 0;
+		acceleration_ = 1.0f;
 
 		position_ += velocity_ * sim_->timeStep_ * acceleration_;
 
@@ -150,22 +152,103 @@ namespace SF
 			auto obstacle = on.second;
 			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
 			{
-				if (!hasIntersection)
-					hasIntersection = true;
-				auto intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
-				auto l = getLength(intersectionPoint - previosPosition_);
-				p = intersectionPoint;
+//				if (!hasIntersection) {
+//					hasIntersection = true;
+//					Agent::CompensateIntersectionForce(obstacle);
 
-				if (l < minLength)
-				{
-					minLength = l;
-					p = intersectionPoint;
-				}
+//				printf("intersect: " + id_);
+//				std::cout((std::string)id_);
+
+					/// COMPENSATION WALL INTERSECTION TEST
+
+					Vector2 *intersection;
+					
+					float a0 = previosPosition_.y() - position_.y();
+					float b0 = position_.x() - previosPosition_.x();
+					float c0 = a0*position_.x() + b0*position_.y();
+
+					float a1 = obstacle->nextObstacle->point_.y() - obstacle->point_.y();
+					float b1 = obstacle->point_.x() - obstacle->nextObstacle->point_.x();
+					float c1 = a1*obstacle->point_.x() + b1*obstacle->point_.y();
+
+					float delta = a0*b1 - a1*b0;
+					if (delta == 0)
+						intersection = new Vector2(0, 0);
+
+					float x = (b1*c0 - b0*c1) / delta;
+					float y = (a0*c1 - a1*c0) / delta;
+					intersection = new Vector2(x, y);
+//					position_ = previosPosition_;
+//					position_ = *new Vector2(0, 0);
+
+
+
+
+
+
+
+
+//					auto difference = p - previosPosition_;
+//								auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+//					
+//								if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
+//								{
+//									if (m >= 0 && m <= TOLERANCE / 2)
+//										position_ = previosPosition_ + difference * m;
+//									else
+//										position_ = previosPosition_;
+//								}
+//					
+//								if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
+//									position_ = previosPosition_;
+//					
+//								if (getLength(difference) <= obstacleRadius_)
+//									position_ = previosPosition_;
+
+
+
+
+
+
+
+
+					auto fromIntersectionVector = *intersection - position_;
+//					auto toIntersectionDist = getLength(fromIntersectionVector);
+
+					auto newPos = previosPosition_ + fromIntersectionVector;
+					
+					auto stepDist = getLength(position_ - previosPosition_);
+					auto stepDistNew = getLength(newPos - previosPosition_);
+
+					if (stepDistNew < stepDist)
+					{
+						auto coeff = stepDist / stepDistNew;
+						fromIntersectionVector *= coeff;
+					} else
+					{
+						auto coeff = (repulsiveAgent_ * repulsiveObstacle_) / 2 / stepDistNew;
+						fromIntersectionVector *= coeff;
+					}
+
+//					position_ = previosPosition_ + fromIntersectionVector;
+
+
+//				}
+//				auto intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
+//				auto l = getLength(intersectionPoint - previosPosition_);
+//				p = intersectionPoint;
+//
+//				if (l < minLength)
+//				{
+//					minLength = l;
+//					p = intersectionPoint;
+//				}
+
 			}
 		}
 
-		if (hasIntersection)
-		{
+//		if (hasIntersection)
+//		{
 //			auto difference = p - previosPosition_;
 //			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
 //
@@ -184,15 +267,64 @@ namespace SF
 //				position_ = previosPosition_;
 //
 //			isForced_ = true;
-			position_ = previosPosition_;
-		}
-		else
-			isForced_ = false;
+
+
+
+
+////			position_ = previosPosition_;
+//		}
+//		else
+//			isForced_ = false;
+
+
+
+		//TODO this is test 'antishaking' stopping rule
+
+
+		// 1 pos
+		// 2 prevpos
+		// 3 desired vel
+
+		auto dx1 = position_.x() - previosPosition_.x();
+		auto dy1 = position_.y() - previosPosition_.y();
+		auto dx2 = prefVelocity_.x() - previosPosition_.x();
+		auto dy2 = prefVelocity_.y() - previosPosition_.y();
+		auto a = dx1*dy2 - dy1*dx2;
+		auto b = dx1*dx2 + dy1*dy2;			
+		auto angle = atan2(a, b);
+
+//		printf("angle: ");
+//		printf("%g", angle / M_PI * 180);
+//		printf("\r\n");
+
+		auto decangle = angle / M_PI * 180;
+		
+//		if (fabs(decangle) > 130)
+//			position_ = previosPosition_;
+
+//	auto xa = previosPosition_.x() - position_.x();
+//auto ya = previosPosition_.y() - position_.y();
+//auto xb = x - x2;
+//auto yb = y - y2;
+//auto a = arccos((xa*xb + ya*yb) / sqrt((sqr(xa) + sqr(ya))*(sqr(xb) + sqr(yb))));
+
+//		if (angle > M_PI / 2) {
+//			size_t decangle = (angle * M_PI / 180);
+//			decangle = angle;
+//			printf("angle: " + decangle);
+//			printf("\r\n");
+//			position_ = previosPosition_;
+//		}
 
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
 		previosPosition_ = position_;
 
+	}
+
+	void CompensateIntersectionForce(SF::Obstacle *obstacle)
+	{
+		
 	}
 
 	/// <summary> Repulsive agent force </summary>
@@ -212,14 +344,26 @@ namespace SF
 
 			auto velocity = an.second->velocity_;
 
-			auto y = an.second->velocity_ * speedList_[an.second->id_] * sim_->timeStep_;
-			auto d = position_ - pos;
-			auto radius = speedList_[an.second->id_] * sim_->timeStep_;
-			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
-			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+//			auto y = an.second->velocity_ * speedList_[an.second->id_] * sim_->timeStep_;
+//			auto d = position_ - pos;
+//			auto radius = speedList_[an.second->id_] * sim_->timeStep_;
+//			auto b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+//			auto potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+//			auto ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+//			auto sum = (d / getLength(d) + (d - y) / getLength(d - y));
+//			auto force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+
+			auto diff = position_ - pos;
+			auto distanceSquared = diff.GetLengthSquared();
+			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
+			auto distance = absoluteDistanceToObstacle - radius_;
+
+//			if (absoluteDistanceToObstacle < minDistanceToObstacle)
+//				minDistanceToObstacle = absoluteDistanceToObstacle;
+
+			auto forceAmount = repulsiveAgentFactor_ * exp(-distance / repulsiveAgent_);
+			auto force = forceAmount * diff.normalized();
+
 
 			auto length = getLength(force);
 			pressure += length;
@@ -232,9 +376,15 @@ namespace SF
 
 		auto forceSumLength = getLength(forceSum);
 
-		if (forceSumLength > maxForceLength)
+//		if (forceSumLength > maxForceLength)
+//		{
+//			auto coeff = maxForceLength / forceSumLength;
+//			forceSum *= coeff;
+//		}
+
+		if (forceSumLength > repulsiveAgent_*2)
 		{
-			auto coeff = maxForceLength / forceSumLength;
+			auto coeff = repulsiveAgent_ * 2 / forceSumLength;
 			forceSum *= coeff;
 		}
 
@@ -328,35 +478,47 @@ namespace SF
 			forces.push_back(force);
 			forceSum += force;
 
-			auto length = getLength(force);
+//			auto length = getLength(force);
 
-			if (maxForceLength < length)
-				maxForceLength = length;
+//			if (maxForceLength < length)
+//				maxForceLength = length;
 		}
 
-		float lengthSum = 0;
-		for (auto force : forces)
-			lengthSum += getLength(force);
+//		float lengthSum = 0;
+//		for (auto force : forces)
+//			lengthSum += getLength(force);
 
-		std::vector<float> forceWeightList;
-		forceWeightList.clear();
-		for (auto force : forces)
-		{
-			if (lengthSum == 0)
-				forceWeightList.push_back(getLength(force) / std::numeric_limits<double>::min());
-			else
-				forceWeightList.push_back(getLength(force) / lengthSum);
-		}
+//		std::vector<float> forceWeightList;
+//		forceWeightList.clear();
+//		for (auto force : forces)
+//		{
+//			if (lengthSum == 0)
+//				forceWeightList.push_back(getLength(force) / std::numeric_limits<double>::min());
+//			else
+//				forceWeightList.push_back(getLength(force) / lengthSum);
+//		}
 
 
 		auto total = Vector2();
 		for (size_t i = 0; i < forces.size(); i++)
-			total += forces[i] * forceWeightList[i];
+//			total += forces[i] * forceWeightList[i];
+		total += forces[i];
+
+
+		auto forceSumLength = getLength(total);
+		
+		if (forceSumLength > repulsiveObstacle_ * 2)
+		{
+			auto coeff = repulsiveObstacle_ * 2 / forceSumLength;
+			total *= coeff;
+		}
+
+
 
 		obstaclePressure_ = getLength(total);
 		correction += total;
 
-		obstacleForce_ = position_ + total;
+		obstacleForce_ = position_ - total;
 	}
 
 
@@ -667,16 +829,16 @@ namespace SF
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
-		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
-			newVelocity_ = normalize(prefVelocity_) * radius_;
-		else
+//		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
+//			newVelocity_ = normalize(prefVelocity_) * radius_;
+//		else
 			newVelocity_ = prefVelocity_;
 
 		correction = Vector2();
 
-		getRepulsiveAgentForce();
-		getRepulsiveObstacleForce();
-		getAttractiveForce();
+//		getRepulsiveAgentForce();
+//		getRepulsiveObstacleForce();
+//		getAttractiveForce();
 
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
