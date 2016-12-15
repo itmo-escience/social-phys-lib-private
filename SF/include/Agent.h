@@ -43,6 +43,7 @@ namespace SF
 		/// <summary> Computes the neighbors of this agent </summary>
 		void computeNeighbors();
 
+		void getNewForce();
 		/// <summary> Search for the best new velocity </summary>
 		void computeNewVelocity();
 
@@ -213,6 +214,23 @@ namespace SF
 		std::map<size_t, float> speedList_;										// map of agent speeds
 		SFSimulator* sim_;														// simulator instance
     
+		//new
+		Vector2 previosObstacleTangenialForce;												// saved previous force
+		Vector2 obstacleTangenialForce;
+		Vector2 previosAgentTangenialForce;												// saved previous force
+		Vector2 agentTangenialForce;
+		Vector2 obstacleRepulsion2Force;
+		Vector2 agentRepulsion2Force;
+
+		//temp degug
+			Vector2 temp;
+			bool isWaiting = false;
+			Vector2 previosVelocity;
+			Vector2 previosForce = *new Vector2(0, 0);
+			int counter = 0;
+
+		// end debug
+
 		friend class KdTree;
 		friend class SFSimulator;
 	};

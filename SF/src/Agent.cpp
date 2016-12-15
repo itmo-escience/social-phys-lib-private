@@ -130,32 +130,19 @@ namespace SF
 			acceleration_ = 0.0f;
 			setSpeedList(id_, 0.0f);
 		}
-
-//		auto speed = speedList_[id_];
-//		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-//		auto tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
-
-		
-//
-//		if (!isForced_)
-//			acceleration_ += tempAcceleration;
-//		else acceleration_ = 0;
-
-
-		//relaxation time temp
+	
+		//relaxation time test
 		auto speed = speedList_[id_];
-		auto mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
 		if (speed < maxSpeed_) {
 			speed = speed + (maxSpeed_ - speed) / relaxationTime_ * sim_->timeStep_;
-
 //			setSpeedList(id_, speed);
 		}
 		else {
 			speed = maxSpeed_;
-
 //			setSpeedList(id_, speed);
 		}
-//		speed = 1.0f;
+
+		speed = 1.0f;
 
 
 //		printf("speed: ");
@@ -170,191 +157,87 @@ namespace SF
 
 //		acceleration_ = 1.0f;
 
-//		previosPosition_ = position_;
-		position_ += velocity_ * sim_->timeStep_ * speed;
+//		position_ += velocity_ * sim_->timeStep_ * speed;
+		position_ += velocity_;
 
-		auto minLength = DBL_MAX;
-		auto p = Vector2();
-		auto hasIntersection = false;
+//		auto minLength = DBL_MAX;
+//		auto p = Vector2();
+//		auto hasIntersection = false;
 
-		for(auto on: obstacleNeighbors_)
-		{
-			auto obstacle = on.second;
-			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
-			{
-//				if (!hasIntersection) {
-//					hasIntersection = true;
-//					Agent::CompensateIntersectionForce(obstacle);
-
-//				printf("intersect: " + id_);
-//				std::cout((std::string)id_);
-
-					/// COMPENSATION WALL INTERSECTION TEST
-
-					Vector2 *intersection;
-					
-					float a0 = previosPosition_.y() - position_.y();
-					float b0 = position_.x() - previosPosition_.x();
-					float c0 = a0*position_.x() + b0*position_.y();
-
-					float a1 = obstacle->nextObstacle->point_.y() - obstacle->point_.y();
-					float b1 = obstacle->point_.x() - obstacle->nextObstacle->point_.x();
-					float c1 = a1*obstacle->point_.x() + b1*obstacle->point_.y();
-
-					float delta = a0*b1 - a1*b0;
-					if (delta == 0)
-						intersection = new Vector2(0, 0);
-
-					float x = (b1*c0 - b0*c1) / delta;
-					float y = (a0*c1 - a1*c0) / delta;
-					intersection = new Vector2(x, y);
-//					position_ = previosPosition_;
-//					position_ = *new Vector2(0, 0);
-
-
-
-
-
-
-
-
-//					auto difference = p - previosPosition_;
-//								auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
-//					
-//								if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
-//								{
-//									if (m >= 0 && m <= TOLERANCE / 2)
-//										position_ = previosPosition_ + difference * m;
-//									else
-//										position_ = previosPosition_;
-//								}
-//					
-//								if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
-//									position_ = previosPosition_;
-//					
-//								if (getLength(difference) <= obstacleRadius_)
-//									position_ = previosPosition_;
-
-
-
-
-
-
-
-
-					auto fromIntersectionVector = *intersection - position_;
-//					auto toIntersectionDist = getLength(fromIntersectionVector);
-
-					auto newPos = previosPosition_ + fromIntersectionVector;
-					
-					auto stepDist = getLength(position_ - previosPosition_);
-					auto stepDistNew = getLength(newPos - previosPosition_);
-
-					if (stepDistNew < stepDist)
-					{
-						auto coeff = stepDist / stepDistNew;
-						fromIntersectionVector *= coeff;
-					} else
-					{
-						auto coeff = (repulsiveAgent_ * repulsiveObstacle_) / 2 / stepDistNew;
-						fromIntersectionVector *= coeff;
-					}
-
-					position_ = previosPosition_ + fromIntersectionVector;
-
-
-//				}
-//				auto intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
-//				auto l = getLength(intersectionPoint - previosPosition_);
-//				p = intersectionPoint;
-//
-//				if (l < minLength)
-//				{
-//					minLength = l;
-//					p = intersectionPoint;
-//				}
-
-			}
-		}
-
-//		if (hasIntersection)
-//		{
-//			auto difference = p - previosPosition_;
-//			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
-//
-//			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
-//			{
-//				if (m >= 0 && m <= TOLERANCE / 2)
-//					position_ = previosPosition_ + difference * m;
-//				else
-//					position_ = previosPosition_;
-//			}
-//
-//			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
-//				position_ = previosPosition_;
-//
-//			if (getLength(difference) <= obstacleRadius_)
-//				position_ = previosPosition_;
-//
-//			isForced_ = true;
-
-
-
-
-////			position_ = previosPosition_;
-//		}
-//		else
-//			isForced_ = false;
-
-
-
-		//TODO this is test 'antishaking' stopping rule
-
-
-		// 1 pos
-		// 2 prevpos
-		// 3 desired vel
-
-//		auto dx1 = position_.x() - previosPosition_.x();
-//		auto dy1 = position_.y() - previosPosition_.y();
-//		auto dx2 = prefVelocity_.x() - previosPosition_.x();
-//		auto dy2 = prefVelocity_.y() - previosPosition_.y();
-//		auto a = dx1*dy2 - dy1*dx2;
-//		auto b = dx1*dx2 + dy1*dy2;			
-//		auto angle = atan2(a, b);
-
-//		printf("angle: ");
-//		printf("%g", angle / M_PI * 180);
-//		printf("\r\n");
-
-//		auto decangle = angle / M_PI * 180;
 		
-//		if (fabs(decangle) > 130)
-//			position_ = previosPosition_;
+//  do not take into account multiple intersections!!!!!
+#pragma region 
+//		for (auto on : obstacleNeighbors_)
+//		{
+//			auto obstacle = on.second;
+//			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
+//			{
+//				// COMPENSATION WALL INTERSECTION TEST
+//
+//				Vector2 *intersection;
+//
+//				float a0 = previosPosition_.y() - position_.y();
+//				float b0 = position_.x() - previosPosition_.x();
+//				float c0 = a0*position_.x() + b0*position_.y();
+//
+//				float a1 = obstacle->nextObstacle->point_.y() - obstacle->point_.y();
+//				float b1 = obstacle->point_.x() - obstacle->nextObstacle->point_.x();
+//				float c1 = a1*obstacle->point_.x() + b1*obstacle->point_.y();
+//
+//				float delta = a0*b1 - a1*b0;
+//				if (delta == 0)
+//					intersection = new Vector2(0, 0);
+//
+//				float x = (b1*c0 - b0*c1) / delta;
+//				float y = (a0*c1 - a1*c0) / delta;
+//				intersection = new Vector2(x, y);
+//				//					position_ = previosPosition_;
+//				//					position_ = *new Vector2(0, 0);
+//
+//
 
-//	auto xa = previosPosition_.x() - position_.x();
-//auto ya = previosPosition_.y() - position_.y();
-//auto xb = x - x2;
-//auto yb = y - y2;
-//auto a = arccos((xa*xb + ya*yb) / sqrt((sqr(xa) + sqr(ya))*(sqr(xb) + sqr(yb))));
+////				 INTERSECTIONS 
+//				auto fromIntersectionVector = *intersection - position_;
+//				//					auto toIntersectionDist = getLength(fromIntersectionVector);
+//
+//				auto newPos = previosPosition_ + fromIntersectionVector;
+//
+//				auto stepDist = getLength(position_ - previosPosition_);
+//				auto stepDistNew = getLength(newPos - previosPosition_);
+//
+//				if (stepDistNew < stepDist)
+//				{
+//					auto coeff = stepDist / stepDistNew;
+//					fromIntersectionVector *= coeff;
+//				}
+//				else
+//				{
+//					auto coeff = (repulsiveAgent_ * repulsiveObstacle_) / 2 / stepDistNew;
+//					fromIntersectionVector *= coeff;
+//				}
+//
+//				position_ = previosPosition_ + fromIntersectionVector;
 
-//		if (angle > M_PI / 2) {
-//			size_t decangle = (angle * M_PI / 180);
-//			decangle = angle;
-//			printf("angle: " + decangle);
-//			printf("\r\n");
-//			position_ = previosPosition_;
+//			}
 //		}
 
+#pragma endregion INTERSECTION
+		
 		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
 
 		previosPosition_ = position_;
 
 	}
 
-	void CompensateIntersectionForce(SF::Obstacle *obstacle)
+	void Agent::getNewForce()
 	{
-		
+//		previosNewForce_
+
+		//polygon
+//		auto direction = position_ - previosPosition_;
+
+
+//		agentForce_ = forceSum;
 	}
 
 	/// <summary> Repulsive agent force </summary>
@@ -364,6 +247,8 @@ namespace SF
 		auto forceSum = Vector2();
 		auto maxForceLength = FLT_MIN;
 
+		std::vector<Vector2> tanForces;
+		std::vector<Vector2> rep2Forces;
 		for(auto an: agentNeighbors_)
 		{
 			setNullSpeed(an.second->id_);
@@ -402,6 +287,55 @@ namespace SF
 				maxForceLength = length;
 
 			forceSum += force * an.second->force_;
+
+
+			//tangnial force
+			auto dtoi = pos - position_;
+			auto wa = 0.02;
+			auto wo = 2;
+//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
+			auto wd = (dtoi).GetLengthSquared();
+
+			auto theta = atan2(-diff.x(), diff.y());
+//					printf("%g", theta/M_PI*180);
+//					printf("\r\n");
+
+			auto tanForce = *new Vector2(0, 0);
+			if (theta < M_PI/2)
+			{
+				tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
+				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
+					isWaiting = true;
+			}
+
+//			auto tanForce = *new Vector2(-sin(theta), cos(theta)) / wd * wa * wo * lambda;
+//			auto tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
+
+//			dtoi = diff;
+//			auto dxvz = dtoi.x() * prefVelocity_.y() - dtoi.y() * prefVelocity_.x();
+//			auto dxvxd = *new Vector2(dxvz*dtoi.y(), dxvz*dtoi.x());
+
+//			auto tanForce = -dxvxd.normalized() *wd * wo * wa;
+
+
+//			Vector2 tanForce;
+//			if (theta > M_PI/2)
+//				tanForce = *new Vector2(-sin(theta), cos(theta)) / wd * wa * wo * lambda;
+//			else
+//				tanForce = *new Vector2(0, 0);
+
+			tanForces.push_back(tanForce);
+
+			//repulsion2 force
+			auto comfortZone = 0.4;
+			auto lambda = 0.3;
+			auto socialBodyRad = radius_ + comfortZone;
+			Vector2 rep2Force;
+			if (socialBodyRad >= absoluteDistanceToObstacle)
+				rep2Force = diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle * lambda;
+			else
+				rep2Force = *new Vector2(0, 0);
+			rep2Forces.push_back(rep2Force);
 		}
 
 		auto forceSumLength = getLength(forceSum);
@@ -423,6 +357,17 @@ namespace SF
 
 		//correction += forceSum;
 
+
+		auto totalTanForce = Vector2();
+		for (size_t i = 0; i < tanForces.size(); i++)
+			totalTanForce += tanForces[i];
+		agentTangenialForce = totalTanForce;
+
+		auto totalRep2Force = Vector2();
+		for (size_t i = 0; i < rep2Forces.size(); i++)
+			totalRep2Force += rep2Forces[i];
+		agentRepulsion2Force = totalRep2Force;
+
 		agentForce_ = forceSum;
 	}
 
@@ -440,6 +385,11 @@ namespace SF
 
 		std::vector<Vector2> forces;
 		forces.clear();
+
+		std::vector<Vector2> tanForces;
+		std::vector<Vector2> rep2Forces;
+		tanForces.clear();
+		rep2Forces.clear();
 
 		for (auto on : obstacleNeighbors_)
 		{
@@ -506,12 +456,52 @@ namespace SF
 			auto force = forceAmount * diff.normalized();
 
 			forces.push_back(force);
-			forceSum += force;
+//			forceSum += force;
 
-//			auto length = getLength(force);
+			// tangenial force
+////			//todo if in perception polygon
+//			auto dtoi = nop - position_;
+//			auto wo = 0.1;
+////			auto theta = atan2(-diff.x(), diff.y());
+////			auto tanForce = *new Vector2(-sin(theta), cos(theta))/ absoluteDistanceToObstacle * wo;
+//
+//
+//			auto wd = sqrt((dtoi - prefVelocity_.normalized() * 2).GetLengthSquared());
+//			auto theta = atan2(-diff.x(), diff.y());
+//			auto tanForce = *new Vector2(-cos(theta), -sin(theta)) / wo * wd;
+//			tanForces.push_back(tanForce);
 
-//			if (maxForceLength < length)
-//				maxForceLength = length;
+			auto dtoi = nop - position_;
+			auto wo = 0.02;
+			//auto wo = 2;
+			//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
+			auto wd = (dtoi).GetLengthSquared();
+
+			auto theta = atan2(-diff.x(), diff.y());
+			//					printf("%g", theta/M_PI*180);
+			//					printf("\r\n");
+
+			auto tanForce = *new Vector2(0, 0);
+			if (theta < M_PI / 2)
+			{
+				tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo;
+				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
+					isWaiting = true;
+			}
+			tanForces.push_back(tanForce);
+
+			//repulsion2 force
+//			auto comfortZone = 0.2;
+//			auto rep2Force = diff*(radius_ + comfortZone - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
+//			rep2Forces.push_back(rep2Force);
+			auto comfortZone = 0.4;
+			auto socialBodyRad = radius_ + comfortZone;
+			Vector2 rep2Force;
+			if (socialBodyRad >= absoluteDistanceToObstacle)
+				rep2Force = -diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
+			else
+				rep2Force = *new Vector2(0, 0);
+			rep2Forces.push_back(rep2Force);
 		}
 
 //		float lengthSum = 0;
@@ -534,7 +524,6 @@ namespace SF
 //			total += forces[i] * forceWeightList[i];
 		total += forces[i];
 
-
 		auto forceSumLength = getLength(total);
 		
 		if (forceSumLength > repulsiveObstacle_ * 2)
@@ -543,6 +532,17 @@ namespace SF
 			total *= coeff;
 		}
 
+
+
+		auto totalTanForce = Vector2();
+		for (size_t i = 0; i < tanForces.size(); i++)
+			totalTanForce += tanForces[i];
+		obstacleTangenialForce = totalTanForce;
+
+		auto totalRep2Force = Vector2();
+		for (size_t i = 0; i < rep2Forces.size(); i++)
+			totalRep2Force += rep2Forces[i];
+		obstacleRepulsion2Force = totalRep2Force*(-1);
 
 
 		obstaclePressure_ = getLength(total);
@@ -857,16 +857,46 @@ namespace SF
 	}
 
 
-	int counter = 0;
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
+		// DEBUG RANDOM INERTION VELOCITY
+//		auto temp2 = *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
+//		if (!isTempVelocityInit)
+//		{
+//			previosVelocity = *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
+//			isTempVelocityInit = true;
+//		}
+//
+//		auto direction = (previosPosition_ - position_);
+//		auto newVelocity = previosVelocity + *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
+//
+//						printf("rand velocity: ");
+//						printf("%g", temp.x());
+//						printf("%g", temp.y());
+//						printf("\r\n");
+//
+//		prefVelocity_ = newVelocity/sqrt(newVelocity.GetLengthSquared());
+//		prefVelocity_ = temp.normalized();
+//		prefVelocity_ = previosVelocity;
+
+
+
+		// DEBUG CALM AGENTS
+//		prefVelocity_ = *new Vector2(0, 0);
+
+
+
 //		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
 //			newVelocity_ = normalize(prefVelocity_) * radius_;
 //		else
-			newVelocity_ = prefVelocity_;
+//			newVelocity_ = prefVelocity_;
 
+			
+		newVelocity_ = *new Vector2(0, 0);
 		correction = Vector2();
+
+		getNewForce();
 
 		getRepulsiveAgentForce();
 		getRepulsiveObstacleForce();
@@ -878,47 +908,94 @@ namespace SF
 
 
 
-		//TODO this is test 'antishaking' stopping rule
+		// TEST 'antishaking' stopping rule
+
+//		// 1 pos
+//		// 2 prevpos
+//		// 3 desired vel
+//
+//		auto dx1 = prefVelocity_.x() + correction.x();
+//		auto dy1 = prefVelocity_.y() + correction.y();
+//		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
+//		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
+//		auto a = dx1*dy2 - dy1*dx2;
+//		auto b = dx1*dx2 + dy1*dy2;
+//		auto angle = atan2(a, b);
+//
+////				printf("angle: ");
+////				printf("%g", angle / M_PI * 180);
+////				printf("\r\n");
+//
+//		auto decangle = angle / M_PI * 180;
+//
+//		if (fabs(decangle) > 60 | isForced_) {
+//			newVelocity_ = *new Vector2(0, 0);
+//
+//			isForced_ = true;
+//			counter++;
+//
+//			// параметр нетерпеливости
+//			if (counter > 5) {
+//				isForced_ = false;
+//				counter = 0;
+//			}
+//		}
 
 
-		// 1 pos
-		// 2 prevpos
-		// 3 desired vel
+		// antishaking2
 
-		auto dx1 = prefVelocity_.x() + correction.x();
-		auto dy1 = prefVelocity_.y() + correction.y();
-		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
-		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
-		auto a = dx1*dy2 - dy1*dx2;
-		auto b = dx1*dx2 + dy1*dy2;
-		auto angle = atan2(a, b);
+		//		// 1 pos
+		//		// 2 prevpos
+		//		// 3 desired vel
+		//
+		//		auto dx1 = prefVelocity_.x() + correction.x();
+		//		auto dy1 = prefVelocity_.y() + correction.y();
+		//		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
+		//		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
 
-//				printf("angle: ");
-//				printf("%g", angle / M_PI * 180);
-//				printf("\r\n");
-
-		auto decangle = angle / M_PI * 180;
-
-		if (fabs(decangle) > 60 | isForced_) {
-			newVelocity_ = *new Vector2(0, 0);
-//			obstacleForce_ = position_;
-
+		auto repulsionForce = agentRepulsion2Force + obstacleRepulsion2Force;// +(position_ - obstacleForce_);
+		auto repdirection = repulsionForce * prefVelocity_;
+		auto lenAq = repulsionForce.GetLengthSquared();
+		auto stopRule = 1;
+		if ((repdirection < 0  )|| isForced_ || isWaiting) //& lenAq > pow(0.05, 2)
+		{
+//			newVelocity_ = *new Vector2(0, 0);
+//			agentTangenialForce = *new Vector2(0, 0);
+//			obstacleTangenialForce = *new Vector2(0, 0);
+			stopRule = 0;
 			isForced_ = true;
 			counter++;
-
-			// параметр нетерпеливости
-			if (counter > 0)
-				isForced_ = false;
-			//			position_ = previosPosition_;
 		}
 
-		correction += agentForce_;
-		correction += position_ - obstacleForce_;
+		// параметр нетерпеливости
+		if (counter > 10) {
+			isForced_ = false;
+			counter = 0;
+			stopRule = 1;
+		}
 
-//		obstacleForce_ = position_ - total;
+//		position_ += velocity_ * sim_->timeStep_ * speed;
+		auto speed = 1.0f;
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce + obstacleTangenialForce).normalized();
+		auto agentOwnForce = sim_->timeStep_ * speed * fto * stopRule;
+		previosForce = agentOwnForce;
+		correction += agentOwnForce;
 
+//		correction += 
+
+//		correction += agentForce_;
+//		correction += position_ - obstacleForce_;
+//		correction += obstacleTangenialForce;
+//		correction += agentTangenialForce.normalized();
+
+		correction += obstacleRepulsion2Force;
+		correction += agentRepulsion2Force;
     
 		newVelocity_ += correction;
+
+//		printf("x: ");
+//		printf("%g", newVelocity_.x());
+//		printf("\r\n");
 	}
 
 	/// <summary> Inserts an agent neighbor into the set of neighbors of this agent </summary>
