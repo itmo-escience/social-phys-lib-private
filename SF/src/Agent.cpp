@@ -300,10 +300,10 @@ namespace SF
 //					printf("%g", theta/M_PI*180);
 //					printf("\r\n");
 
-			auto tanForce = *new Vector2(0, 0);
+			auto tanForce = Vector2(0, 0);
 			if (theta < M_PI/2)
 			{
-				tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
+				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
 				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
 					isWaiting = true;
 			}
@@ -334,7 +334,7 @@ namespace SF
 			if (socialBodyRad >= absoluteDistanceToObstacle)
 				rep2Force = diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle * lambda;
 			else
-				rep2Force = *new Vector2(0, 0);
+				rep2Force = Vector2(0, 0);
 			rep2Forces.push_back(rep2Force);
 		}
 
@@ -481,10 +481,10 @@ namespace SF
 			//					printf("%g", theta/M_PI*180);
 			//					printf("\r\n");
 
-			auto tanForce = *new Vector2(0, 0);
+			auto tanForce = Vector2(0, 0);
 			if (theta < M_PI / 2)
 			{
-				tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo;
+				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
 				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
 					isWaiting = true;
 			}
@@ -500,7 +500,7 @@ namespace SF
 			if (socialBodyRad >= absoluteDistanceToObstacle)
 				rep2Force = -diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
 			else
-				rep2Force = *new Vector2(0, 0);
+				rep2Force = Vector2(0, 0);
 			rep2Forces.push_back(rep2Force);
 		}
 
@@ -883,7 +883,7 @@ namespace SF
 
 
 		// DEBUG CALM AGENTS
-//		prefVelocity_ = *new Vector2(0, 0);
+//		prefVelocity_ = Vector2(0, 0);
 
 
 
@@ -893,7 +893,7 @@ namespace SF
 //			newVelocity_ = prefVelocity_;
 
 			
-		newVelocity_ = *new Vector2(0, 0);
+		newVelocity_ = Vector2(0, 0);
 		correction = Vector2();
 
 		getNewForce();
@@ -959,9 +959,9 @@ namespace SF
 		auto stopRule = 1;
 		if ((repdirection < 0  )|| isForced_ || isWaiting) //& lenAq > pow(0.05, 2)
 		{
-//			newVelocity_ = *new Vector2(0, 0);
-//			agentTangenialForce = *new Vector2(0, 0);
-//			obstacleTangenialForce = *new Vector2(0, 0);
+//			newVelocity_ = Vector2(0, 0);
+//			agentTangenialForce = Vector2(0, 0);
+//			obstacleTangenialForce = Vector2(0, 0);
 			stopRule = 0;
 			isForced_ = true;
 			counter++;
