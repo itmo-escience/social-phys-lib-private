@@ -975,13 +975,28 @@ namespace SF
 		}
 
 //		position_ += velocity_ * sim_->timeStep_ * speed;
-		auto speed = 1.0f;
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce + obstacleTangenialForce).normalized();
-		auto agentOwnForce = sim_->timeStep_ * speed * fto * stopRule;
+//		auto speed = 1.0f;
+
+
+		if (speed < maxSpeed_) {
+			speed = speed + (maxSpeed_ - speed) / relaxationTime_ * sim_->timeStep_;
+		}
+		else {
+			speed = maxSpeed_;
+
+		}
+		
+//		speed = 1;
+		//        auto speed = 1.0f;
+
+//		auto fto = (previosForce + prefVelocity_ + agentTangenialForce + obstacleTangenialForce).normalized();
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRule + obstacleTangenialForce * stopRule).normalized();
+		auto agentOwnForce = sim_->timeStep_ * speed * fto*stopRule;
+//		auto agentOwnForce = sim_->timeStep_ * speed * fto;
+
+
 		previosForce = agentOwnForce;
 		correction += agentOwnForce;
-
-//		correction += 
 
 //		correction += agentForce_;
 //		correction += position_ - obstacleForce_;

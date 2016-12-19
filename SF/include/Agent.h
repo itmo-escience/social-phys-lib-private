@@ -228,6 +228,8 @@ namespace SF
 			Vector2 previosVelocity;
 			Vector2 previosForce = *new Vector2(0, 0);
 			int counter = 0;
+			float speed = 0.0f;
+
 
 		// end debug
 
