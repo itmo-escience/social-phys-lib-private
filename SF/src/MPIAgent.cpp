@@ -5,7 +5,7 @@
 
 SF::MPIAgent::MPIAgent()
 {
-	agent = nullptr;
+	agent = NULL;
 }
 
 SF::MPIAgent::MPIAgent(Agent* _agent)
@@ -30,11 +30,11 @@ void SF::MPIAgent::DeserializeAgent(unsigned char* array)
 void SF::MPIAgent::PrintAgentInfo() const
 {
 	std::string agentInfo = "";
-	agentInfo += "ID: " + std::to_string((long double)agent->id_) + "\n";
-	agentInfo += "Position: " + std::to_string((long double)agent->position_.x()) + " " + std::to_string((long double)agent->position_.y()) + "\n";
-	agentInfo += "Prev Position: " + std::to_string((long double)agent->previosPosition_.x()) + " " + std::to_string((long double)agent->previosPosition_.y()) + "\n";
-	agentInfo += "Velocity: " + std::to_string((long double)agent->velocity_.x()) + " " + std::to_string((long double)agent->velocity_.y()) + "\n";
-	agentInfo += "Radius: " + std::to_string((long double)agent->radius_) + "\n";
+	agentInfo += "ID: " + patch::to_string((long double)agent->id_) + "\n";
+	agentInfo += "Position: " + patch::to_string((long double)agent->position_.x()) + " " + patch::to_string((long double)agent->position_.y()) + "\n";
+	agentInfo += "Prev Position: " + patch::to_string((long double)agent->previosPosition_.x()) + " " + patch::to_string((long double)agent->previosPosition_.y()) + "\n";
+	agentInfo += "Velocity: " + patch::to_string((long double)agent->velocity_.x()) + " " + patch::to_string((long double)agent->velocity_.y()) + "\n";
+	agentInfo += "Radius: " + patch::to_string((long double)agent->radius_) + "\n";
 	std::cout << agentInfo << std::endl;
 }
 

@@ -351,9 +351,9 @@ namespace SF
 			Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
 
 			size_t j = 0;
-			for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
+			for (size_t k = 0; k < nearestObstaclePointList.size(); k++)
 			{
-				Vector2 nop = nearestObstaclePointList[i];
+				Vector2 nop = nearestObstaclePointList[k];
 				Vector2 l = nop - closestPoint;
 				if (l.GetLengthSquared() > TOLERANCE)
 				{
@@ -1258,7 +1258,7 @@ namespace SF
 	/// <returns> deserialized agent </returns>
 	Agent* Agent::Deseriaize(unsigned char * arr)
 	{
-		Agent* ag= new Agent(nullptr);
+		Agent* ag= new Agent(NULL);
 		// A pointer we will advance whenever we write data
 		unsigned char* p = arr;
 

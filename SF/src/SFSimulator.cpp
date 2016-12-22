@@ -27,9 +27,9 @@ namespace SF
 		rotationNow2Future_(),
 		rotationFuture_(),
 		agents_(),
-		defaultAgent_(nullptr),
+		defaultAgent_(NULL),
 		globalTime_(0.0f),
-		kdTree_(nullptr),
+		kdTree_(NULL),
 		obstacles_(),
 		timeStep_(1.0f),
 		platformVelocity_(),
@@ -69,7 +69,7 @@ namespace SF
 				return agents_[i];
 			}
 		}
-		return nullptr;
+		return NULL;
 	}
 
 	/// <summary> Get list of agents who are not in modeling areas </summary>
@@ -504,7 +504,7 @@ namespace SF
 	/// <param name="apc"> Property </param>
 	void SFSimulator::setAgentDefaults(AgentPropertyConfig & apc)
 	{
-		if (defaultAgent_ == nullptr)
+		if (defaultAgent_ == NULL)
 			defaultAgent_ = new Agent(this);
 
 

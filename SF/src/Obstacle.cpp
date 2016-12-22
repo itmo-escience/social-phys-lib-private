@@ -6,9 +6,9 @@ namespace SF
 	/// <summary> Constructs a static obstacle instance </summary>
 	Obstacle::Obstacle() : 
 		isConvex_(false), 
-		nextObstacle(nullptr), 
+		nextObstacle(NULL), 
 		point_(), 
-		prevObstacle(nullptr), 
+		prevObstacle(NULL), 
 		unitDir_(), 
 		id_(0)
 	{ }

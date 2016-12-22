@@ -29,6 +29,7 @@ namespace SF
 		_timeHorizon(timeHorizon),
 		_radius(radius),
 		_maxSpeed(maxSpeed),
+		_force(force),
 		_accelerationCoefficient(accelerationCoefficient),
 		_relaxationTime(relaxationTime),
 		_repulsiveAgent(repulsiveAgent),
@@ -205,19 +206,19 @@ namespace SF
 	void AgentPropertyConfig::PrintDefaultProperties(void) const
 	{
 		std::string propertiesString = "";
-		propertiesString += "Acceleration coeff: " + std::to_string((long double)this->_accelerationCoefficient) + "\n";
-		propertiesString += "Friction: " + std::to_string((long double)this->_friction) + "\n";
-		propertiesString += "Radius: " + std::to_string((long double)this->_radius) + "\n";
-		propertiesString += "Perception: " + std::to_string((long double)this->_perception) + "\n";
-		propertiesString += "Force: " + std::to_string((long double)this->_force) + "\n";
-		propertiesString += "Max neigh: " + std::to_string((long double)this->_maxNeighbors) + "\n";
-		propertiesString += "Max speed: " + std::to_string((long double)this->_maxSpeed) + "\n";
-		propertiesString += "Obstacle radius: " + std::to_string((long double)this->_obstacleRadius) + "\n";
-		propertiesString += "Relax time: " + std::to_string((long double)this->_relaxationTime) + "\n";
-		propertiesString += "Repulsive agent: " + std::to_string((long double)this->_repulsiveAgent) + "\n";
-		propertiesString += "Repulsive agent factor: " + std::to_string((long double)this->_repulsiveAgentFactor) + "\n";
-		propertiesString += "Repulsive obstacle: " + std::to_string((long double)this->_repulsiveObstacle) + "\n";
-		propertiesString += "Repulsive obstacle factor: " + std::to_string((long double)this->_repulsiveObstacleFactor) + "\n";
+		propertiesString += "Acceleration coeff: " + patch::to_string((long double)this->_accelerationCoefficient) + "\n";
+		propertiesString += "Friction: " + patch::to_string((long double)this->_friction) + "\n";
+		propertiesString += "Radius: " + patch::to_string((long double)this->_radius) + "\n";
+		propertiesString += "Perception: " + patch::to_string((long double)this->_perception) + "\n";
+		propertiesString += "Force: " + patch::to_string((long double)this->_force) + "\n";
+		propertiesString += "Max neigh: " + patch::to_string((long double)this->_maxNeighbors) + "\n";
+		propertiesString += "Max speed: " + patch::to_string((long double)this->_maxSpeed) + "\n";
+		propertiesString += "Obstacle radius: " + patch::to_string((long double)this->_obstacleRadius) + "\n";
+		propertiesString += "Relax time: " + patch::to_string((long double)this->_relaxationTime) + "\n";
+		propertiesString += "Repulsive agent: " + patch::to_string((long double)this->_repulsiveAgent) + "\n";
+		propertiesString += "Repulsive agent factor: " + patch::to_string((long double)this->_repulsiveAgentFactor) + "\n";
+		propertiesString += "Repulsive obstacle: " + patch::to_string((long double)this->_repulsiveObstacle) + "\n";
+		propertiesString += "Repulsive obstacle factor: " + patch::to_string((long double)this->_repulsiveObstacleFactor) + "\n";
 		std::cout << propertiesString << std::endl;
 	}
 }

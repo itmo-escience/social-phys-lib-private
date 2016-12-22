@@ -6,6 +6,10 @@
 #include "SFSimulator.h"
 #include "Vector3.h"
 #include "SimpleMatrix.h"
+#include <cfloat>
+#include <climits>
+#include <stdio.h>
+#include <string.h> // memcpy
 
 //#include <algorithm>.
 //#include "Winsock2.h"
@@ -223,7 +227,7 @@ namespace SF
 		Vector3 oldPlatformVelocity_;											// saved previous platform velocity
 		std::vector<std::pair<long, const Obstacle*> > obstacleNeighbors_;		// list of neighbor obstacles
 		std::vector<std::pair<long, const Agent*> > agentNeighbors_;			// list of neighbor agents
-		std::vector<std::pair<size_t, float>> agentNeighborsIndexList_;			// list of neighbor agent identifiers
+		std::vector<std::pair<size_t, float> > agentNeighborsIndexList_;			// list of neighbor agent identifiers
 		std::vector<int> attractiveIds_;										// list of attractive agent identifiers
 		std::map<size_t, float> speedList_;										// map of agent speeds
 		SFSimulator* sim_;														// simulator instance

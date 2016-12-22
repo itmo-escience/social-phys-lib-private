@@ -12,7 +12,7 @@ namespace SF
 	KdTree::KdTree(SFSimulator* sim) : 
 		agents_(), 
 		agentTree_(), 
-		obstacleTree_(nullptr), 
+		obstacleTree_(NULL), 
 		sim_(sim)
 	{  }
 
@@ -129,7 +129,7 @@ namespace SF
 	KdTree::ObstacleTreeNode* KdTree::buildObstacleTreeRecursive(const std::vector<Obstacle*>& obstacles)
 	{
 		if (obstacles.empty())
-			return nullptr;
+			return NULL;
 
 		ObstacleTreeNode* node = new ObstacleTreeNode;
 
@@ -255,7 +255,7 @@ namespace SF
 	/// <param name="agent"> A pointer to the obstacle tree node to be deleted </param>
 	void KdTree::deleteObstacleTree(ObstacleTreeNode* node) const
 	{
-		if (node != nullptr) 
+		if (node != NULL) 
 		{
 			deleteObstacleTree(node->left);
 			deleteObstacleTree(node->right);
@@ -354,7 +354,7 @@ namespace SF
 	/// <param name="node"> The specified node </param>
 	void KdTree::queryObstacleTreeRecursive(Agent* agent, float rangeSq, const ObstacleTreeNode* node) const
 	{
-		if (node == nullptr)
+		if (node == NULL)
 			return;
 		
 		const Obstacle* obstacle1 = node->obstacle;
@@ -393,7 +393,7 @@ namespace SF
 	/// <returns> True if q1 and q2 are mutually visible within the radius; false otherwise </returns>
 	bool KdTree::queryVisibilityRecursive(const Vector2& q1, const Vector2& q2, float radius, const ObstacleTreeNode* node) const
 	{
-		if (node == nullptr) 
+		if (node == NULL) 
 			return true;
 		else 
 		{
