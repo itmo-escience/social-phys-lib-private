@@ -226,8 +226,9 @@ namespace SF
 			Vector2 temp;
 			bool isWaiting = false;
 			Vector2 previosVelocity;
-			Vector2 previosForce = *new Vector2(0, 0);
+			Vector2 previosForce = Vector2(0, 0);
 			int counter = 0;
+			int counterW = 0;
 			float speed = 0.0f;
 
 

@@ -296,17 +296,61 @@ namespace SF
 //			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
 			auto wd = (dtoi).GetLengthSquared();
 
-			auto theta = atan2(-diff.x(), diff.y());
+			auto va = pos - position_;
+			auto vb = prefVelocity_;
+			
+			auto theta = acos(va*vb/(sqrt(va.GetLengthSquared())*sqrt(vb.GetLengthSquared())));
+			
+//			auto theta = atan2(-diff.x(), diff.y());
 //					printf("%g", theta/M_PI*180);
 //					printf("\r\n");
 
 			auto tanForce = Vector2(0, 0);
-			if (theta < M_PI/2)
+
+			//TODO check condition!!!
+			if (theta < M_PI/2 && theta > -M_PI/2)
 			{
 				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
-				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
+
+				//ellipse
+				auto ea = 0.2;
+				auto eb = 0.3;
+
+				//				auto ellipseDistance = sqrt((1 - pow((1/tan(theta) - ea), 2)/(eb*eb))/(ea*ea));
+				
+				auto cott = 1 / tan(theta);
+				auto ex = 2 * cott / (eb / ea / ea + cott*cott / eb);
+				auto ey = cott * ex - eb;
+
+				auto ellipseDistance = sqrt(pow(ex - 0, 2) + pow(ey - (-eb), 2));
+
+
+
+				//			auto ellipseDistance = sqrt((1 - pow((1 / tan(theta) - ea), 2) / (eb*eb)) * (ea*ea));
+
+				if (!isnan(ellipseDistance) && absoluteDistanceToObstacle < ellipseDistance) {
 					isWaiting = true;
+//
+//					printf("D: ");
+//					printf("%g", absoluteDistanceToObstacle);
+//					printf("\r\n");
+//					printf("ED: ");
+//					printf("%g", ellipseDistance);
+//					printf("\r\n");
+//					printf("Theta: ");
+//					printf("%g", theta / M_PI * 180);
+//					printf("\r\n");
+				}
 			}
+
+			
+
+							
+
+
+
+
+
 
 //			auto tanForce = *new Vector2(-sin(theta), cos(theta)) / wd * wa * wo * lambda;
 //			auto tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
@@ -485,8 +529,8 @@ namespace SF
 			if (theta < M_PI / 2)
 			{
 				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
-				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
-					isWaiting = true;
+//				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
+//					isWaiting = true;
 			}
 			tanForces.push_back(tanForce);
 
@@ -956,13 +1000,10 @@ namespace SF
 		auto repulsionForce = agentRepulsion2Force + obstacleRepulsion2Force;// +(position_ - obstacleForce_);
 		auto repdirection = repulsionForce * prefVelocity_;
 		auto lenAq = repulsionForce.GetLengthSquared();
-		auto stopRule = 1;
-		if ((repdirection < 0  )|| isForced_ || isWaiting) //& lenAq > pow(0.05, 2)
+		auto stopRuleMultiplier = 1;
+		if ((repdirection < 0  )|| isForced_ )
 		{
-//			newVelocity_ = Vector2(0, 0);
-//			agentTangenialForce = Vector2(0, 0);
-//			obstacleTangenialForce = Vector2(0, 0);
-			stopRule = 0;
+			stopRuleMultiplier = 0;
 			isForced_ = true;
 			counter++;
 		}
@@ -971,8 +1012,44 @@ namespace SF
 		if (counter > 10) {
 			isForced_ = false;
 			counter = 0;
-			stopRule = 1;
+			stopRuleMultiplier = 1;
 		}
+
+		auto waitRuleMultiplier = 1;
+//		if (isWaiting)
+//		{
+//			waitRuleMultiplier = 0;
+//			counterW++;
+//		}
+//
+//		// параметр нетерпеливости
+//		if (counterW > 10) {
+//			isWaiting = false;
+//			counterW = 0;
+//			stopRuleMultiplier = 1;
+//		}
+
+
+
+//		// параметр нетерпеливости
+		auto param = 20;
+		if (isWaiting || (counterW >= 1 && counterW < param))
+		{
+			waitRuleMultiplier = 0;
+			counterW++;			
+		}
+
+		if (counterW >= param) {
+			isWaiting = false;
+			counterW = 0;
+		}
+		
+
+//		isWaiting = false;
+//		if (counterW > param) {
+//			isWaiting = false;
+//			counterW = 0;
+//		}
 
 //		position_ += velocity_ * sim_->timeStep_ * speed;
 //		auto speed = 1.0f;
@@ -983,15 +1060,13 @@ namespace SF
 		}
 		else {
 			speed = maxSpeed_;
-
 		}
 		
-//		speed = 1;
-		//        auto speed = 1.0f;
 
+		stopRuleMultiplier = 0;
 //		auto fto = (previosForce + prefVelocity_ + agentTangenialForce + obstacleTangenialForce).normalized();
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRule + obstacleTangenialForce * stopRule).normalized();
-		auto agentOwnForce = sim_->timeStep_ * speed * fto*stopRule;
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
+		auto agentOwnForce = sim_->timeStep_ * speed * fto * waitRuleMultiplier;
 //		auto agentOwnForce = sim_->timeStep_ * speed * fto;
 
 
