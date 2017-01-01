@@ -291,7 +291,8 @@ namespace SF
 
 			//tangnial force
 			auto dtoi = pos - position_;
-			auto wa = 0.02;
+//			auto wa = 0.2;
+//			auto wa = 1;
 			auto wo = 2;
 //			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
 			auto wd = (dtoi).GetLengthSquared();
@@ -299,47 +300,50 @@ namespace SF
 			auto va = pos - position_;
 			auto vb = prefVelocity_;
 			
+			// (0, 90)
 			auto theta = acos(va*vb/(sqrt(va.GetLengthSquared())*sqrt(vb.GetLengthSquared())));
 			
-//			auto theta = atan2(-diff.x(), diff.y());
-//					printf("%g", theta/M_PI*180);
-//					printf("\r\n");
-
 			auto tanForce = Vector2(0, 0);
 
-			//TODO check condition!!!
-			if (theta < M_PI/2 && theta > -M_PI/2)
+			if (theta < M_PI / 2 && theta > 0)
 			{
-				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
+				//ellipse params a and b
+				auto fea = 0.5;
+				auto feb = 1.5;
 
-				//ellipse
-				auto ea = 0.2;
-				auto eb = 0.3;
+				auto fcott = 1 / tan(theta);
+				auto fex = 2 * fcott / (feb / fea / fea + fcott*fcott / feb);
+				auto fey = fcott * fex - feb;
 
-				//				auto ellipseDistance = sqrt((1 - pow((1/tan(theta) - ea), 2)/(eb*eb))/(ea*ea));
-				
-				auto cott = 1 / tan(theta);
-				auto ex = 2 * cott / (eb / ea / ea + cott*cott / eb);
-				auto ey = cott * ex - eb;
+				auto fellipseDistance = sqrt(pow(fex - 0, 2) + pow(fey - (-feb), 2));
 
-				auto ellipseDistance = sqrt(pow(ex - 0, 2) + pow(ey - (-eb), 2));
+				if (absoluteDistanceToObstacle < fellipseDistance) {
+					tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
+				}
 
 
+				//ellipse params a and b
+				auto wea = 0.2;
+				auto web = 0.3;
 
-				//			auto ellipseDistance = sqrt((1 - pow((1 / tan(theta) - ea), 2) / (eb*eb)) * (ea*ea));
+				auto wcott = 1 / tan(theta);
+				auto wex = 2 * wcott / (web / wea / wea + wcott*wcott / web);
+				auto wey = wcott * wex - web;
 
-				if (!isnan(ellipseDistance) && absoluteDistanceToObstacle < ellipseDistance) {
+				auto wellipseDistance = sqrt(pow(wex - 0, 2) + pow(wey - (-web), 2));
+
+				if (absoluteDistanceToObstacle < wellipseDistance) {
 					isWaiting = true;
-//
-//					printf("D: ");
-//					printf("%g", absoluteDistanceToObstacle);
-//					printf("\r\n");
-//					printf("ED: ");
-//					printf("%g", ellipseDistance);
-//					printf("\r\n");
-//					printf("Theta: ");
-//					printf("%g", theta / M_PI * 180);
-//					printf("\r\n");
+					//
+					//					printf("D: ");
+					//					printf("%g", absoluteDistanceToObstacle);
+					//					printf("\r\n");
+					//					printf("ED: ");
+					//					printf("%g", ellipseDistance);
+					//					printf("\r\n");
+					//					printf("Theta: ");
+					//					printf("%g", theta / M_PI * 180);
+					//					printf("\r\n");
 				}
 			}
 
@@ -405,7 +409,7 @@ namespace SF
 		auto totalTanForce = Vector2();
 		for (size_t i = 0; i < tanForces.size(); i++)
 			totalTanForce += tanForces[i];
-		agentTangenialForce = totalTanForce;
+		agentTangenialForce = totalTanForce.normalized()*2;
 
 		auto totalRep2Force = Vector2();
 		for (size_t i = 0; i < rep2Forces.size(); i++)
@@ -503,42 +507,58 @@ namespace SF
 //			forceSum += force;
 
 			// tangenial force
-////			//todo if in perception polygon
-//			auto dtoi = nop - position_;
-//			auto wo = 0.1;
-////			auto theta = atan2(-diff.x(), diff.y());
-////			auto tanForce = *new Vector2(-sin(theta), cos(theta))/ absoluteDistanceToObstacle * wo;
-//
-//
-//			auto wd = sqrt((dtoi - prefVelocity_.normalized() * 2).GetLengthSquared());
-//			auto theta = atan2(-diff.x(), diff.y());
-//			auto tanForce = *new Vector2(-cos(theta), -sin(theta)) / wo * wd;
-//			tanForces.push_back(tanForce);
 
 			auto dtoi = nop - position_;
-			auto wo = 0.02;
+//			auto wo = 0.2;
 			//auto wo = 2;
 			//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
 			auto wd = (dtoi).GetLengthSquared();
 
-			auto theta = atan2(-diff.x(), diff.y());
-			//					printf("%g", theta/M_PI*180);
-			//					printf("\r\n");
+//			auto theta = atan2(-diff.x(), diff.y());
+//			//					printf("%g", theta/M_PI*180);
+//			//					printf("\r\n");
+//
+//			auto tanForce = Vector2(0, 0);
+//			if (theta < M_PI / 2)
+//			{
+//				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
+////				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
+////					isWaiting = true;
+//			}
+
+
+
+			auto va = nop - position_;
+			auto vb = prefVelocity_;
+			// (0, 90)
+			auto theta = acos(va*vb / (sqrt(va.GetLengthSquared())*sqrt(vb.GetLengthSquared())));
 
 			auto tanForce = Vector2(0, 0);
-			if (theta < M_PI / 2)
+
+			if (theta < M_PI / 2 && theta > 0)
 			{
-				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
-//				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
-//					isWaiting = true;
+				//ellipse params a and b
+				auto fea = 0.5;
+				auto feb = 1.5;
+
+				auto fcott = 1 / tan(theta);
+				auto fex = 2 * fcott / (feb / fea / fea + fcott*fcott / feb);
+				auto fey = fcott * fex - feb;
+
+				auto fellipseDistance = sqrt(pow(fex - 0, 2) + pow(fey - (-feb), 2));
+
+				if (absoluteDistanceToObstacle < fellipseDistance) {
+					tanForce = Vector2(-cos(theta), -sin(theta)) / wd;
+				}
 			}
+
 			tanForces.push_back(tanForce);
 
 			//repulsion2 force
 //			auto comfortZone = 0.2;
 //			auto rep2Force = diff*(radius_ + comfortZone - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
 //			rep2Forces.push_back(rep2Force);
-			auto comfortZone = 0.4;
+			auto comfortZone = 0.2;
 			auto socialBodyRad = radius_ + comfortZone;
 			Vector2 rep2Force;
 			if (socialBodyRad >= absoluteDistanceToObstacle)
@@ -581,7 +601,7 @@ namespace SF
 		auto totalTanForce = Vector2();
 		for (size_t i = 0; i < tanForces.size(); i++)
 			totalTanForce += tanForces[i];
-		obstacleTangenialForce = totalTanForce;
+		obstacleTangenialForce = totalTanForce.normalized();
 
 		auto totalRep2Force = Vector2();
 		for (size_t i = 0; i < rep2Forces.size(); i++)
@@ -904,39 +924,9 @@ namespace SF
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
-		// DEBUG RANDOM INERTION VELOCITY
-//		auto temp2 = *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
-//		if (!isTempVelocityInit)
-//		{
-//			previosVelocity = *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
-//			isTempVelocityInit = true;
-//		}
-//
-//		auto direction = (previosPosition_ - position_);
-//		auto newVelocity = previosVelocity + *new Vector2(static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1, static_cast <float> (rand()) / static_cast <float>(RAND_MAX) * 2 - 1);
-//
-//						printf("rand velocity: ");
-//						printf("%g", temp.x());
-//						printf("%g", temp.y());
-//						printf("\r\n");
-//
-//		prefVelocity_ = newVelocity/sqrt(newVelocity.GetLengthSquared());
-//		prefVelocity_ = temp.normalized();
-//		prefVelocity_ = previosVelocity;
-
-
-
 		// DEBUG CALM AGENTS
 //		prefVelocity_ = Vector2(0, 0);
-
-
-
-//		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
-//			newVelocity_ = normalize(prefVelocity_) * radius_;
-//		else
-//			newVelocity_ = prefVelocity_;
-
-			
+							
 		newVelocity_ = Vector2(0, 0);
 		correction = Vector2();
 
@@ -949,126 +939,72 @@ namespace SF
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
 
+		auto repulsionForce = agentRepulsion2Force + obstacleRepulsion2Force;
+		auto lenRepSq = repulsionForce.GetLengthSquared();
+		auto repStopRule = 1;
+		if (lenRepSq > 0)
+			repStopRule = 0;
 
 
 
-		// TEST 'antishaking' stopping rule
-
-//		// 1 pos
-//		// 2 prevpos
-//		// 3 desired vel
-//
-//		auto dx1 = prefVelocity_.x() + correction.x();
-//		auto dy1 = prefVelocity_.y() + correction.y();
-//		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
-//		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
-//		auto a = dx1*dy2 - dy1*dx2;
-//		auto b = dx1*dx2 + dy1*dy2;
-//		auto angle = atan2(a, b);
-//
-////				printf("angle: ");
-////				printf("%g", angle / M_PI * 180);
-////				printf("\r\n");
-//
-//		auto decangle = angle / M_PI * 180;
-//
-//		if (fabs(decangle) > 60 | isForced_) {
-//			newVelocity_ = *new Vector2(0, 0);
-//
-//			isForced_ = true;
-//			counter++;
-//
-//			// параметр нетерпеливости
-//			if (counter > 5) {
-//				isForced_ = false;
-//				counter = 0;
-//			}
-//		}
-
-
-		// antishaking2
-
-		//		// 1 pos
-		//		// 2 prevpos
-		//		// 3 desired vel
-		//
-		//		auto dx1 = prefVelocity_.x() + correction.x();
-		//		auto dy1 = prefVelocity_.y() + correction.y();
-		//		auto dx2 = prefVelocity_.x();// -previosPosition_.x();
-		//		auto dy2 = prefVelocity_.y();// -previosPosition_.y();
-
-		auto repulsionForce = agentRepulsion2Force + obstacleRepulsion2Force;// +(position_ - obstacleForce_);
-		auto repdirection = repulsionForce * prefVelocity_;
-		auto lenAq = repulsionForce.GetLengthSquared();
+		auto repdirection = agentRepulsion2Force * prefVelocity_;
 		auto stopRuleMultiplier = 1;
-		if ((repdirection < 0  )|| isForced_ )
+		auto param1 = 10;
+		if (isForced_ || repdirection < 0 || (counter >= 1 && counter < param1))
 		{
 			stopRuleMultiplier = 0;
-			isForced_ = true;
 			counter++;
 		}
 
-		// параметр нетерпеливости
-		if (counter > 10) {
+		if (counter >= param1) {
 			isForced_ = false;
 			counter = 0;
 			stopRuleMultiplier = 1;
 		}
 
 		auto waitRuleMultiplier = 1;
-//		if (isWaiting)
-//		{
-//			waitRuleMultiplier = 0;
-//			counterW++;
-//		}
-//
 //		// параметр нетерпеливости
-//		if (counterW > 10) {
-//			isWaiting = false;
-//			counterW = 0;
-//			stopRuleMultiplier = 1;
-//		}
-
-
-
-//		// параметр нетерпеливости
-		auto param = 20;
-		if (isWaiting || (counterW >= 1 && counterW < param))
+		auto param2 = 10;
+		if (isWaiting || (counterW >= 1 && counterW < param2))
 		{
 			waitRuleMultiplier = 0;
-			counterW++;			
+			counterW++;
 		}
 
-		if (counterW >= param) {
+		if (counterW >= param2) {
 			isWaiting = false;
 			counterW = 0;
+			waitRuleMultiplier = 1;
 		}
-		
 
-//		isWaiting = false;
-//		if (counterW > param) {
-//			isWaiting = false;
-//			counterW = 0;
+
+//		auto repdirection = agentRepulsion2Force.normalized() * prefVelocity_;
+//		auto waitRuleMultiplier = 1;
+//		auto param1 = 5;
+//		if (isWaiting ||  (counter >= 1 && counter < param1))
+//		{
+//			waitRuleMultiplier = 0;
+//			counter++;
+//		}
+//
+//		if (counter >= param1) {
+//			isForced_ = false;
+//			counter = 0;
+//			waitRuleMultiplier = 1;
 //		}
 
-//		position_ += velocity_ * sim_->timeStep_ * speed;
-//		auto speed = 1.0f;
-
-
-		if (speed < maxSpeed_) {
+		//todo update speedlist logic
+		if (speed < maxSpeed_)
 			speed = speed + (maxSpeed_ - speed) / relaxationTime_ * sim_->timeStep_;
-		}
-		else {
+		else
 			speed = maxSpeed_;
-		}
 		
 
-		stopRuleMultiplier = 0;
-//		auto fto = (previosForce + prefVelocity_ + agentTangenialForce + obstacleTangenialForce).normalized();
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
-		auto agentOwnForce = sim_->timeStep_ * speed * fto * waitRuleMultiplier;
-//		auto agentOwnForce = sim_->timeStep_ * speed * fto;
-
+//		stopRuleMultiplier = 0;
+		auto a =  waitRuleMultiplier;
+//		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 0 + obstacleTangenialForce * 0).normalized();
+		auto agentOwnForce = sim_->timeStep_ * speed * fto * a;
 
 		previosForce = agentOwnForce;
 		correction += agentOwnForce;
