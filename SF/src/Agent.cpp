@@ -288,14 +288,28 @@ namespace SF
 
 			forceSum += force * an.second->force_;
 
-
+			
 			//tangnial force
 			auto dtoi = pos - position_;
-//			auto wa = 0.2;
-//			auto wa = 1;
-			auto wo = 2;
-//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
-			auto wd = (dtoi).GetLengthSquared();
+
+			// weights
+			auto wa = 1.2;
+			auto wd = sqrt(dtoi.GetLengthSquared());
+
+			// force ellipse params a and b
+			auto fea = 0.5;
+			auto feb = 3;
+
+			// waiting rule ellipse params a and b
+			auto wea = 0.2;
+			auto web = 0.3;
+
+			// mutual direction of agents
+			if (prefVelocity_ * an.second->prefVelocity_ < 0)
+			{
+				wa = 2.4;
+				feb = 1.5;
+			}
 
 			auto va = pos - position_;
 			auto vb = prefVelocity_;
@@ -307,24 +321,20 @@ namespace SF
 
 			if (theta < M_PI / 2 && theta > 0)
 			{
-				//ellipse params a and b
-				auto fea = 0.5;
-				auto feb = 1.5;
+				auto ftan = tan(M_PI / 2 - theta);
+				auto fex = 1 / sqrt(1 / fea / fea + ftan*ftan / feb / feb);
+				auto fey = fex * ftan;
 
-				auto fcott = 1 / tan(theta);
-				auto fex = 2 * fcott / (feb / fea / fea + fcott*fcott / feb);
-				auto fey = fcott * fex - feb;
-
-				auto fellipseDistance = sqrt(pow(fex - 0, 2) + pow(fey - (-feb), 2));
+				auto fellipseDistance = sqrt(pow(fex, 2) + pow(fey, 2));
 
 				if (absoluteDistanceToObstacle < fellipseDistance) {
-					tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
+					auto k = va.x() * vb.y() - va.y() * vb.x();
+					auto i = -k* va.y();
+					auto j = k * va.x();
+					auto tf = Vector2(i, j);
+					tanForce = tf.normalized() / wd * wa;
+//					tanForce = Vector2(-cos(theta), sin(theta)) / wd;
 				}
-
-
-				//ellipse params a and b
-				auto wea = 0.2;
-				auto web = 0.3;
 
 				auto wcott = 1 / tan(theta);
 				auto wex = 2 * wcott / (web / wea / wea + wcott*wcott / web);
@@ -346,32 +356,7 @@ namespace SF
 					//					printf("\r\n");
 				}
 			}
-
 			
-
-							
-
-
-
-
-
-
-//			auto tanForce = *new Vector2(-sin(theta), cos(theta)) / wd * wa * wo * lambda;
-//			auto tanForce = *new Vector2(-cos(theta), -sin(theta)) / wd * wo * wa;
-
-//			dtoi = diff;
-//			auto dxvz = dtoi.x() * prefVelocity_.y() - dtoi.y() * prefVelocity_.x();
-//			auto dxvxd = *new Vector2(dxvz*dtoi.y(), dxvz*dtoi.x());
-
-//			auto tanForce = -dxvxd.normalized() *wd * wo * wa;
-
-
-//			Vector2 tanForce;
-//			if (theta > M_PI/2)
-//				tanForce = *new Vector2(-sin(theta), cos(theta)) / wd * wa * wo * lambda;
-//			else
-//				tanForce = *new Vector2(0, 0);
-
 			tanForces.push_back(tanForce);
 
 			//repulsion2 force
@@ -512,7 +497,7 @@ namespace SF
 //			auto wo = 0.2;
 			//auto wo = 2;
 			//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
-			auto wd = (dtoi).GetLengthSquared();
+			auto wd = sqrt(dtoi.GetLengthSquared());
 
 //			auto theta = atan2(-diff.x(), diff.y());
 //			//					printf("%g", theta/M_PI*180);
@@ -541,14 +526,19 @@ namespace SF
 				auto fea = 0.5;
 				auto feb = 1.5;
 
-				auto fcott = 1 / tan(theta);
-				auto fex = 2 * fcott / (feb / fea / fea + fcott*fcott / feb);
-				auto fey = fcott * fex - feb;
+				auto ftan = tan(M_PI/2 - theta);
+				auto fex = 1 / sqrt(1/fea/fea + ftan*ftan/feb/feb);
+				auto fey = fex * ftan;
 
-				auto fellipseDistance = sqrt(pow(fex - 0, 2) + pow(fey - (-feb), 2));
+				auto fellipseDistance = sqrt(pow(fex, 2) + pow(fey, 2));
 
 				if (absoluteDistanceToObstacle < fellipseDistance) {
-					tanForce = Vector2(-cos(theta), -sin(theta)) / wd;
+//					tanForce = Vector2(-cos(theta), -sin(theta)) / wd;
+					auto k = va.x() * vb.y() - va.y() * vb.x();
+					auto i = -k* va.y();
+					auto j = k * va.x();
+					auto tf = Vector2(i, j);
+					tanForce = tf.normalized()/wd;
 				}
 			}
 
@@ -1003,7 +993,7 @@ namespace SF
 //		stopRuleMultiplier = 0;
 		auto a =  waitRuleMultiplier;
 //		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 0 + obstacleTangenialForce * 0).normalized();
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 0 + obstacleTangenialForce * 1).normalized();
 		auto agentOwnForce = sim_->timeStep_ * speed * fto * a;
 
 		previosForce = agentOwnForce;

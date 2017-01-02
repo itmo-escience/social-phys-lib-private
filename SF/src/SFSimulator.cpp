@@ -849,7 +849,7 @@ namespace SF
 	/// <returns> The the obstacle trajectory vector </returns>
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		return agents_[index]->obstacleForce_;
+		return agents_[index]->obstacleTangenialForce;
 	}
 
 	/// <summary> Returns the agent repulsive force </summary>
