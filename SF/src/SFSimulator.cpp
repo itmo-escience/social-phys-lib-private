@@ -46,16 +46,23 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-		for (size_t i = 0; i < agents_.size(); ++i)
-			delete agents_[i];
+#pragma omp parallel
+		{ 
 
-		for(size_t i = 0; i < tmpAgents_.size(); ++i)
-			delete tmpAgents_[i];
+#pragma omp for
+			for (size_t i = 0; i < agents_.size(); ++i)
+				delete agents_[i];
 
-		for (size_t i = 0; i < obstacles_.size(); ++i)
-			delete obstacles_[i];
+#pragma omp for
+			for(size_t i = 0; i < tmpAgents_.size(); ++i)
+				delete tmpAgents_[i];
 
-		delete kdTree_;
+#pragma omp for
+			for (size_t i = 0; i < obstacles_.size(); ++i)
+				delete obstacles_[i];
+
+			delete kdTree_;
+		}
 	}
 
 	Agent* SFSimulator::getAgent(size_t agentId)
