@@ -22,6 +22,11 @@ unsigned char* SF::MPIAgent::SerializeAgent() const
 	return agent->Serialize();
 }
 
+void SF::MPIAgent::DeleteAgent()
+{
+	delete agent;
+}
+
 void SF::MPIAgent::DeserializeAgent(unsigned char* array)
 {
 	agent = Agent::Deseriaize(array);

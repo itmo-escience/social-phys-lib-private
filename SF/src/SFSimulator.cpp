@@ -56,8 +56,6 @@ namespace SF
 			delete obstacles_[i];
 
 		delete kdTree_;
-
-
 	}
 
 	Agent* SFSimulator::getAgent(size_t agentId)
@@ -895,6 +893,22 @@ namespace SF
 		result.push_back(dead);
 
 		return result;
+	}
+
+	/// <summary> Returns the list containing IDs of agents </summary>
+	/// <returns> The list containing IDs of agents </returns>
+	std::vector<size_t> SFSimulator::getAliveAgentIdsList()
+	{
+		std::vector<size_t> agentIdsList = std::vector<size_t>();
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			if(!agents_[i]->isDeleted_)
+			{
+				agentIdsList.push_back(agents_[i]->id_);	
+			}
+		}
+
+		return agentIdsList;
 	}
 
 	/// <summary> Sets the new SF parameters </summary>

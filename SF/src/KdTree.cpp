@@ -27,9 +27,17 @@ namespace SF
 	{
 		agents_.clear();
 		agentTree_.clear();
-		for (size_t i = 0; i < sim_->agents_.size(); ++i) 
+		printf("agents count %d \n", sim_->agents_.size());
+		for (size_t i = 0; i < sim_->agents_.size(); ++i)
 			if (!sim_->agents_[i]->isDeleted_)
 				agents_.push_back(sim_->agents_[i]);
+
+		int id = sim_->agents_.size() + 1;
+		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
+		{
+			sim_->tmpAgents_[i]->id_ = id;
+			id++;
+		}
 
 		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
 			if(!sim_->tmpAgents_[i]->isDeleted_)
@@ -38,7 +46,7 @@ namespace SF
 		if (!agents_.empty())
 		{
 			agentTree_.resize(2 * agents_.size() - 1);
-			buildAgentTreeRecursive(0, agents_.size(), 0);	
+ 			buildAgentTreeRecursive(0, agents_.size(), 0);	
 		}
 	}
 
@@ -48,6 +56,7 @@ namespace SF
 	/// <param name="node"> Selected node  </param>
 	void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node)
 	{
+		//printf("begin: %d end: %d node: %d \n", begin, end, node);
 		agentTree_[node].begin = begin;
 		agentTree_[node].end = end;
 		agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();

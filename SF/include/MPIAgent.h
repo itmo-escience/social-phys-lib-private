@@ -11,10 +11,13 @@ namespace SF
 		MPIAgent();
 		MPIAgent(Agent* agent);
 		~MPIAgent();
+		void DeleteAgent();
 
 		unsigned char* SerializeAgent() const;
 		void DeserializeAgent(unsigned char*);
 		void PrintAgentInfo() const;
+
+	
 		
 		double GetToleranceValue() const;
 		bool IsDeleted() const;

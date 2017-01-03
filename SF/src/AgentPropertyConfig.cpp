@@ -50,6 +50,7 @@ namespace SF
 		_timeHorizon(0),
 		_radius(0),
 		_maxSpeed(0),
+		_force(1),
 		_accelerationCoefficient(0),
 		_relaxationTime(0),
 		_repulsiveAgent(0),
@@ -197,7 +198,7 @@ namespace SF
 		p += sizeof(float);
 
 		memcpy(&agentPropertyConfig->_velocity, p, sizeof(float) * 2);
-		p += sizeof(sizeof(float) * 2);
+		p += sizeof(float) * 2;
 
 		return agentPropertyConfig;
 	}

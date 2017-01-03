@@ -426,6 +426,10 @@ namespace SF
 			float newRepulsiveObstacleFactor_
 		);
 
+		/// <summary> Returns the list containing IDs of agents </summary>
+		/// <returns> The list containing IDs of agents </returns>
+		std::vector<size_t> getAliveAgentIdsList();
+
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
 		Vector3 rotationPast2Now_;
