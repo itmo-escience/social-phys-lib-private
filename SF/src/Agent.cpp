@@ -294,7 +294,7 @@ namespace SF
 
 			// weights
 			auto wa = 1.2;
-			auto wd = sqrt(dtoi.GetLengthSquared());
+			auto wd = dtoi.GetLengthSquared();
 
 			// force ellipse params a and b
 			auto fea = 0.5;
@@ -394,7 +394,7 @@ namespace SF
 		auto totalTanForce = Vector2();
 		for (size_t i = 0; i < tanForces.size(); i++)
 			totalTanForce += tanForces[i];
-		agentTangenialForce = totalTanForce.normalized()*2;
+		agentTangenialForce = totalTanForce.normalized();
 
 		auto totalRep2Force = Vector2();
 		for (size_t i = 0; i < rep2Forces.size(); i++)
@@ -497,7 +497,7 @@ namespace SF
 //			auto wo = 0.2;
 			//auto wo = 2;
 			//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
-			auto wd = sqrt(dtoi.GetLengthSquared());
+			auto wd = dtoi.GetLengthSquared();
 
 //			auto theta = atan2(-diff.x(), diff.y());
 //			//					printf("%g", theta/M_PI*180);
@@ -940,7 +940,7 @@ namespace SF
 		auto repdirection = agentRepulsion2Force * prefVelocity_;
 		auto stopRuleMultiplier = 1;
 		auto param1 = 10;
-		if (isForced_ || repdirection < 0 || (counter >= 1 && counter < param1))
+		if (isForced_ || repdirection < 0 && agentRepulsion2Force.GetLengthSquared() > 0 || (counter >= 1 && counter < param1))
 		{
 			stopRuleMultiplier = 0;
 			counter++;
@@ -993,7 +993,7 @@ namespace SF
 //		stopRuleMultiplier = 0;
 		auto a =  waitRuleMultiplier;
 //		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 0 + obstacleTangenialForce * 1).normalized();
+		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 1 + obstacleTangenialForce * 1).normalized();
 		auto agentOwnForce = sim_->timeStep_ * speed * fto * a;
 
 		previosForce = agentOwnForce;
