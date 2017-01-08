@@ -424,6 +424,8 @@ namespace SF
 		tanForces.clear();
 		rep2Forces.clear();
 
+		//TODO CHECK THIS! bug can be heres (check all 3 nearestneghbor cycles)
+
 		for (auto on : obstacleNeighbors_)
 		{
 			setNullSpeed(id_);
@@ -468,7 +470,6 @@ namespace SF
 					if ((nop - start).GetLengthSquared() < TOLERANCE || (nop - end).GetLengthSquared() < TOLERANCE)
 						nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
 				}
-
 				j++;
 			}
 		}
@@ -476,12 +477,12 @@ namespace SF
 		for (auto nop : nearestObstaclePointList)
 		{
 			auto closestPoint = nop;
-
 			auto diff = position_ - closestPoint;
 			auto distanceSquared = diff.GetLengthSquared();
 			auto absoluteDistanceToObstacle = sqrt(distanceSquared);
-			auto distance = absoluteDistanceToObstacle - radius_;
 
+			// old repu;sion
+			auto distance = absoluteDistanceToObstacle - radius_;
 			if (absoluteDistanceToObstacle < minDistanceToObstacle)
 				minDistanceToObstacle = absoluteDistanceToObstacle;
 
@@ -489,97 +490,53 @@ namespace SF
 			auto force = forceAmount * diff.normalized();
 
 			forces.push_back(force);
-//			forceSum += force;
 
 			// tangenial force
-
 			auto dtoi = nop - position_;
 //			auto wo = 0.2;
 			//auto wo = 2;
-			//			auto wd = ((dtoi - prefVelocity_.normalized() * 3).GetLengthSquared());
 			auto wd = dtoi.GetLengthSquared();
-
-//			auto theta = atan2(-diff.x(), diff.y());
-//			//					printf("%g", theta/M_PI*180);
-//			//					printf("\r\n");
-//
-//			auto tanForce = Vector2(0, 0);
-//			if (theta < M_PI / 2)
-//			{
-//				tanForce = Vector2(-cos(theta), -sin(theta)) / wd * wo;
-////				if (absoluteDistanceToObstacle > 1 - radius_ * 2)
-////					isWaiting = true;
-//			}
-
-
-
 			auto va = nop - position_;
 			auto vb = prefVelocity_;
 			// (0, 90)
 			auto theta = acos(va*vb / (sqrt(va.GetLengthSquared())*sqrt(vb.GetLengthSquared())));
-
 			auto tanForce = Vector2(0, 0);
-
 			if (theta < M_PI / 2 && theta > 0)
 			{
 				//ellipse params a and b
 				auto fea = 0.5;
 				auto feb = 1.5;
-
 				auto ftan = tan(M_PI/2 - theta);
 				auto fex = 1 / sqrt(1/fea/fea + ftan*ftan/feb/feb);
 				auto fey = fex * ftan;
-
 				auto fellipseDistance = sqrt(pow(fex, 2) + pow(fey, 2));
 
 				if (absoluteDistanceToObstacle < fellipseDistance) {
-//					tanForce = Vector2(-cos(theta), -sin(theta)) / wd;
 					auto k = va.x() * vb.y() - va.y() * vb.x();
 					auto i = -k* va.y();
 					auto j = k * va.x();
 					auto tf = Vector2(i, j);
-					tanForce = tf.normalized()/wd;
+					tanForce = tf.normalized();
 				}
 			}
 
 			tanForces.push_back(tanForce);
 
 			//repulsion2 force
-//			auto comfortZone = 0.2;
-//			auto rep2Force = diff*(radius_ + comfortZone - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
-//			rep2Forces.push_back(rep2Force);
 			auto comfortZone = 0.2;
 			auto socialBodyRad = radius_ + comfortZone;
 			Vector2 rep2Force;
 			if (socialBodyRad >= absoluteDistanceToObstacle)
-				rep2Force = -diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
+				rep2Force = diff*(socialBodyRad - absoluteDistanceToObstacle) / absoluteDistanceToObstacle;
 			else
 				rep2Force = Vector2(0, 0);
 			rep2Forces.push_back(rep2Force);
 		}
 
-//		float lengthSum = 0;
-//		for (auto force : forces)
-//			lengthSum += getLength(force);
-
-//		std::vector<float> forceWeightList;
-//		forceWeightList.clear();
-//		for (auto force : forces)
-//		{
-//			if (lengthSum == 0)
-//				forceWeightList.push_back(getLength(force) / std::numeric_limits<double>::min());
-//			else
-//				forceWeightList.push_back(getLength(force) / lengthSum);
-//		}
-
-
 		auto total = Vector2();
 		for (size_t i = 0; i < forces.size(); i++)
-//			total += forces[i] * forceWeightList[i];
 		total += forces[i];
-
-		auto forceSumLength = getLength(total);
-		
+		auto forceSumLength = getLength(total);		
 		if (forceSumLength > repulsiveObstacle_ * 2)
 		{
 			auto coeff = repulsiveObstacle_ * 2 / forceSumLength;
@@ -596,7 +553,7 @@ namespace SF
 		auto totalRep2Force = Vector2();
 		for (size_t i = 0; i < rep2Forces.size(); i++)
 			totalRep2Force += rep2Forces[i];
-		obstacleRepulsion2Force = totalRep2Force*(-1);
+		obstacleRepulsion2Force = totalRep2Force;
 
 
 		obstaclePressure_ = getLength(total);
@@ -989,11 +946,15 @@ namespace SF
 		else
 			speed = maxSpeed_;
 		
+		radius_ = 0.3;
 
+		auto wat = 1;
+		auto wot = 1;
 //		stopRuleMultiplier = 0;
 		auto a =  waitRuleMultiplier;
+		auto b = repStopRule;
 //		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * stopRuleMultiplier + obstacleTangenialForce * stopRuleMultiplier).normalized();
-		auto fto = (previosForce + prefVelocity_ + agentTangenialForce * 1 + obstacleTangenialForce * 1).normalized();
+		auto fto = (previosForce + prefVelocity_ + wat * agentTangenialForce * b + wot * obstacleTangenialForce * b).normalized();
 		auto agentOwnForce = sim_->timeStep_ * speed * fto * a;
 
 		previosForce = agentOwnForce;
