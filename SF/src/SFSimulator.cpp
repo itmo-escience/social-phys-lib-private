@@ -50,15 +50,15 @@ namespace SF
 		{ 
 
 #pragma omp for
-			for (size_t i = 0; i < agents_.size(); ++i)
+			for (int i = 0; i < agents_.size(); ++i)
 				delete agents_[i];
 
 #pragma omp for
-			for(size_t i = 0; i < tmpAgents_.size(); ++i)
+			for(int i = 0; i < tmpAgents_.size(); ++i)
 				delete tmpAgents_[i];
 
 #pragma omp for
-			for (size_t i = 0; i < obstacles_.size(); ++i)
+			for (int i = 0; i < obstacles_.size(); ++i)
 				delete obstacles_[i];
 
 			delete kdTree_;
