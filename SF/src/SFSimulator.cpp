@@ -918,6 +918,22 @@ namespace SF
 		return agentIdsList;
 	}
 
+	/// <summary> Returns the list containing alive agents </summary>
+	/// <returns> The list containing pointers of agents </returns>
+	std::vector<Agent*> SFSimulator::getAliveAgents()
+	{
+		std::vector<Agent*> agentIdsList = std::vector<Agent*>();
+		for(int i = 0; i < agents_.size(); i++)
+		{
+			if(!agents_[i]->isDeleted_)
+			{
+				agentIdsList.push_back(agents_[i]);	
+			}
+		}
+
+		return agentIdsList;
+	}
+
 	/// <summary> Sets the new SF parameters </summary>
 	/// <param name="newRepulsiveAgent_"> New RepulsiveAgent value </param>
 	/// <param name="newRepulsiveAgentFactor_"> New RepulsiveAgentFactor value </param>

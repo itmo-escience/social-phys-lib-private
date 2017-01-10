@@ -430,6 +430,10 @@ namespace SF
 		/// <returns> The list containing IDs of agents </returns>
 		std::vector<size_t> getAliveAgentIdsList();
 
+		/// <summary> Returns the list containing alive agents </summary>
+		/// <returns> The list containing pointers of agents </returns>
+		std::vector<Agent*> getAliveAgents();
+
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
 		Vector3 rotationPast2Now_;
