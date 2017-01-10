@@ -46,23 +46,23 @@ namespace SF
 	{
 		delete defaultAgent_;
 
-#pragma omp parallel
-		{ 
+//#pragma omp parallel
+//		{ 
 
-#pragma omp for
+//#pragma omp for
 			for (int i = 0; i < agents_.size(); ++i)
 				delete agents_[i];
 
-#pragma omp for
+//#pragma omp for
 			for(int i = 0; i < tmpAgents_.size(); ++i)
 				delete tmpAgents_[i];
 
-#pragma omp for
+//#pragma omp for
 			for (int i = 0; i < obstacles_.size(); ++i)
 				delete obstacles_[i];
 
 			delete kdTree_;
-		}
+		//}
 	}
 
 	Agent* SFSimulator::getAgent(size_t agentId)
@@ -343,9 +343,9 @@ namespace SF
 			addPlatformRotationYZ(getRotationDegreeSet().getRotationOX());
 		}
 
-		#pragma omp parallel
-		{ 
-			#pragma omp for
+		//#pragma omp parallel
+		//{ 
+			//#pragma omp for
 			for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
 				if (!(agents_[i]->isDeleted_))
@@ -355,13 +355,13 @@ namespace SF
 				}
 			}
 
-			#pragma omp for
+			//#pragma omp for
 			for(int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
 				if(!(agents_[i]->isDeleted_))
 					agents_[i]->update();
 			}
-		}
+		//}
 
 		for(size_t i = 0; i < tmpAgents_.size(); i++)
 		{

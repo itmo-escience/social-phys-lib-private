@@ -128,7 +128,7 @@ namespace SF
 		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
 		|| newVelocity_.y() != newVelocity_.y())
 		{
-			printf("error!\n");
+			printf("error! getAccelerationTerm \n");
 		}
 
 		velocity_ = newVelocity_;
@@ -136,7 +136,7 @@ namespace SF
 		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
 		|| newVelocity_.y() != newVelocity_.y())
 		{
-			printf("error!\n");
+			printf("error!getAccelerationTerm \n ");
 		}
 
 		if (fabs(prefVelocity_.x()) < TOLERANCE && fabs(prefVelocity_.y()) < TOLERANCE)
