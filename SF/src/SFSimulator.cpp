@@ -69,12 +69,12 @@ namespace SF
 	{
 		for(size_t i = 0; i < agents_.size(); i++)
 		{
-			if(agents_[i]->id_ == agentId)
+			if(agents_[i] != NULL && agents_[i]->id_ == agentId)
 			{
 				return agents_[i];
 			}
 		}
-		return NULL;
+		throw;
 	}
 
 	/// <summary> Get list of agents who are not in modeling areas </summary>
@@ -86,10 +86,13 @@ namespace SF
 		std::vector<Agent* > agentsOutsideOfArea;
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			if(agents_[i]->position_.x() < leftBotPoint.x() || agents_[i]->position_.x() > leftBotPoint.x() //If outside of modeling area
-			|| agents_[i]->position_.y() < leftBotPoint.y() || agents_[i]->position_.y() > leftBotPoint.y()) 
+			if(agents_[i] != NULL)
 			{
-				agentsOutsideOfArea.push_back(agents_[i]);
+				if(agents_[i]->position_.x() < leftBotPoint.x() || agents_[i]->position_.x() > leftBotPoint.x() //If outside of modeling area
+				|| agents_[i]->position_.y() < leftBotPoint.y() || agents_[i]->position_.y() > leftBotPoint.y()) 
+				{
+					agentsOutsideOfArea.push_back(agents_[i]);
+				}	
 			}
 		}
 
@@ -101,7 +104,14 @@ namespace SF
 	/// <returns> The count of agent neighbors taken into account to compute the current velocity for the specified agent </returns>
 	size_t SFSimulator::getAgentNumAgentNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_.size();
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->agentNeighbors_.size();
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the specified agent neighbor of the specified agent </summary>
@@ -110,7 +120,14 @@ namespace SF
 	/// <returns> The number of the neighboring agent </returns>
 	size_t SFSimulator::getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
+		if(agents_[agentNo] != NULL && agents_[neighborNo])
+		{
+			return agents_[agentNo]->agentNeighbors_[neighborNo].second->id_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the specified obstacle neighbor of the specified agent </summary>
@@ -119,7 +136,14 @@ namespace SF
 	/// <returns> The number of the first vertex of the neighboring obstacle edge </returns>
 	size_t SFSimulator::getAgentObstacleNeighbor(size_t agentNo, size_t neighborNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
+		if(agents_[agentNo] != NULL && agents_[neighborNo] != NULL)
+		{
+			return agents_[agentNo]->obstacleNeighbors_[neighborNo].second->id_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the count of obstacle neighbors taken into account to compute the current velocity for the specified agent </summary>
@@ -127,7 +151,14 @@ namespace SF
 	/// <returns> The count of obstacle neighbors taken into account to compute the current velocity for the specified agent </returns>
 	size_t SFSimulator::getAgentNumObstacleNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->obstacleNeighbors_.size();
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->obstacleNeighbors_.size();
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Adds a new agent with default properties to the simulation </summary>
@@ -172,7 +203,10 @@ namespace SF
 		std::cout << "Agents count: " << agents_.size() << std::endl;
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			std::cout << "ID: " << agents_[i]->id_ << " X: " << agents_[i]->position_.x() << " Y: " << agents_[i]->position_.y() << " VelX: " << agents_[i]->velocity_.x() << " VelY: " << agents_[i]->velocity_.y() <<std::endl;
+			if(agents_[i] != NULL)
+			{
+				std::cout << "ID: " << agents_[i]->id_ << " X: " << agents_[i]->position_.x() << " Y: " << agents_[i]->position_.y() << " VelX: " << agents_[i]->velocity_.x() << " VelY: " << agents_[i]->velocity_.y() <<std::endl;
+			}
 		}
 	}
 
@@ -348,18 +382,25 @@ namespace SF
 			//#pragma omp for
 			for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
-				if (!(agents_[i]->isDeleted_))
+				if(agents_[i] != NULL)
 				{
-					agents_[i]->computeNeighbors();
-					agents_[i]->computeNewVelocity();
+					if (!(agents_[i]->isDeleted_))
+					{
+						agents_[i]->computeNeighbors();
+						agents_[i]->computeNewVelocity();
+					}
 				}
+
 			}
 
 			//#pragma omp for
 			for(int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
-				if(!(agents_[i]->isDeleted_))
-					agents_[i]->update();
+				if(agents_[i] != NULL)
+				{
+					if(!(agents_[i]->isDeleted_))
+						agents_[i]->update();
+				}
 			}
 		//}
 
@@ -378,7 +419,14 @@ namespace SF
 	/// <returns> The present maximum neighbor count of the agent </returns>
 	size_t SFSimulator::getAgentMaxNeighbors(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxNeighbors_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->maxNeighbors_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the maximum speed of a specified agent </summary>
@@ -386,7 +434,14 @@ namespace SF
 	/// <returns> The present maximum speed of the agent </returns>
 	float SFSimulator::getAgentMaxSpeed(size_t agentNo) const
 	{
-		return agents_[agentNo]->maxSpeed_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->maxSpeed_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the maximum neighbor distance of a specified agent </summary>
@@ -394,7 +449,14 @@ namespace SF
 	/// <returns> The present maximum neighbor distance of the agent</returns>
 	float SFSimulator::getAgentNeighborDist(size_t agentNo) const
 	{
-		return agents_[agentNo]->neighborDist_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->neighborDist_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the two-dimensional position of a specified agent </summary>
@@ -402,7 +464,14 @@ namespace SF
 	/// <returns> The present two-dimensional position of the (center of the) agent </returns>
 	const Vector2& SFSimulator::getAgentPosition(size_t agentNo) const
 	{
-		return agents_[agentNo]->position_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->position_;
+		}
+		else
+		{
+			throw;	
+		}
 	}
 
 	/// <summary> Returns the two-dimensional preferred velocity  of a specified agent </summary>
@@ -410,7 +479,14 @@ namespace SF
 	/// <returns> The present two-dimensional of the agent </returns>
 	const Vector2& SFSimulator::getAgentPrefVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->prefVelocity_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->prefVelocity_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the radius of a specified agent </summary>
@@ -418,7 +494,14 @@ namespace SF
 	/// <returns> The present radius of the agent </returns>
 	float SFSimulator::getAgentRadius(size_t agentNo) const
 	{
-		return agents_[agentNo]->radius_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->radius_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the time horizon with respect to obstacles of a specified agent </summary>
@@ -426,7 +509,14 @@ namespace SF
 	/// <returns> The present time horizon with respect to obstacles of the agent </returns>
 	float SFSimulator::getAgentTimeHorizonObst(size_t agentNo) const
 	{
-		return agents_[agentNo]->timeHorizonObst_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->timeHorizonObst_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the two-dimensional linear velocity of a specified agent </summary>
@@ -434,7 +524,15 @@ namespace SF
 	/// <returns> The present two-dimensional linear velocity of the agent </returns>
 	const Vector2& SFSimulator::getAgentVelocity(size_t agentNo) const
 	{
-		return agents_[agentNo]->velocity_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->velocity_;
+		}
+		else
+		{
+			throw;
+		}
+		
 	}
 
 	/// <summary> Returns the global time of the simulation </summary>
@@ -537,7 +635,14 @@ namespace SF
 	/// <param name="maxNeighbors"> The replacement maximum neighbor count </param>
 	void SFSimulator::setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
 	{
-		agents_[agentNo]->maxNeighbors_ = maxNeighbors;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->maxNeighbors_ = maxNeighbors;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the maximum speed of a specified agent </summary>
@@ -545,13 +650,27 @@ namespace SF
 	/// <param name="maxSpeed"> The replacement maximum speed. Must be non - negative </param>
 	void SFSimulator::setAgentMaxSpeed(size_t agentNo, float maxSpeed)
 	{
-		agents_[agentNo]->maxSpeed_ = maxSpeed;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->maxSpeed_ = maxSpeed;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 
 	void SFSimulator::setAgentForce(size_t agentNo, float force)
 	{
-		agents_[agentNo]->force_ = force;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->force_ = force;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the maximum neighbor distance of a specified agent </summary>
@@ -559,7 +678,14 @@ namespace SF
 	/// <param name="neighborDist"> The replacement maximum neighbor distance. Must be non - negative</param>
 	void SFSimulator::setAgentNeighborDist(size_t agentNo, float neighborDist)
 	{
-		agents_[agentNo]->neighborDist_ = neighborDist;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->neighborDist_ = neighborDist;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the two-dimensional position of a specified agent </summary>
@@ -567,7 +693,14 @@ namespace SF
 	/// <param name="position"> The replacement of the two-dimensional position </param>
 	void SFSimulator::setAgentPosition(size_t agentNo, const Vector2& position)
 	{
-		agents_[agentNo]->position_ = position;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->position_ = position;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the two-dimensional preferred velocity of a specified agent </summary>
@@ -575,7 +708,14 @@ namespace SF
 	/// <param name="prefVelocity"> The replacement of the two-dimensional preferred velocity </param>
 	void SFSimulator::setAgentPrefVelocity(size_t agentNo, const Vector2& prefVelocity)
 	{
-		agents_[agentNo]->prefVelocity_ = prefVelocity;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->prefVelocity_ = prefVelocity;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the radius of a specified agent </summary>
@@ -583,7 +723,14 @@ namespace SF
 	/// <param name="radius"> The replacement radius. Must be non - negative </param>
 	void SFSimulator::setAgentRadius(size_t agentNo, float radius)
 	{
-		agents_[agentNo]->radius_ = radius;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->radius_ = radius;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the time horizon of a specified agent with respect to obstacles </summary>
@@ -591,7 +738,14 @@ namespace SF
 	/// <param name="timeHorizonObst"> The replacement time horizon with respect to obstacles. Must be positive </param>
 	void SFSimulator::setAgentTimeHorizonObst(size_t agentNo, float timeHorizonObst)
 	{
-		agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->timeHorizonObst_ = timeHorizonObst;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the two-dimensional linear velocity of a specified agent </summary>
@@ -599,7 +753,14 @@ namespace SF
 	/// <param name="velocity"> The replacement two-dimensional linear velocity </param>
 	void SFSimulator::setAgentVelocity(size_t agentNo, const Vector2& velocity)
 	{
-		agents_[agentNo]->velocity_ = velocity;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->velocity_ = velocity;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Sets the time step of the simulation</summary>
@@ -628,7 +789,14 @@ namespace SF
 	/// <param name="friction"> New value of friction </param>
 	void SFSimulator::setAgentFriction(size_t agentNo, float friction)
 	{
-		agents_[agentNo]->friction_ = friction;
+		if(agents_[agentNo] != NULL)
+		{
+			agents_[agentNo]->friction_ = friction;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the agent friction of platform </summary>
@@ -636,7 +804,14 @@ namespace SF
 	/// <returns> The friction of agent </returns>
 	float SFSimulator::getAgentFriction(size_t agentNo) const
 	{
-		return agents_[agentNo]->friction_;
+		if(agents_[agentNo] != NULL)
+		{
+			return agents_[agentNo]->friction_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the angle set </summary>
@@ -711,6 +886,7 @@ namespace SF
 	/// <param name="attractiveIds"> The list of attractive agent ID</param>
 	void SFSimulator::setAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
+		if(agents_[id] != NULL)
 		agents_[id]->attractiveIds_ = attractiveIds;
 	}
 
@@ -719,9 +895,12 @@ namespace SF
 	/// <param name="newID"> The attractive agent ID </param>
 	void SFSimulator::addAttractiveId(int id, int newId)
 	{
-		std::vector<int> ail = agents_[id]->attractiveIds_;
-		if(std::find(ail.begin(), ail.end(), newId) == ail.end())
-			agents_[id]->attractiveIds_.push_back(newId);
+		if(agents_[id] != NULL)
+		{
+			std::vector<int> ail = agents_[id]->attractiveIds_;
+			if(std::find(ail.begin(), ail.end(), newId) == ail.end())
+				agents_[id]->attractiveIds_.push_back(newId);
+		}
 	}
 
 	/// <summary> Adds the list of attractive agents to specified agent </summary>
@@ -742,15 +921,19 @@ namespace SF
 	/// <param name="idFoeDelete"> The attractive agent ID </param>
 	void SFSimulator::deleteAttractiveId(int id, int idForDelete)
 	{
-		std::vector<int> aais = agents_[id]->attractiveIds_;
-		for (std::vector<int>::iterator i = aais.begin(); i != aais.end(); ++i)
+		if(agents_[id] != NULL)
 		{
-			if (*i == idForDelete)
+			std::vector<int> aais = agents_[id]->attractiveIds_;
+			for (std::vector<int>::iterator i = aais.begin(); i != aais.end(); ++i)
 			{
-				aais.erase(i);
-				break;
+				if (*i == idForDelete)
+				{
+					aais.erase(i);
+					break;
+				}
 			}
 		}
+
 	}
 
 	/// <summary> The deleting of the list of attractive agents </summary>
@@ -831,7 +1014,7 @@ namespace SF
 		std::vector<size_t> result;
 		if (agents_.size() > 0)
 		{
-			if (index >= agents_.size())
+			if (index >= agents_.size() || agents_[index] == NULL)
 				result.push_back(0);
 			else
 			{
@@ -858,7 +1041,12 @@ namespace SF
 	/// <param name="index"> The number of the agent </param>
 	void SFSimulator::deleteAgent(size_t index)
 	{
-		agents_[index]->isDeleted_ = true;
+		if(agents_[index] != NULL)
+		{
+			agents_[index]->isDeleted_ = true;
+			delete agents_[index];
+			 agents_[index] = NULL;
+		}
 	}
 
 	/// <summary> Returns the list containing IDs of deleted agents </summary>
@@ -868,12 +1056,11 @@ namespace SF
 		std::vector<size_t> result = std::vector<size_t>();
 
 		//for (auto a : agents_)
-		for(int i = 0; i < agents_.size(); i++)
-		{
-			if (agents_[i]->isDeleted_)
-				result.push_back(agents_[i]->id_);
-		}
-
+		//for(int i = 0; i < agents_.size(); i++)
+		//{
+		//	if (agents_[i]->isDeleted_)
+		//		result.push_back(agents_[i]->id_);
+		//}
 
 		return result;
 	}
@@ -891,7 +1078,7 @@ namespace SF
 		//for (auto a : agents_)
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			agents_[i]->isDeleted_ ? dead++ : alive++;
+			agents_[i] == NULL ? dead++ : alive++;
 		}
 		//a->isDeleted_ ? dead++ : alive++;
 					
@@ -909,7 +1096,7 @@ namespace SF
 		std::vector<size_t> agentIdsList = std::vector<size_t>();
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			if(!agents_[i]->isDeleted_)
+			if(agents_[i] != NULL)
 			{
 				agentIdsList.push_back(agents_[i]->id_);	
 			}
@@ -925,7 +1112,7 @@ namespace SF
 		std::vector<Agent*> agentIdsList = std::vector<Agent*>();
 		for(int i = 0; i < agents_.size(); i++)
 		{
-			if(!agents_[i]->isDeleted_)
+			if(agents_[i] != NULL)
 			{
 				agentIdsList.push_back(agents_[i]);	
 			}
@@ -945,12 +1132,15 @@ namespace SF
 
 		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
-			if (!(agents_[i]->isDeleted_))
+			if(agents_[i] != NULL)
 			{
-				agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
-				agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
-				agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
-				agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
+				if (!(agents_[i]->isDeleted_))
+				{
+					agents_[i]->repulsiveAgent_ = newRepulsiveAgent_;
+					agents_[i]->repulsiveAgentFactor_ = newRepulsiveAgentFactor_;
+					agents_[i]->repulsiveObstacle_ = newRepulsiveObstacle_;
+					agents_[i]->repulsiveObstacleFactor_ = newRepulsiveObstacleFactor_;
+				}
 			}
 		}
 
@@ -965,7 +1155,14 @@ namespace SF
 	/// <returns> The agent pressure </returns>
 	double SFSimulator::getAgentPressure(size_t index)
 	{
-		return agents_[index]->agentPressure_;
+		if(agents_[index] != NULL)
+		{
+			return agents_[index]->agentPressure_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the obstacle pressure </summary>
@@ -973,7 +1170,14 @@ namespace SF
 	/// <returns> The obstacle pressure </returns>
 	double SFSimulator::getObstaclePressure(size_t index)
 	{
-		return agents_[index]->obstaclePressure_;
+		if(agents_[index] != NULL)
+		{
+			return agents_[index]->obstaclePressure_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the obstacle trajectory </summary>
@@ -981,7 +1185,14 @@ namespace SF
 	/// <returns> The the obstacle trajectory vector </returns>
 	Vector2 SFSimulator::getObstacleTrajectory(size_t index)
 	{
-		return agents_[index]->obstacleForce_;
+		if(agents_[index] != NULL)
+		{
+			return agents_[index]->obstacleForce_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 
 	/// <summary> Returns the agent repulsive force </summary>
@@ -989,6 +1200,13 @@ namespace SF
 	/// <returns> The the agent repulsive force vector </returns>
 	Vector2 SFSimulator::getAgentRepulsiveForce(size_t index)
 	{
-		return agents_[index]->agentForce_;
+		if(agents_[index] != NULL)
+		{
+			return agents_[index]->agentForce_;
+		}
+		else
+		{
+			throw;
+		}
 	}
 }

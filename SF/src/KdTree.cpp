@@ -29,8 +29,11 @@ namespace SF
 		agentTree_.clear();
 		//printf("agents count %d \n", sim_->agents_.size());
 		for (size_t i = 0; i < sim_->agents_.size(); ++i)
-			if (!sim_->agents_[i]->isDeleted_)
-				agents_.push_back(sim_->agents_[i]);
+			if( sim_->agents_[i] != NULL)
+			{
+				if (!sim_->agents_[i]->isDeleted_)
+					agents_.push_back(sim_->agents_[i]);
+			}
 
 		int id = sim_->agents_.size() + 1;
 		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
@@ -40,7 +43,7 @@ namespace SF
 		}
 
 		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
-			if(!sim_->tmpAgents_[i]->isDeleted_)
+			//if(!sim_->tmpAgents_[i]->isDeleted_)
 				agents_.push_back(sim_->tmpAgents_[i]);
 
 		if (!agents_.empty())

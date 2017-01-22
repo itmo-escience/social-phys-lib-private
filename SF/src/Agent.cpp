@@ -3,7 +3,6 @@
 #include "../include/Agent.h"
 #include "../include/Obstacle.h"
 #include "../include/KdTree.h"
-#include "../include/MPIAgent.h"
 
 namespace SF
 {
@@ -162,7 +161,7 @@ namespace SF
 		}
 
 		double minLength = DBL_MAX;
-		Vector2 p = Vector2();
+		Vector2 p;
 		bool hasIntersection = false;
 
 		//for(auto on: obstacleNeighbors_)
@@ -381,6 +380,12 @@ namespace SF
 			float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
 			Vector2 force = forceAmount * diff.normalized();
 
+			if(_isnan(force.x()) || _isnan(force.y()))
+			{
+				printf("error! force is NAN\n");
+				getchar();
+			}
+
 			forces.push_back(force);
 			forceSum += force;
 
@@ -402,10 +407,26 @@ namespace SF
 		//for (auto force : forces)
 		for(int i = 0; i < forces.size(); i++)
 		{
+			if(_isnan(forces[i].x()) || _isnan(forces[i].y()))
+			{
+				printf("error! forces[%d] is NAN \n", i);
+				getchar();
+			}
+
 			if (lengthSum == 0)
-				forceWeightList.push_back(getLength(forces[i]) / std::numeric_limits<double>::min());
+			{
+				forceWeightList.push_back(getLength(forces[i]) / std::numeric_limits<float>::min());
+				if(_isnan(forceWeightList[forceWeightList.size() - 1]))
+				{
+					printf("error! forceWeightList[%d] is NAN\n", forceWeightList.size() - 1 );
+					getchar();
+				}
+			}
 			else
+			{
 				forceWeightList.push_back(getLength(forces[i]) / lengthSum);
+			}
+				
 		}
 
 
@@ -413,8 +434,20 @@ namespace SF
 		for (size_t i = 0; i < forces.size(); i++)
 			total += forces[i] * forceWeightList[i];
 
+		if(_isnan(total.x()) || _isnan(total.y()))
+		{
+			printf("error!\n");
+			getchar();
+		}
+
 		obstaclePressure_ = getLength(total);
 		correction += total;
+
+		if(_isnan(correction.x()) || _isnan(correction.y()))
+		{
+			printf("error!\n");
+			getchar();
+		}
 
 		obstacleForce_ = position_ + total;
 	}
@@ -564,6 +597,7 @@ namespace SF
 				|| correction.y() != correction.y())
 				{
 					printf("error!\n");
+					getchar();
 				}
 			}
 		}
@@ -729,10 +763,10 @@ namespace SF
 
 			correction += result * platformFactor_;
 
-			if(correction.x() != correction.x() //Is NAN check
-			|| correction.y() != correction.y())
+			if(_isnan(correction.x()) || _isnan(correction.y()))
 			{
 				printf("error!\n");
+				getchar();
 			}
 		}
 	}
@@ -740,8 +774,7 @@ namespace SF
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
+		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))
 		{
 			printf("error!\n");
 		}
@@ -751,39 +784,54 @@ namespace SF
 		else
 			newVelocity_ = prefVelocity_;
 
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
+		if(_isnan(newVelocity_.x() || newVelocity_.y()))//Is NAN check
 		{
 			printf("error!\n");
+			getchar();
 		}
 
 		correction = Vector2();
 
-		if(correction.x() != correction.x() //Is NAN check
-		|| correction.y() != correction.y())
+		if(_isnan(correction.x()) || _isnan(correction.y()))
 		{
 			printf("error!\n");
+			getchar();
 		}
 
 		getRepulsiveAgentForce();
+		if(_isnan(correction.x()) || _isnan(correction.y()))
+		{
+			printf("error!\n");
+			getchar();
+		}
 		getRepulsiveObstacleForce();
+		if(_isnan(correction.x()) || _isnan(correction.y()))
+		{
+			printf("error!\n");
+			getchar();
+		}
 		getAttractiveForce();
+		if(_isnan(correction.x()) || _isnan(correction.y()))
+		{
+			printf("error!\n");
+			getchar();
+		}
 
 		if(sim_->IsMovingPlatform)
 			getMovingPlatformForce();
 
-		if(correction.x() != correction.x() //Is NAN check
-		|| correction.y() != correction.y())
+		if(_isnan(correction.x()) || _isnan(correction.y()))
 		{
 			printf("error!\n");
+			getchar();
 		}
     
 		newVelocity_ += correction;
 
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
+		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))
 		{
 			printf("error!\n");
+			getchar();
 		}
 	}
 
