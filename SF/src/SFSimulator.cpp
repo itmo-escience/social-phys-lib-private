@@ -50,15 +50,15 @@ namespace SF
 //		{ 
 
 //#pragma omp for
-			for (int i = 0; i < agents_.size(); ++i)
+			for (size_t i = 0; i < agents_.size(); ++i)
 				delete agents_[i];
 
 //#pragma omp for
-			for(int i = 0; i < tmpAgents_.size(); ++i)
+			for(size_t i = 0; i < tmpAgents_.size(); ++i)
 				delete tmpAgents_[i];
 
 //#pragma omp for
-			for (int i = 0; i < obstacles_.size(); ++i)
+			for (size_t i = 0; i < obstacles_.size(); ++i)
 				delete obstacles_[i];
 
 			delete kdTree_;
@@ -84,7 +84,7 @@ namespace SF
 	std::vector<Agent* > SFSimulator::getAgentsWhoNotInArea(Vector2 leftBotPoint, Vector2 rightTopPoint)
 	{
 		std::vector<Agent* > agentsOutsideOfArea;
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			if(agents_[i] != NULL)
 			{
@@ -201,7 +201,7 @@ namespace SF
 	void SFSimulator::printAgentsInfo() const
 	{
 		std::cout << "Agents count: " << agents_.size() << std::endl;
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			if(agents_[i] != NULL)
 			{
@@ -345,7 +345,7 @@ namespace SF
 	{
 		bool isFound = false;
 
-		for (int i = 0; i < obstacles_.size(); i++)
+		for (size_t i = 0; i < obstacles_.size(); i++)
 		{
 			if (obstacles_[i]->id_ == objectId)
 			{
@@ -369,20 +369,22 @@ namespace SF
 	/// <summary> Lets the simulator perform a simulation step and updates the two - dimensional position and two - dimensional velocity of each agent </summary>
 	void SFSimulator::doStep()
 	{
-		kdTree_->buildAgentTree();
-
-		if (agents_.size() > 0)
+		try
 		{
-			addPlatformRotationXZ(getRotationDegreeSet().getRotationOY());
-			addPlatformRotationYZ(getRotationDegreeSet().getRotationOX());
-		}
+			kdTree_->buildAgentTree();
 
-		//#pragma omp parallel
-		//{ 
-			//#pragma omp for
-			for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			if (agents_.size() > 0)
 			{
-				if(agents_[i] != NULL)
+				addPlatformRotationXZ(getRotationDegreeSet().getRotationOY());
+				addPlatformRotationYZ(getRotationDegreeSet().getRotationOX());
+			}
+
+			//#pragma omp parallel
+			//{ 
+			//#pragma omp for
+			for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			{
+				if (agents_[i] != NULL)
 				{
 					if (!(agents_[i]->isDeleted_))
 					{
@@ -390,28 +392,33 @@ namespace SF
 						agents_[i]->computeNewVelocity();
 					}
 				}
-
 			}
 
 			//#pragma omp for
-			for(int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 			{
-				if(agents_[i] != NULL)
+				if (agents_[i] != NULL)
 				{
-					if(!(agents_[i]->isDeleted_))
+					if (!(agents_[i]->isDeleted_))
 						agents_[i]->update();
 				}
 			}
-		//}
+			//}
 
-		for(size_t i = 0; i < tmpAgents_.size(); i++)
-		{
-			delete tmpAgents_[i];
+			for (size_t i = 0; i < tmpAgents_.size(); i++)
+			{
+				delete tmpAgents_[i];
+			}
+
+			tmpAgents_.clear();
+
+			globalTime_ += timeStep_;
 		}
-
-		tmpAgents_.clear();
-
-		globalTime_ += timeStep_;
+		catch (...)
+		{
+			std::cerr << " Error occured in doStep at file " << __FILE__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Returns the maximum neighbor count of a specified agent </summary>
@@ -909,7 +916,7 @@ namespace SF
 	void SFSimulator::addAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
 		//for (auto ai : attractiveIds)
-		for( int i = 0; i < attractiveIds.size(); i++)
+		for( size_t i = 0; i < attractiveIds.size(); i++)
 		{
 			addAttractiveId(id, attractiveIds[i]);
 		}
@@ -942,7 +949,7 @@ namespace SF
 	void SFSimulator::deleteAttractiveIdList(int id, const std::vector<int>& attractiveIds)
 	{
 		//for(auto ai: attractiveIds)
-		for(int i = 0; i < attractiveIds.size(); i++)
+		for(size_t i = 0; i < attractiveIds.size(); i++)
 		{
 			deleteAttractiveId(id, attractiveIds[i]);	
 		}
@@ -1025,7 +1032,7 @@ namespace SF
 				this->kdTree_->computeAgentNeighborsIndexList(agent, rangeSq);
 
 				//for (auto an : agent->agentNeighborsIndexList_)
-				for(int i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
+				for(size_t i = 0; i < agent->agentNeighborsIndexList_.size(); i++)
 				{
 					result.push_back(agent->agentNeighborsIndexList_[i].first);	
 				}
@@ -1076,7 +1083,7 @@ namespace SF
 			dead = 0;
 
 		//for (auto a : agents_)
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			agents_[i] == NULL ? dead++ : alive++;
 		}
@@ -1094,7 +1101,7 @@ namespace SF
 	std::vector<size_t> SFSimulator::getAliveAgentIdsList()
 	{
 		std::vector<size_t> agentIdsList = std::vector<size_t>();
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			if(agents_[i] != NULL)
 			{
@@ -1110,7 +1117,7 @@ namespace SF
 	std::vector<Agent*> SFSimulator::getAliveAgents()
 	{
 		std::vector<Agent*> agentIdsList = std::vector<Agent*>();
-		for(int i = 0; i < agents_.size(); i++)
+		for(size_t i = 0; i < agents_.size(); i++)
 		{
 			if(agents_[i] != NULL)
 			{
@@ -1130,7 +1137,7 @@ namespace SF
 	{
 #pragma omp parallel for
 
-		for (int i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+		for (long long i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 		{
 			if(agents_[i] != NULL)
 			{

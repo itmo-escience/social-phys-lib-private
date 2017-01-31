@@ -4,6 +4,7 @@
 #include "../include/KdTree.h"
 #include "../include/Agent.h"
 #include "../include/Obstacle.h"
+#include <iostream>
 
 namespace SF
 {
@@ -25,31 +26,39 @@ namespace SF
 	/// <summary> Builds an agent kd-tree </summary>
 	void KdTree::buildAgentTree()
 	{
-		agents_.clear();
-		agentTree_.clear();
-		//printf("agents count %d \n", sim_->agents_.size());
-		for (size_t i = 0; i < sim_->agents_.size(); ++i)
-			if( sim_->agents_[i] != NULL)
+		try
+		{
+			agents_.clear();
+			agentTree_.clear();
+			//printf("agents count %d \n", sim_->agents_.size());
+			for (size_t i = 0; i < sim_->agents_.size(); ++i)
+				if (sim_->agents_[i] != NULL)
+				{
+					if (!sim_->agents_[i]->isDeleted_)
+						agents_.push_back(sim_->agents_[i]);
+				}
+
+			size_t id = sim_->agents_.size() + 1;
+			for (size_t i = 0; i < sim_->tmpAgents_.size(); i++)
 			{
-				if (!sim_->agents_[i]->isDeleted_)
-					agents_.push_back(sim_->agents_[i]);
+				sim_->tmpAgents_[i]->id_ = id;
+				id++;
 			}
 
-		int id = sim_->agents_.size() + 1;
-		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
-		{
-			sim_->tmpAgents_[i]->id_ = id;
-			id++;
-		}
-
-		for(size_t i = 0; i < sim_->tmpAgents_.size(); i++)
+			for (size_t i = 0; i < sim_->tmpAgents_.size(); i++)
 			//if(!sim_->tmpAgents_[i]->isDeleted_)
 				agents_.push_back(sim_->tmpAgents_[i]);
 
-		if (!agents_.empty())
+			if (!agents_.empty())
+			{
+				agentTree_.resize(2 * agents_.size() - 1);
+				buildAgentTreeRecursive(0, agents_.size(), 0);
+			}
+		}
+		catch (...)
 		{
-			agentTree_.resize(2 * agents_.size() - 1);
- 			buildAgentTreeRecursive(0, agents_.size(), 0);	
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -59,63 +68,72 @@ namespace SF
 	/// <param name="node"> Selected node  </param>
 	void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node)
 	{
-		//printf("begin: %d end: %d node: %d \n", begin, end, node);
-		agentTree_[node].begin = begin;
-		agentTree_[node].end = end;
-		agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
-		agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
-    
-		for (size_t i = begin + 1; i < end; ++i) 
+		try
 		{
-			AgentTreeNode tree = agentTree_[node];
-			Vector2 position = agents_[i]->position_;
+			//printf("begin: %d end: %d node: %d \n", begin, end, node);
+			agentTree_[node].begin = begin;
+			agentTree_[node].end = end;
+			agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
+			agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
 
-			tree.maxX = std::max(tree.maxX, position.x());
-			tree.minX = std::min(tree.minX, position.x());
-			tree.maxY = std::max(tree.maxY, position.y());
-			tree.minY = std::min(tree.minY, position.y());
-
-			agentTree_[node] = tree;
-		}
-
-		if (end - begin > MAX_LEAF_SIZE) 
-		{
-			// No leaf node
-			const bool isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
-			const float splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
-
-			size_t left = begin;
-			size_t right = end;
-
-			while (left < right) 
+			for (size_t i = begin + 1; i < end; ++i)
 			{
-				while (left < right && (isVertical ? agents_[left]->position_.x() : agents_[left]->position_.y()) < splitValue) 
-					++left;
-				
-				while (right > left && (isVertical ? agents_[right-1]->position_.x() : agents_[right-1]->position_.y()) >= splitValue)
-					--right;
-				
-				if (left < right) 
+				AgentTreeNode tree = agentTree_[node];
+				Vector2 position = agents_[i]->position_;
+
+				tree.maxX = std::max(tree.maxX, position.x());
+				tree.minX = std::min(tree.minX, position.x());
+				tree.maxY = std::max(tree.maxY, position.y());
+				tree.minY = std::min(tree.minY, position.y());
+
+				agentTree_[node] = tree;
+			}
+
+			if (end - begin > MAX_LEAF_SIZE)
+			{
+				// No leaf node
+				const bool isVertical = (agentTree_[node].maxX - agentTree_[node].minX > agentTree_[node].maxY - agentTree_[node].minY);
+				const float splitValue = (isVertical ? 0.5f * (agentTree_[node].maxX + agentTree_[node].minX) : 0.5f * (agentTree_[node].maxY + agentTree_[node].minY));
+
+				size_t left = begin;
+				size_t right = end;
+
+				while (left < right)
 				{
-					std::swap(agents_[left], agents_[right-1]);
-					++left;
-					--right;
+					while (left < right && (isVertical ? agents_[left]->position_.x() : agents_[left]->position_.y()) < splitValue)
+						++left;
+
+					while (right > left && (isVertical ? agents_[right - 1]->position_.x() : agents_[right - 1]->position_.y()) >= splitValue)
+						--right;
+
+					if (left < right)
+					{
+						std::swap(agents_[left], agents_[right - 1]);
+						++left;
+						--right;
+					}
 				}
+
+				size_t leftSize = left - begin;
+
+				if (leftSize == 0)
+				{
+					++leftSize;
+					++left;
+					++right;
+				}
+
+				agentTree_[node].left = node + 1;
+				agentTree_[node].right = node + 1 + (2 * leftSize - 1);
+
+				buildAgentTreeRecursive(begin, left, agentTree_[node].left);
+				buildAgentTreeRecursive(left, end, agentTree_[node].right);
 			}
-
-			size_t leftSize = left - begin;
-
-			if (leftSize == 0) {
-				++leftSize;
-				++left;
-				++right;
-			}
-
-			agentTree_[node].left = node + 1;
-			agentTree_[node].right = node + 1 + (2 * leftSize - 1);
-
-			buildAgentTreeRecursive(begin, left, agentTree_[node].left);
-			buildAgentTreeRecursive(left, end, agentTree_[node].right);
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -281,40 +299,48 @@ namespace SF
 	/// <param name="node"> The specified node </param>
 	void KdTree::queryAgentTreeRecursive(Agent* agent, float& rangeSq, size_t node) const
 	{
-		if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) 
+		try
 		{
-			for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i) 
+			if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE)
 			{
-				if(!(agents_[i]->isDeleted_))
-				agent->insertAgentNeighbor(agents_[i], rangeSq);
-			}
-		} 
-		else 
-		{
-			const float distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
-
-			const float distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
-
-			if (distSqLeft < distSqRight) 
-			{
-				if (distSqLeft < rangeSq) 
+				for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i)
 				{
-					queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
-
-					if (distSqRight < rangeSq) 
-						queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+					if (!(agents_[i]->isDeleted_))
+						agent->insertAgentNeighbor(agents_[i], rangeSq);
 				}
-			} 
-			else 
+			}
+			else
 			{
-				if (distSqRight < rangeSq) 
-				{
-					queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+				const float distSqLeft = sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].left].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].left].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].left].maxY));
 
-					if (distSqLeft < rangeSq) 
+				const float distSqRight = sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minX - agent->position_.x())) + sqr(std::max(0.0f, agent->position_.x() - agentTree_[agentTree_[node].right].maxX)) + sqr(std::max(0.0f, agentTree_[agentTree_[node].right].minY - agent->position_.y())) + sqr(std::max(0.0f, agent->position_.y() - agentTree_[agentTree_[node].right].maxY));
+
+				if (distSqLeft < distSqRight)
+				{
+					if (distSqLeft < rangeSq)
+					{
 						queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
+
+						if (distSqRight < rangeSq)
+							queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+					}
+				}
+				else
+				{
+					if (distSqRight < rangeSq)
+					{
+						queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+
+						if (distSqLeft < rangeSq)
+							queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
+					}
 				}
 			}
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -366,21 +392,29 @@ namespace SF
 	/// <param name="node"> The specified node </param>
 	void KdTree::queryObstacleTreeRecursive(Agent* agent, float rangeSq, const ObstacleTreeNode* node) const
 	{
-		if (node == NULL)
-			return;
-		
-		const Obstacle* obstacle1 = node->obstacle;
-		const Obstacle* obstacle2 = obstacle1->nextObstacle;
-		const float agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
-
-		queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
-			
-		const float distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
-
-		if (distSqLine < rangeSq) 
+		try
 		{
-			agent->insertObstacleNeighbor(node->obstacle, rangeSq);
-			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
+			if (node == NULL)
+				return;
+
+			const Obstacle* obstacle1 = node->obstacle;
+			const Obstacle* obstacle2 = obstacle1->nextObstacle;
+			const float agentLeftOfLine = leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
+
+			queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->left : node->right));
+
+			const float distSqLine = sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
+
+			if (distSqLine < rangeSq)
+			{
+				agent->insertObstacleNeighbor(node->obstacle, rangeSq);
+				queryObstacleTreeRecursive(agent, rangeSq, (agentLeftOfLine >= 0.0f ? node->right : node->left));
+			}
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 

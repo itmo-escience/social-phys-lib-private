@@ -3,6 +3,7 @@
 #include "../include/Agent.h"
 #include "../include/Obstacle.h"
 #include "../include/KdTree.h"
+#include <iostream>
 
 namespace SF
 {
@@ -59,17 +60,25 @@ namespace SF
 	/// <summary> Computes the neighbors of this agent </summary>
 	void Agent::computeNeighbors()
 	{
-		// obstacle section
-		obstacleNeighbors_.clear();
-		float rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
-		sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
-
-		// agent section
-		agentNeighbors_.clear();
-		if (maxNeighbors_ > 0) 
+		try
 		{
-			rangeSq = sqr(neighborDist_);
-			sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+			// obstacle section
+			obstacleNeighbors_.clear();
+			float rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+			sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
+
+			// agent section
+			agentNeighbors_.clear();
+			if (maxNeighbors_ > 0)
+			{
+				rangeSq = sqr(neighborDist_);
+				sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+			}
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -119,99 +128,107 @@ namespace SF
 	/// <summary> Acceleration term method </summary>
 	void Agent::getAccelerationTerm()
 	{
-		setNullSpeed(id_);
-
-		if ((fabs(previosPosition_.x() - INT_MIN) < SF_EPSILON) && (fabs(previosPosition_.y() - INT_MIN) < SF_EPSILON))
-			previosPosition_ = position_;
-
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
+		try
 		{
-			printf("error! getAccelerationTerm \n");
-		}
+			setNullSpeed(id_);
 
-		velocity_ = newVelocity_;
+			if ((fabs(previosPosition_.x() - INT_MIN) < SF_EPSILON) && (fabs(previosPosition_.y() - INT_MIN) < SF_EPSILON))
+				previosPosition_ = position_;
 
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
-		{
-			printf("error!getAccelerationTerm \n ");
-		}
-
-		if (fabs(prefVelocity_.x()) < TOLERANCE && fabs(prefVelocity_.y()) < TOLERANCE)
-		{
-			acceleration_ = 0.0f;
-			setSpeedList(id_, 0.0f);
-		}
-
-		float speed = speedList_[id_];
-		float mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
-		float tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
-
-		if (!isForced_)
-			acceleration_ += tempAcceleration;
-		else acceleration_ = 0;
-
-		position_ += velocity_ * sim_->timeStep_ * acceleration_;
-
-		if(newVelocity_.x() != newVelocity_.x() //Is NAN check
-		|| newVelocity_.y() != newVelocity_.y())
-		{
-			printf("error!\n");
-		}
-
-		double minLength = DBL_MAX;
-		Vector2 p;
-		bool hasIntersection = false;
-
-		//for(auto on: obstacleNeighbors_)
-		for(int i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			const Obstacle* obstacle = obstacleNeighbors_[i].second;
-			if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
+			if (newVelocity_.x() != newVelocity_.x() //Is NAN check
+				|| newVelocity_.y() != newVelocity_.y())
 			{
-				if (!hasIntersection)
-					hasIntersection = true;
-				Vector2 intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
-				float l = getLength(intersectionPoint - previosPosition_);
-				p = intersectionPoint;
+				printf("error! getAccelerationTerm \n");
+			}
 
-				if (l < minLength)
+			velocity_ = newVelocity_;
+
+			if (newVelocity_.x() != newVelocity_.x() //Is NAN check
+				|| newVelocity_.y() != newVelocity_.y())
+			{
+				printf("error!getAccelerationTerm \n ");
+			}
+
+			if (fabs(prefVelocity_.x()) < TOLERANCE && fabs(prefVelocity_.y()) < TOLERANCE)
+			{
+				acceleration_ = 0.0f;
+				setSpeedList(id_, 0.0f);
+			}
+
+			float speed = speedList_[id_];
+			float mult = getNormalizedSpeed(speedList_[id_], maxSpeed_);
+			float tempAcceleration = 1 / relaxationTime_ * (maxSpeed_ - speedList_[id_]) * mult;
+
+			if (!isForced_)
+				acceleration_ += tempAcceleration;
+			else acceleration_ = 0;
+
+			position_ += velocity_ * sim_->timeStep_ * acceleration_;
+
+			if (newVelocity_.x() != newVelocity_.x() //Is NAN check
+				|| newVelocity_.y() != newVelocity_.y())
+			{
+				printf("error!\n");
+			}
+
+			double minLength = DBL_MAX;
+			Vector2 p;
+			bool hasIntersection = false;
+
+			//for(auto on: obstacleNeighbors_)
+			for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+			{
+				const Obstacle* obstacle = obstacleNeighbors_[i].second;
+				if (isIntersect(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_))
 				{
-					minLength = l;
+					if (!hasIntersection)
+						hasIntersection = true;
+					Vector2 intersectionPoint = getIntersection(position_, previosPosition_, obstacle->point_, obstacle->nextObstacle->point_);
+					float l = getLength(intersectionPoint - previosPosition_);
 					p = intersectionPoint;
+
+					if (l < minLength)
+					{
+						minLength = l;
+						p = intersectionPoint;
+					}
 				}
 			}
-		}
 
-		if (hasIntersection)
+			if (hasIntersection)
+			{
+				//			auto difference = p - previosPosition_;
+				//			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
+				//
+				//			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
+				//			{
+				//				if (m >= 0 && m <= TOLERANCE / 2)
+				//					position_ = previosPosition_ + difference * m;
+				//				else
+				//					position_ = previosPosition_;
+				//			}
+				//
+				//			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
+				//				position_ = previosPosition_;
+				//
+				//			if (getLength(difference) <= obstacleRadius_)
+				//				position_ = previosPosition_;
+				//
+				//			isForced_ = true;
+				position_ = previosPosition_;
+			}
+			else
+				isForced_ = false;
+
+			setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
+
+			previosPosition_ = position_;
+		}
+		catch (...)
 		{
-//			auto difference = p - previosPosition_;
-//			auto m = (getLength(difference) - obstacleRadius_) / getLength(difference);
-//
-//			if (getLength(difference) > obstacleRadius_ && getLength(difference) <= TOLERANCE)
-//			{
-//				if (m >= 0 && m <= TOLERANCE / 2)
-//					position_ = previosPosition_ + difference * m;
-//				else
-//					position_ = previosPosition_;
-//			}
-//
-//			if (getLength(difference) > obstacleRadius_ && getLength(difference) > TOLERANCE)
-//				position_ = previosPosition_;
-//
-//			if (getLength(difference) <= obstacleRadius_)
-//				position_ = previosPosition_;
-//
-//			isForced_ = true;
-			position_ = previosPosition_;
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			exit(EXIT_FAILURE);
 		}
-		else
-			isForced_ = false;
-
-		setSpeedList(id_, static_cast<float>(sqrt(pow((position_ - previosPosition_).x(), 2) + pow((position_ - previosPosition_).y(), 2))) / sim_->timeStep_);
-
-		previosPosition_ = position_;
 	}
 
 	/// <summary> Repulsive agent force </summary>
@@ -222,7 +239,7 @@ namespace SF
 		float maxForceLength = FLT_MIN;
 
 		//for(auto an: agentNeighbors_)
-		for(int i = 0; i < agentNeighbors_.size(); i++)
+		for(size_t i = 0; i < agentNeighbors_.size(); i++)
 		{
 			setNullSpeed(agentNeighbors_[i].second->id_);
 			Vector2 pos = agentNeighbors_[i].second->position_;
@@ -313,7 +330,7 @@ namespace SF
 		forces.clear();
 
 		//for (auto on : obstacleNeighbors_)
-		for (int i = 0; i < obstacleNeighbors_.size(); i++)
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			setNullSpeed(id_);
 
@@ -325,7 +342,7 @@ namespace SF
 			bool hasSuchClosestPoint = false;
 
 			//for (auto nop : nearestObstaclePointList)
-			for (int j = 0; j < nearestObstaclePointList.size(); j++)
+			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
 			{
 				Vector2 l = nearestObstaclePointList[j] - closestPoint;
 				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
@@ -342,7 +359,7 @@ namespace SF
 		}
 
 		//for (auto on : obstacleNeighbors_)
-		for (int i = 0; i < obstacleNeighbors_.size(); i++)
+		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
 		{
 			const Obstacle* obstacle = obstacleNeighbors_[i].second;
 			Vector2 start = obstacle->point_;
@@ -365,7 +382,7 @@ namespace SF
 		}
 
 		//for (auto nop : nearestObstaclePointList)
-		for (int i = 0; i < nearestObstaclePointList.size(); i++)
+		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 		{
 			Vector2 closestPoint = nearestObstaclePointList[i];
 
@@ -397,7 +414,7 @@ namespace SF
 
 		float lengthSum = 0;
 		//for (auto force : forces)
-		for(int i = 0; i < forces.size(); i++)
+		for(size_t i = 0; i < forces.size(); i++)
 		{
 			lengthSum += getLength(forces[i]);
 		}
@@ -405,7 +422,7 @@ namespace SF
 		std::vector<float> forceWeightList;
 		forceWeightList.clear();
 		//for (auto force : forces)
-		for(int i = 0; i < forces.size(); i++)
+		for(size_t i = 0; i < forces.size(); i++)
 		{
 			if(_isnan(forces[i].x()) || _isnan(forces[i].y()))
 			{
@@ -784,7 +801,7 @@ namespace SF
 		else
 			newVelocity_ = prefVelocity_;
 
-		if(_isnan(newVelocity_.x() || newVelocity_.y()))//Is NAN check
+		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))//Is NAN check
 		{
 			printf("error!\n");
 			getchar();
@@ -1184,7 +1201,7 @@ namespace SF
 		memcpy(p, &this->id_, sizeof(size_t));
 		p += sizeof(size_t);
 
-		size_t maxNeighbors_;
+		//size_t maxNeighbors_;
 		memcpy(p, &this->maxNeighbors_, sizeof(size_t));
 		p += sizeof(size_t);
 
