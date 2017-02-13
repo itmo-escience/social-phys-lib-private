@@ -4,6 +4,14 @@
 #include "../include/Obstacle.h"
 #include "../include/KdTree.h"
 #include <iostream>
+#ifdef __linux__
+#include "../include/stacktrace.h"
+#define PRINT_STACK_TRACE Util::print_stacktrace();
+#define ISNAN std::isnan
+#else
+#define PRINT_STACK_TRACE
+#define ISNAN _isnan
+#endif
 
 namespace SF
 {
@@ -75,9 +83,27 @@ namespace SF
 				sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
 			}
 		}
+		catch(const std::runtime_error& re)
+		{
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
+		catch(const std::exception& ex)
+		{
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -224,9 +250,27 @@ namespace SF
 
 			previosPosition_ = position_;
 		}
+		catch(const std::runtime_error& re)
+		{
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
+		catch(const std::exception& ex)
+		{
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -234,239 +278,286 @@ namespace SF
 	/// <summary> Repulsive agent force </summary>
 	void Agent::getRepulsiveAgentForce()
 	{
-		double pressure = 0;
-		Vector2 forceSum = Vector2();
-		float maxForceLength = FLT_MIN;
-
-		//for(auto an: agentNeighbors_)
-		for(size_t i = 0; i < agentNeighbors_.size(); i++)
+		try
 		{
-			setNullSpeed(agentNeighbors_[i].second->id_);
-			Vector2 pos = agentNeighbors_[i].second->position_;
+			double pressure = 0;
+			Vector2 forceSum = Vector2();
+			float maxForceLength = FLT_MIN;
 
-			if (position_ == pos)
-				continue;
-
-			Vector2 velocity = agentNeighbors_[i].second->velocity_;
-
-			Vector2 y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-			Vector2 d = position_ - pos;
-			float radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
-
-			float b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
-			float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
-			float ratio = (getLength(d) + getLength(d - y)) / 2 * b;
-			Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
-			Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
-
-			if(force.x() != force.x() //Is NAN check
-			|| force.y() != force.y())
+			//for(auto an: agentNeighbors_)
+			for(size_t i = 0; i < agentNeighbors_.size(); i++)
 			{
-				printf("error!\n");
+				setNullSpeed(agentNeighbors_[i].second->id_);
+				Vector2 pos = agentNeighbors_[i].second->position_;
+
+				if (position_ == pos)
+					continue;
+
+				Vector2 velocity = agentNeighbors_[i].second->velocity_;
+
+				Vector2 y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+				Vector2 d = position_ - pos;
+				float radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+
+				float b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
+				float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
+				float ratio = (getLength(d) + getLength(d - y)) / 2 * b;
+				Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
+				Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
+
+				if(ISNAN(force.x()) || ISNAN(force.y()))
+				{
+					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				}
+
+				float length = getLength(force);
+				pressure += length;
+
+				if (maxForceLength < length)
+					maxForceLength = length;
+
+				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				{
+					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				}
+
+				forceSum += force * agentNeighbors_[i].second->force_;
+
+				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				{
+					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				}
 			}
 
-			float length = getLength(force);
-			pressure += length;
+			float forceSumLength = getLength(forceSum);
 
-			if (maxForceLength < length)
-				maxForceLength = length;
-
-			if(force.x() != force.x() //Is NAN check
-			|| force.y() != force.y())
+			if (forceSumLength > maxForceLength)
 			{
-				printf("error!\n");
+				float coeff = maxForceLength / forceSumLength;
+				forceSum *= coeff;
+
+				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				{
+					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				}
 			}
 
-			forceSum += force * agentNeighbors_[i].second->force_;
+			float maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
+			agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
 
-			if(forceSum.x() != forceSum.x() //Is NAN check
-			|| forceSum.y() != forceSum.y())
+			correction += forceSum;
+
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				printf("error!\n");
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
+
+			agentForce_ = forceSum;
 		}
-
-		float forceSumLength = getLength(forceSum);
-
-		if (forceSumLength > maxForceLength)
+		catch(const std::runtime_error& re)
 		{
-			float coeff = maxForceLength / forceSumLength;
-			forceSum *= coeff;
-
-			if(forceSum.x() != forceSum.x() //Is NAN check
-			|| forceSum.y() != forceSum.y())
-			{
-				printf("error!\n");
-			}
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		float maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
-		agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
-
-		correction += forceSum;
-
-		if(correction.x() != correction.x() //Is NAN check
-		|| correction.y() != correction.y())
+		catch(const std::exception& ex)
 		{
-			printf("error!\n");
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		agentForce_ = forceSum;
+		catch(...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Repulsive obstacle force </summary>
 	void Agent::getRepulsiveObstacleForce()
 	{
-		Vector2 forceSum = Vector2();
-		float maxForceLength = FLT_MIN;
-		float minDistanceToObstacle = FLT_MAX;
-
-		std::vector<Vector2> nearestObstaclePointList;
-		nearestObstaclePointList.clear();
-
-		Vector2 sum;
-
-		std::vector<Vector2> forces;
-		forces.clear();
-
-		//for (auto on : obstacleNeighbors_)
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+		try
 		{
-			setNullSpeed(id_);
+			Vector2 forceSum = Vector2();
+			float maxForceLength = FLT_MIN;
+			float minDistanceToObstacle = FLT_MAX;
 
-			const Obstacle* obstacle = obstacleNeighbors_[i].second;
-			Vector2 start = obstacle->point_;
-			Vector2 end = obstacle->nextObstacle->point_;
-			Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
+			std::vector<Vector2> nearestObstaclePointList;
+			nearestObstaclePointList.clear();
 
-			bool hasSuchClosestPoint = false;
+			Vector2 sum;
+
+			std::vector<Vector2> forces;
+			forces.clear();
+
+			//for (auto on : obstacleNeighbors_)
+			for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+			{
+				setNullSpeed(id_);
+
+				const Obstacle* obstacle = obstacleNeighbors_[i].second;
+				Vector2 start = obstacle->point_;
+				Vector2 end = obstacle->nextObstacle->point_;
+				Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
+
+				bool hasSuchClosestPoint = false;
+
+				//for (auto nop : nearestObstaclePointList)
+				for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
+				{
+					Vector2 l = nearestObstaclePointList[j] - closestPoint;
+					if (fabsf(l.GetLengthSquared()) < TOLERANCE)
+					{
+						hasSuchClosestPoint = true;
+						break;
+					}
+				}
+
+				if (hasSuchClosestPoint)
+					continue;
+
+				nearestObstaclePointList.push_back(closestPoint);
+			}
+
+			//for (auto on : obstacleNeighbors_)
+			for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
+			{
+				const Obstacle* obstacle = obstacleNeighbors_[i].second;
+				Vector2 start = obstacle->point_;
+				Vector2 end = obstacle->nextObstacle->point_;
+				Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
+
+				size_t j = 0;
+				for (size_t k = 0; k < nearestObstaclePointList.size(); k++)
+				{
+					Vector2 nop = nearestObstaclePointList[k];
+					Vector2 l = nop - closestPoint;
+					if (l.GetLengthSquared() > TOLERANCE)
+					{
+						if ((nop - start).GetLengthSquared() < TOLERANCE || (nop - end).GetLengthSquared() < TOLERANCE)
+							nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
+					}
+
+					j++;
+				}
+			}
 
 			//for (auto nop : nearestObstaclePointList)
-			for (size_t j = 0; j < nearestObstaclePointList.size(); j++)
+			for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
 			{
-				Vector2 l = nearestObstaclePointList[j] - closestPoint;
-				if (fabsf(l.GetLengthSquared()) < TOLERANCE)
+				Vector2 closestPoint = nearestObstaclePointList[i];
+
+				Vector2 diff = position_ - closestPoint;
+				float distanceSquared = diff.GetLengthSquared();
+				float absoluteDistanceToObstacle = sqrt(distanceSquared);
+				float distance = absoluteDistanceToObstacle - radius_;
+
+				if (absoluteDistanceToObstacle < minDistanceToObstacle)
+					minDistanceToObstacle = absoluteDistanceToObstacle;
+
+				float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
+				Vector2 force = forceAmount * diff.normalized();
+
+				if(ISNAN(force.x()) || ISNAN(force.y()))
 				{
-					hasSuchClosestPoint = true;
-					break;
-				}
-			}
-
-			if (hasSuchClosestPoint)
-				continue;
-
-			nearestObstaclePointList.push_back(closestPoint);
-		}
-
-		//for (auto on : obstacleNeighbors_)
-		for (size_t i = 0; i < obstacleNeighbors_.size(); i++)
-		{
-			const Obstacle* obstacle = obstacleNeighbors_[i].second;
-			Vector2 start = obstacle->point_;
-			Vector2 end = obstacle->nextObstacle->point_;
-			Vector2 closestPoint = getNearestPoint(&start, &end, &position_);
-
-			size_t j = 0;
-			for (size_t k = 0; k < nearestObstaclePointList.size(); k++)
-			{
-				Vector2 nop = nearestObstaclePointList[k];
-				Vector2 l = nop - closestPoint;
-				if (l.GetLengthSquared() > TOLERANCE)
-				{
-					if ((nop - start).GetLengthSquared() < TOLERANCE || (nop - end).GetLengthSquared() < TOLERANCE)
-						nearestObstaclePointList.erase(nearestObstaclePointList.begin() + j);
-				}
-
-				j++;
-			}
-		}
-
-		//for (auto nop : nearestObstaclePointList)
-		for (size_t i = 0; i < nearestObstaclePointList.size(); i++)
-		{
-			Vector2 closestPoint = nearestObstaclePointList[i];
-
-			Vector2 diff = position_ - closestPoint;
-			float distanceSquared = diff.GetLengthSquared();
-			float absoluteDistanceToObstacle = sqrt(distanceSquared);
-			float distance = absoluteDistanceToObstacle - radius_;
-
-			if (absoluteDistanceToObstacle < minDistanceToObstacle)
-				minDistanceToObstacle = absoluteDistanceToObstacle;
-
-			float forceAmount = repulsiveObstacleFactor_ * exp(-distance / repulsiveObstacle_);
-			Vector2 force = forceAmount * diff.normalized();
-
-			if(_isnan(force.x()) || _isnan(force.y()))
-			{
-				printf("error! force is NAN\n");
-				getchar();
-			}
-
-			forces.push_back(force);
-			forceSum += force;
-
-			float length = getLength(force);
-
-			if (maxForceLength < length)
-				maxForceLength = length;
-		}
-
-		float lengthSum = 0;
-		//for (auto force : forces)
-		for(size_t i = 0; i < forces.size(); i++)
-		{
-			lengthSum += getLength(forces[i]);
-		}
-
-		std::vector<float> forceWeightList;
-		forceWeightList.clear();
-		//for (auto force : forces)
-		for(size_t i = 0; i < forces.size(); i++)
-		{
-			if(_isnan(forces[i].x()) || _isnan(forces[i].y()))
-			{
-				printf("error! forces[%d] is NAN \n", i);
-				getchar();
-			}
-
-			if (lengthSum == 0)
-			{
-				forceWeightList.push_back(getLength(forces[i]) / std::numeric_limits<float>::min());
-				if(_isnan(forceWeightList[forceWeightList.size() - 1]))
-				{
-					printf("error! forceWeightList[%d] is NAN\n", forceWeightList.size() - 1 );
+					printf("error! force is NAN\n");
 					getchar();
 				}
+
+				forces.push_back(force);
+				forceSum += force;
+
+				float length = getLength(force);
+
+				if (maxForceLength < length)
+					maxForceLength = length;
 			}
-			else
+
+			float lengthSum = 0;
+			//for (auto force : forces)
+			for(size_t i = 0; i < forces.size(); i++)
 			{
-				forceWeightList.push_back(getLength(forces[i]) / lengthSum);
+				lengthSum += getLength(forces[i]);
 			}
-				
+
+			std::vector<float> forceWeightList;
+			forceWeightList.clear();
+			//for (auto force : forces)
+			for(size_t i = 0; i < forces.size(); i++)
+			{
+				if(ISNAN(forces[i].x()) || ISNAN(forces[i].y()))
+				{
+					printf("error! forces[%d] is NAN \n", i);
+					getchar();
+				}
+
+				if (lengthSum == 0)
+				{
+					forceWeightList.push_back(getLength(forces[i]) / std::numeric_limits<float>::min());
+					if(ISNAN(forceWeightList[forceWeightList.size() - 1]))
+					{
+						printf("error! forceWeightList[%d] is NAN\n", forceWeightList.size() - 1 );
+						getchar();
+					}
+				}
+				else
+				{
+					forceWeightList.push_back(getLength(forces[i]) / lengthSum);
+				}
+
+			}
+
+
+			Vector2 total = Vector2();
+			for (size_t i = 0; i < forces.size(); i++)
+				total += forces[i] * forceWeightList[i];
+
+			if(ISNAN(total.x()) || ISNAN(total.y()))
+			{
+				printf("error!\n");
+				getchar();
+			}
+
+			obstaclePressure_ = getLength(total);
+			correction += total;
+
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				printf("error!\n");
+				getchar();
+			}
+
+			obstacleForce_ = position_ + total;
 		}
-
-
-		Vector2 total = Vector2();
-		for (size_t i = 0; i < forces.size(); i++)
-			total += forces[i] * forceWeightList[i];
-
-		if(_isnan(total.x()) || _isnan(total.y()))
+		catch(const std::runtime_error& re)
 		{
-			printf("error!\n");
-			getchar();
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		obstaclePressure_ = getLength(total);
-		correction += total;
-
-		if(_isnan(correction.x()) || _isnan(correction.y()))
+		catch(const std::exception& ex)
 		{
-			printf("error!\n");
-			getchar();
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		obstacleForce_ = position_ + total;
+		catch(...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
@@ -587,8 +678,10 @@ namespace SF
 ////			obstacleForce_ = position_;
 //	}
 
-	/// <summary> Attractive force </summary>
-	void Agent::getAttractiveForce()
+/// <summary> Attractive force </summary>
+void Agent::getAttractiveForce()
+{
+	try
 	{
 		if(attractiveIds_.size() > 0)
 		{
@@ -611,7 +704,7 @@ namespace SF
 				correction += add;
 
 				if(correction.x() != correction.x() //Is NAN check
-				|| correction.y() != correction.y())
+					|| correction.y() != correction.y())
 				{
 					printf("error!\n");
 					getchar();
@@ -619,236 +712,313 @@ namespace SF
 			}
 		}
 	}
+	catch(const std::runtime_error& re)
+	{
+		// speciffic handling for runtime_error
+		std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		std::cerr << "Runtime error: " << re.what() << std::endl;
+		PRINT_STACK_TRACE
+		exit(EXIT_FAILURE);
+	}
+	catch(const std::exception& ex)
+	{
+		// speciffic handling for all exceptions extending std::exception, except
+		// std::runtime_error which is handled explicitly
+		std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		std::cerr << "Error occurred: " << ex.what() << std::endl;
+		PRINT_STACK_TRACE
+		exit(EXIT_FAILURE);
+	}
+	catch(...)
+	{
+		std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		PRINT_STACK_TRACE
+		exit(EXIT_FAILURE);
+	}
+}
 
 	/// <summary> Moving platform force </summary>
 	void Agent::getMovingPlatformForce()
 	{
-		if (sim_->rotationFuture_ != Vector3())
+		try
 		{
-			Vector3
-				omega,
-				dOmega,
-				R = Vector3(position_.x(), position_.y(), 0),
-				V = Vector3(velocity_.x(), velocity_.y(), 0),
-				A = Vector3(),
-				fixedOmega = Vector3(),
-				fixedR = Vector3(),
-				fixedV = Vector3(),
-				fixedA = Vector3();
-
-			float
-				determinantPrefixCentralForceX,
-				determinantPrefixCentralForceY,
-				determinantCentralForceX,
-				determinantCentralForceY,
-				determinantTangentialForceX,
-				determinantTangentialForceY,
-				determinantCoriolisForceX,
-				determinantCoriolisForceY;
-
-			Vector2
-				newVX = Vector2(),
-				newVY = Vector2();
-
-			if (fabs(sim_->rotationNow_.x()) > 0.001f)
+			if (sim_->rotationFuture_ != Vector3())
 			{
-				ParameterType parameterType = X;
-				omega = getOmega(parameterType, NOW);
-				dOmega = getDOmega(parameterType, NOW);
-
 				Vector3
-					prefixCentralForce,
-					centralForce,
-					tangentialForce,
-					CoriolisForce;
+					omega,
+					dOmega,
+					R = Vector3(position_.x(), position_.y(), 0),
+					V = Vector3(velocity_.x(), velocity_.y(), 0),
+					A = Vector3(),
+					fixedOmega = Vector3(),
+					fixedR = Vector3(),
+					fixedV = Vector3(),
+					fixedA = Vector3();
 
-				fixedR = Vector3(
-					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+				float
+					determinantPrefixCentralForceX,
+					determinantPrefixCentralForceY,
+					determinantCentralForceX,
+					determinantCentralForceY,
+					determinantTangentialForceX,
+					determinantTangentialForceY,
+					determinantCoriolisForceX,
+					determinantCoriolisForceY;
 
-				fixedV = Vector3(
-					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+				Vector2
+					newVX = Vector2(),
+					newVY = Vector2();
 
-				determinantPrefixCentralForceX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
-				prefixCentralForce =
-					(determinantPrefixCentralForceX > 0) ?
-					getCross(omega, R) :
+				if (fabs(sim_->rotationNow_.x()) > 0.001f)
+				{
+					ParameterType parameterType = X;
+					omega = getOmega(parameterType, NOW);
+					dOmega = getDOmega(parameterType, NOW);
+
+					Vector3
+						prefixCentralForce,
+						centralForce,
+						tangentialForce,
+						CoriolisForce;
+
+					fixedR = Vector3(
+						R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+						R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+						R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) + R.x() * sin(omega.y()));
+
+					fixedV = Vector3(
+						V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+						V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+						V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) + V.x() * sin(omega.y()));
+
+					determinantPrefixCentralForceX = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+					prefixCentralForce =
+						(determinantPrefixCentralForceX > 0) ?
+						getCross(omega, R) :
 					getCross(R, omega);
 
-				determinantCentralForceX = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
-				centralForce =
-					(determinantCentralForceX > 0) ?
-					getCross(omega, prefixCentralForce) :
+					determinantCentralForceX = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+					centralForce =
+						(determinantCentralForceX > 0) ?
+						getCross(omega, prefixCentralForce) :
 					getCross(prefixCentralForce, omega);
 
-				determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
-				tangentialForce =
-					(determinantTangentialForceX > 0) ?
-					getCross(dOmega, R) :
+					determinantTangentialForceX = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+					tangentialForce =
+						(determinantTangentialForceX > 0) ?
+						getCross(dOmega, R) :
 					getCross(R, dOmega);
 
-				determinantCoriolisForceX = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
-				CoriolisForce =
-					(determinantCoriolisForceX > 0) ?
-					2 * getCross(omega, V) :
+					determinantCoriolisForceX = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+					CoriolisForce =
+						(determinantCoriolisForceX > 0) ?
+						2 * getCross(omega, V) :
 					2 * getCross(V, omega);
 
-				fixedA = centralForce + tangentialForce - CoriolisForce;
+					fixedA = centralForce + tangentialForce - CoriolisForce;
 
-				A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
+					A = Vector3(fixedA.x() / cos(omega.x()), fixedA.y() / cos(omega.y()), 0);
 
-				newVX = Vector2(A.x(), A.y());
-			}
+					newVX = Vector2(A.x(), A.y());
+				}
 
-			if (fabs(sim_->rotationNow_.y()) > 0.001f)
-			{
-				ParameterType parameterType = Y;
-				omega = getOmega(parameterType, NOW);
-				dOmega = getDOmega(parameterType, NOW);
-				
-				Vector3
-					prefixCentralForce,
-					centralForce,
-					tangentialForce,
-					CoriolisForce;
+				if (fabs(sim_->rotationNow_.y()) > 0.001f)
+				{
+					ParameterType parameterType = Y;
+					omega = getOmega(parameterType, NOW);
+					dOmega = getDOmega(parameterType, NOW);
 
-				fixedR = Vector3(
-					R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
-					R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
-					R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) - R.x() * sin(omega.y()));
+					Vector3
+						prefixCentralForce,
+						centralForce,
+						tangentialForce,
+						CoriolisForce;
 
-				fixedV = Vector3(
-					V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
-					V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
-					V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
+					fixedR = Vector3(
+						R.x() * cos(omega.y()) + R.z() * sin(omega.y()),
+						R.y() * cos(omega.x()) + R.z() * sin(omega.y()),
+						R.z() * cos(omega.x()) - R.y() * sin(omega.x()) + R.z() * cos(omega.y()) - R.x() * sin(omega.y()));
 
-				determinantPrefixCentralForceY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
-				prefixCentralForce =
-					(determinantPrefixCentralForceY > 0) ?
-					getCross(omega, R) :
+					fixedV = Vector3(
+						V.x() * cos(omega.y()) + V.z() * sin(omega.y()),
+						V.y() * cos(omega.x()) + V.z() * sin(omega.x()),
+						V.z() * cos(omega.x()) - V.y() * sin(omega.x()) + V.z() * cos(omega.y()) - V.x() * sin(omega.y()));
+
+					determinantPrefixCentralForceY = omega.y() * R.z() - omega.z() * R.y() - omega.x() * R.z() + omega.z() * R.x() + omega.x() * R.y() - omega.y() * R.x();
+					prefixCentralForce =
+						(determinantPrefixCentralForceY > 0) ?
+						getCross(omega, R) :
 					getCross(R, omega);
 
-				determinantCentralForceY = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
-				centralForce =
-					(determinantCentralForceY > 0) ?
-					getCross(omega, prefixCentralForce) :
+					determinantCentralForceY = omega.y() * prefixCentralForce.z() - omega.z() * prefixCentralForce.y() - omega.x() * prefixCentralForce.z() + omega.z() * prefixCentralForce.x() + omega.x() * prefixCentralForce.y() - omega.y() * prefixCentralForce.x();
+					centralForce =
+						(determinantCentralForceY > 0) ?
+						getCross(omega, prefixCentralForce) :
 					getCross(prefixCentralForce, omega);
 
-				determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
-				tangentialForce =
-					(determinantTangentialForceY > 0) ?
-					getCross(dOmega, R) :
+					determinantTangentialForceY = dOmega.y() * R.z() - dOmega.z() * R.y() - dOmega.x() * R.z() + dOmega.z() * R.x() + dOmega.x() * R.y() - dOmega.y() * R.x();
+					tangentialForce =
+						(determinantTangentialForceY > 0) ?
+						getCross(dOmega, R) :
 					getCross(R, dOmega);
 
-				determinantCoriolisForceY = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
-				CoriolisForce =
-					(determinantCoriolisForceY > 0) ?
-					2 * getCross(omega, V) :
+					determinantCoriolisForceY = omega.y() * V.z() - omega.z() * V.y() - omega.x() * V.z() + omega.z() * V.x() + omega.x() * V.y() - omega.y() * V.x();
+					CoriolisForce =
+						(determinantCoriolisForceY > 0) ?
+						2 * getCross(omega, V) :
 					2 * getCross(V, omega);
 
-				fixedA = centralForce + tangentialForce - CoriolisForce;
+					fixedA = centralForce + tangentialForce - CoriolisForce;
 
-				A = Vector3(
-					fixedA.x() / cos(omega.x()),
-					fixedA.y() / cos(omega.y()),
-					0);
+					A = Vector3(
+						fixedA.x() / cos(omega.x()),
+						fixedA.y() / cos(omega.y()),
+						0);
 
-				newVY = Vector2(A.x(), A.y());
+					newVY = Vector2(A.x(), A.y());
+				}
+
+				Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
+
+				// heave
+				// TODO good heave
+				Vector3 platformVeclocity = sim_->getPlatformVelocity();
+
+				float
+					accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
+					oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
+
+				float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
+
+				if (difference > 0)	
+					result = result * (1 + fabs(difference));
+				else
+					result = result * (1 - fabs(difference));
+
+				oldPlatformVelocity_ = platformVeclocity;
+
+				correction += result * platformFactor_;
+
+				if(ISNAN(correction.x()) || ISNAN(correction.y()))
+				{
+					printf("error!\n");
+					getchar();
+				}
 			}
-
-			Vector2 result = (velocity_ + (newVX + newVY) * sim_->timeStep_);
-
-			// heave
-			// TODO good heave
-			Vector3 platformVeclocity = sim_->getPlatformVelocity();
-			
-			float
-				accelerationZ = platformVeclocity.z() * pow(sim_->timeStep_, 2),
-				oldAccelerationZ = oldPlatformVelocity_.z() * pow(sim_->timeStep_, 2);
-
-			float difference = fabs(accelerationZ) - fabs(oldAccelerationZ);
-
-			if (difference > 0)	
-				result = result * (1 + fabs(difference));
-			else
-				result = result * (1 - fabs(difference));
-
-			oldPlatformVelocity_ = platformVeclocity;
-
-			correction += result * platformFactor_;
-
-			if(_isnan(correction.x()) || _isnan(correction.y()))
-			{
-				printf("error!\n");
-				getchar();
-			}
+		}
+		catch(const std::runtime_error& re)
+		{
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
+		catch(const std::exception& ex)
+		{
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
 	}
 
 	/// <summary> Search for the best new velocity </summary>
 	void Agent::computeNewVelocity()
 	{
-		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))
+		try
 		{
-			printf("error!\n");
+			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
+			{
+				std::cerr << "error! newVelocity_ is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+
+			if (prefVelocity_ * prefVelocity_ > sqr(radius_))
+				newVelocity_ = normalize(prefVelocity_) * radius_;
+			else
+				newVelocity_ = prefVelocity_;
+
+			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))//Is NAN check
+			{
+				std::cerr << "error! newVelocity_ is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+
+			correction = Vector2();
+
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+
+			getRepulsiveAgentForce();
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+			getRepulsiveObstacleForce();
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+			getAttractiveForce();
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+
+			if(sim_->IsMovingPlatform)
+				getMovingPlatformForce();
+
+			if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
+
+			newVelocity_ += correction;
+
+			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
+			{
+				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			}
 		}
-
-		if (prefVelocity_ * prefVelocity_ > sqr(radius_))
-			newVelocity_ = normalize(prefVelocity_) * radius_;
-		else
-			newVelocity_ = prefVelocity_;
-
-		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))//Is NAN check
+		catch(const std::runtime_error& re)
 		{
-			printf("error!\n");
-			getchar();
+			// speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		correction = Vector2();
-
-		if(_isnan(correction.x()) || _isnan(correction.y()))
+		catch(const std::exception& ex)
 		{
-			printf("error!\n");
-			getchar();
+			// speciffic handling for all exceptions extending std::exception, except
+			// std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
-
-		getRepulsiveAgentForce();
-		if(_isnan(correction.x()) || _isnan(correction.y()))
+		catch (...)
 		{
-			printf("error!\n");
-			getchar();
-		}
-		getRepulsiveObstacleForce();
-		if(_isnan(correction.x()) || _isnan(correction.y()))
-		{
-			printf("error!\n");
-			getchar();
-		}
-		getAttractiveForce();
-		if(_isnan(correction.x()) || _isnan(correction.y()))
-		{
-			printf("error!\n");
-			getchar();
-		}
-
-		if(sim_->IsMovingPlatform)
-			getMovingPlatformForce();
-
-		if(_isnan(correction.x()) || _isnan(correction.y()))
-		{
-			printf("error!\n");
-			getchar();
-		}
-    
-		newVelocity_ += correction;
-
-		if(_isnan(newVelocity_.x()) || _isnan(newVelocity_.y()))
-		{
-			printf("error!\n");
-			getchar();
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
 		}
 	}
 

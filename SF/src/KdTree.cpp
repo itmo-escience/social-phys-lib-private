@@ -55,9 +55,16 @@ namespace SF
 				buildAgentTreeRecursive(0, agents_.size(), 0);
 			}
 		}
+		catch (std::bad_alloc& ba) 
+		{
+			std::cerr << ba.what() <<  " Memory overflow at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -133,6 +140,7 @@ namespace SF
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -276,9 +284,18 @@ namespace SF
 	/// <param name="rangeSq"> The squared range around the agent </param>
 	void KdTree::computeObstacleNeighbors(Agent* agent, float rangeSq) const
 	{
-		//mtx.lock();
-		queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
-		//mtx.unlock();
+		try
+		{
+			//mtx.lock();
+			queryObstacleTreeRecursive(agent, rangeSq, obstacleTree_);
+			//mtx.unlock();
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Deletes the specified obstacle tree node </summary>
@@ -340,6 +357,7 @@ namespace SF
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -414,6 +432,7 @@ namespace SF
 		catch (...)
 		{
 			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}

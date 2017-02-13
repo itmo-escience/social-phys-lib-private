@@ -47,6 +47,9 @@
     <ClInclude Include="include\mpiagent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\stacktrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AgentPropertyConfig.cpp">

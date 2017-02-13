@@ -7,6 +7,14 @@
 #include "../include/RotationDegreeSet.h"
 #include <iostream>
 #include <algorithm>
+#ifdef __linux__
+#include "../include/stacktrace.h"
+#define PRINT_STACK_TRACE Util::print_stacktrace();
+#define ISNAN std::isnan
+#else
+#define PRINT_STACK_TRACE
+#define ISNAN _isnan
+#endif
 
 
 #ifdef HAVE_CONFIG_H
@@ -382,28 +390,87 @@ namespace SF
 			//#pragma omp parallel
 			//{ 
 			//#pragma omp for
-			for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			try
 			{
-				if (agents_[i] != NULL)
+				for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
 				{
-					if (!(agents_[i]->isDeleted_))
+					if (agents_[i] != NULL)
 					{
-						agents_[i]->computeNeighbors();
-						agents_[i]->computeNewVelocity();
+						if (!(agents_[i]->isDeleted_))
+						{
+							agents_[i]->computeNeighbors();
+							agents_[i]->computeNewVelocity();
+						}
 					}
 				}
 			}
-
-			//#pragma omp for
-			for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+			catch(const std::runtime_error& re)
 			{
-				if (agents_[i] != NULL)
-				{
-					if (!(agents_[i]->isDeleted_))
-						agents_[i]->update();
-				}
+				// speciffic handling for runtime_error
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				std::cerr << "Runtime error: " << re.what() << std::endl;
+				PRINT_STACK_TRACE
 			}
-			//}
+			catch(const std::exception& ex)
+			{
+				// speciffic handling for all exceptions extending std::exception, except
+				// std::runtime_error which is handled explicitly
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				std::cerr << "Error occurred: " << ex.what() << std::endl;
+				PRINT_STACK_TRACE
+			}
+			catch (std::bad_alloc& ba) 
+			{
+				std::cerr << ba.what() <<  " Memory overflow at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				PRINT_STACK_TRACE
+				exit(EXIT_FAILURE);
+			}
+			catch (...)
+			{
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				PRINT_STACK_TRACE
+				exit(EXIT_FAILURE);
+			}
+
+			try
+			{
+				//#pragma omp for
+				for (size_t i = 0; i < static_cast<size_t>(agents_.size()); ++i)
+				{
+					if (agents_[i] != NULL)
+					{
+						if (!(agents_[i]->isDeleted_))
+							agents_[i]->update();
+					}
+				}
+				//}
+			}
+			catch (std::bad_alloc& ba) 
+			{
+				std::cerr << ba.what() <<  " Memory overflow at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				PRINT_STACK_TRACE
+				exit(EXIT_FAILURE);
+			}
+			catch(const std::runtime_error& re)
+			{
+				// speciffic handling for runtime_error
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				std::cerr << "Runtime error: " << re.what() << std::endl;
+				PRINT_STACK_TRACE
+			}
+			catch(const std::exception& ex)
+			{
+				// speciffic handling for all exceptions extending std::exception, except
+				// std::runtime_error which is handled explicitly
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				std::cerr << "Error occurred: " << ex.what() << std::endl;
+				PRINT_STACK_TRACE
+			}
+			catch (...)
+			{
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				exit(EXIT_FAILURE);
+			}
 
 			for (size_t i = 0; i < tmpAgents_.size(); i++)
 			{
@@ -414,9 +481,25 @@ namespace SF
 
 			globalTime_ += timeStep_;
 		}
+		catch(const std::runtime_error& re)
+		{
+		    // speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch(const std::exception& ex)
+		{
+		    // speciffic handling for all exceptions extending std::exception, except
+		    // std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
 		catch (...)
 		{
-			std::cerr << " Error occured in doStep at file " << __FILE__ << " line: " << __LINE__ << std::endl;
+			std::cerr << " Error occured in doStep at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -959,36 +1042,106 @@ namespace SF
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationXY(float value)
 	{
-		double futureSum = platformRotationXY_ + value;
+		try{
+			double futureSum = platformRotationXY_ + value;
 
-		if (futureSum >= 2 * M_PI)
-			platformRotationXY_ = futureSum - 2 * M_PI;
-		else
-			platformRotationXY_ = futureSum;
+			if (futureSum >= 2 * M_PI)
+				platformRotationXY_ = futureSum - 2 * M_PI;
+			else
+				platformRotationXY_ = futureSum;
+		}
+		catch(const std::runtime_error& re)
+		{
+		    // speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch(const std::exception& ex)
+		{
+		    // speciffic handling for all exceptions extending std::exception, except
+		    // std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Adds the platform rotation on XZ axis </summary>
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationXZ(float value)
 	{
-		double futureSum = platformRotationXZ_ + value;
+		try{
+			double futureSum = platformRotationXZ_ + value;
 
-		if (futureSum >= 2 * M_PI)
-			platformRotationXZ_ = futureSum - 2 * M_PI;
-		else
-			platformRotationXZ_ = futureSum;
+			if (futureSum >= 2 * M_PI)
+				platformRotationXZ_ = futureSum - 2 * M_PI;
+			else
+				platformRotationXZ_ = futureSum;
+		}
+		catch(const std::runtime_error& re)
+		{
+		    // speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch(const std::exception& ex)
+		{
+		    // speciffic handling for all exceptions extending std::exception, except
+		    // std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Adds the platform rotation on YZ axis </summary>
 	/// <param name="value"> The new rotation value </param>
 	void SFSimulator::addPlatformRotationYZ(float value)
 	{
-		double futureSum = platformRotationYZ_ + value;
+		try
+		{
+			double futureSum = platformRotationYZ_ + value;
 
-		if (futureSum >= 2 * M_PI)
-			platformRotationYZ_ = futureSum - 2 * M_PI;
-		else
-			platformRotationYZ_ = futureSum;
+			if (futureSum >= 2 * M_PI)
+				platformRotationYZ_ = futureSum - 2 * M_PI;
+			else
+				platformRotationYZ_ = futureSum;
+		}
+		catch(const std::runtime_error& re)
+		{
+		    // speciffic handling for runtime_error
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Runtime error: " << re.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch(const std::exception& ex)
+		{
+		    // speciffic handling for all exceptions extending std::exception, except
+		    // std::runtime_error which is handled explicitly
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		    std::cerr << "Error occurred: " << ex.what() << std::endl;
+			PRINT_STACK_TRACE
+		}
+		catch (...)
+		{
+			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			PRINT_STACK_TRACE
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/// <summary> Returns the platform rotation on XY axis </summary>

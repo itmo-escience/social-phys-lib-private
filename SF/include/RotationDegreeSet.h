@@ -4,6 +4,14 @@
 #include <ostream>
 
 #include "Vector3.h"
+#include <iostream>
+
+#ifdef __linux__
+#include "../include/stacktrace.h"
+#define PRINT_STACK_TRACE Util::print_stacktrace();
+#else
+#define PRINT_STACK_TRACE
+#endif
 
 namespace SF
 {
@@ -74,13 +82,30 @@ namespace SF
 		/// <summary> Returns OX coord </summary>
 		inline float getRotationOX() const
 		{
-			return val_[0];
+			try{
+				return val_[0];
+			}
+			catch (...)
+			{
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				PRINT_STACK_TRACE
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		/// <summary> Returns OY coord </summary>
 		inline float getRotationOY() const
 		{
-			return val_[1];
+			try
+			{
+				return val_[1];
+			}
+			catch (...)
+			{
+				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				PRINT_STACK_TRACE
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		/// <summary> Returns OZ coord </summary>

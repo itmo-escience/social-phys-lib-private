@@ -64,6 +64,8 @@
 #include <cmath>
 #include <ostream>
 #include <cfloat>
+#include <iostream>
+#include <stdexcept>
 
 #define M_PI 3.1415926535897932384626433832795
 
@@ -436,7 +438,30 @@ namespace SF
   */
   inline Vector2 normalize(const Vector2& vector)
   {
-    return vector / abs(vector);
+	  try
+	  {
+		  return vector / abs(vector);
+	  }
+	  catch(const std::runtime_error& re)
+	  {
+		  // speciffic handling for runtime_error
+		  std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		  std::cerr << "Runtime error: " << re.what() << std::endl;
+		  exit(EXIT_FAILURE);
+	  }
+	  catch(const std::exception& ex)
+	  {
+		  // speciffic handling for all exceptions extending std::exception, except
+		  // std::runtime_error which is handled explicitly
+		  std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		  std::cerr << "Error occurred: " << ex.what() << std::endl;
+		  exit(EXIT_FAILURE);
+	  }
+	  catch(...)
+	  {
+		  std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+		  exit(EXIT_FAILURE);
+	  }
   }
 
   /*

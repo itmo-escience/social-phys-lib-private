@@ -53,6 +53,7 @@
     <ClInclude Include="include\SF.h" />
     <ClInclude Include="include\SFSimulator.h" />
     <ClInclude Include="include\SimpleMatrix.h" />
+    <ClInclude Include="include\stacktrace.h" />
     <ClInclude Include="include\Vector2.h" />
     <ClInclude Include="include\Vector3.h" />
   </ItemGroup>

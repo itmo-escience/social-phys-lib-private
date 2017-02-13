@@ -12,13 +12,16 @@
 
 #include <cmath>
 #include <ostream>
+#include <stdexcept>
 
 namespace SF
 {
 /*!
  *  @brief		Defines a three-dimensional vector.
  */
-__declspec(dllexport) class Vector3
+
+ 
+ class Vector3
 {
 public:
 	/*!
