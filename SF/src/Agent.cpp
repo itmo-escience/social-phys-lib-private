@@ -945,7 +945,7 @@ namespace SF
 			speed = speed + (maxSpeed_ - speed) / relaxationTime_ * sim_->timeStep_;
 		else
 			speed = maxSpeed_;
-		speed *= 0.75;
+//		speed *= 0.75;
 
 		radius_ = 0.15;
 
