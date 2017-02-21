@@ -6,6 +6,7 @@
 #include "SFSimulator.h"
 #include "Vector3.h"
 #include "SimpleMatrix.h"
+#include "AgentsContainer.h"
 #include <cfloat>
 #include <climits>
 #include <stdio.h>
@@ -16,6 +17,8 @@
 
 namespace SF
 {
+	class AgentsContainer;
+
 	/// <summary> Defines an agent in the simulation </summary>
 	class Agent
 	{

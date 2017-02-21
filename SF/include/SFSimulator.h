@@ -9,6 +9,7 @@
 #include "AgentPropertyConfig.h"
 #include "RotationDegreeSet.h"
 #include "MPIAgent.h"
+#include "AgentsContainer.h"
 
 namespace SF
 {
@@ -29,6 +30,7 @@ namespace SF
 	class Obstacle;
 	class AgentPropertyConfig;
 	class RotationDegreeSet;
+	class AgentsContainer;
 
 	/// <summary> The main class of the library that contains all simulation functionality </summary>
 	class SFSimulator
@@ -304,7 +306,7 @@ namespace SF
 		/// <summary> Sets the list of attractive agents to specified agent</summary>
 		/// <param name="id"> The number of the agent </param>
 		/// <param name="attractiveIds"> The list of attractive agent ID</param>
-		void setAttractiveIdList(int id, const std::vector<int> &attractiveIds);
+		void setAttractiveIdList(size_t id, const std::vector<int> &attractiveIds);
 
 		/// <summary> Sets the attractive agent to specified agent</summary>
 		/// <param name="id"> The number of the agent </param>
@@ -414,6 +416,9 @@ namespace SF
 		/// <returns> The list containing IDs of deleted agents </returns>
 		std::vector<size_t> getDeletedIDList();
 
+		size_t Size();
+		void PrintFieldsSize();
+
 		/// <summary> Sets the new SF parameters </summary>
 		/// <param name="newRepulsiveAgent_"> New RepulsiveAgent value </param>
 		/// <param name="newRepulsiveAgentFactor_"> New RepulsiveAgentFactor value </param>
@@ -452,7 +457,8 @@ namespace SF
 		std::vector<size_t> deleteIDs;		// list of deleted agents
 
 	private:
-		std::vector<Agent*> agents_;		// all agents list
+		//std::vector<Agent*> agents_;		// all agents list
+		AgentsContainer agents_;
 		std::vector<Agent*> tmpAgents_;		// temporary list of agents from adjacent areas
 		Agent* defaultAgent_;				// default setting
 		float globalTime_;					// the global timer

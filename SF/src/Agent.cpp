@@ -691,7 +691,7 @@ void Agent::getAttractiveForce()
 				if (attractiveIds_[i] == id_)
 					continue;
 
-				Vector2 anp = sim_->agents_[attractiveIds_[i]]->position_;
+				Vector2 anp = sim_->agents_.GetAgentWithID(attractiveIds_[i])->position_;
 
 				Vector2 pairPosition = anp;
 				Vector2 normalizedDistance = normalize(position_ - anp);
@@ -938,7 +938,7 @@ void Agent::getAttractiveForce()
 		{
 			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
 			{
-				std::cerr << "error! newVelocity_ is NAN" << std::cerr;
+				std::cerr << "error! newVelocity_ is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 
@@ -949,7 +949,7 @@ void Agent::getAttractiveForce()
 
 			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))//Is NAN check
 			{
-				std::cerr << "error! newVelocity_ is NAN" << std::cerr;
+				std::cerr << "error! newVelocity_ is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 
@@ -957,26 +957,26 @@ void Agent::getAttractiveForce()
 
 			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 
 			getRepulsiveAgentForce();
 			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 			getRepulsiveObstacleForce();
 			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 			getAttractiveForce();
 			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 
@@ -985,7 +985,7 @@ void Agent::getAttractiveForce()
 
 			if(ISNAN(correction.x()) || ISNAN(correction.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 
@@ -993,7 +993,7 @@ void Agent::getAttractiveForce()
 
 			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
 			{
-				std::cerr << "error! correction is NAN" << std::cerr;
+				std::cerr << "error! correction is NAN" << std::endl;
 				std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
 			}
 		}

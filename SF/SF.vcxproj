@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AgentsContainer.h" />
     <ClInclude Include="include\Agent.h" />
     <ClInclude Include="include\AgentPropertyConfig.h" />
     <ClInclude Include="include\Definitions.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="include\Vector3.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\AgentsContainer.cpp" />
     <ClCompile Include="src\Agent.cpp" />
     <ClCompile Include="src\AgentPropertyConfig.cpp" />
     <ClCompile Include="src\KdTree.cpp" />

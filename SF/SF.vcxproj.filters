@@ -50,6 +50,9 @@
     <ClInclude Include="include\stacktrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\AgentsContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AgentPropertyConfig.cpp">
@@ -71,6 +74,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MPIAgent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AgentsContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -120,6 +120,11 @@ namespace SF
 			return center_;
 		}
 
+		size_t Size()
+		{
+			return sizeof(center_) + sizeof(val_);
+		} 
+
 	private:
 		float val_[3];		// vector component array
 		Vector3 center_;	// center

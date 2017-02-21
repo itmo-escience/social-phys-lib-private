@@ -23,6 +23,25 @@ namespace SF
 		deleteObstacleTree(obstacleTree_);
 	}
 
+	size_t KdTree::Size()
+	{		
+		size_t size = sizeof(sim_);
+
+		for(std::vector<Agent*>::const_iterator it = agents_.begin(); it != agents_.end(); ++it)
+		{
+			size += sizeof(it);
+		}
+
+		for(std::vector<AgentTreeNode>::const_iterator it = agentTree_.begin(); it != agentTree_.end(); ++it)
+		{
+			size += sizeof(it);
+		}
+
+		size += obstacleTree_->Size();
+
+		return size;
+	}
+
 	/// <summary> Builds an agent kd-tree </summary>
 	void KdTree::buildAgentTree()
 	{
@@ -31,23 +50,31 @@ namespace SF
 			agents_.clear();
 			agentTree_.clear();
 			//printf("agents count %d \n", sim_->agents_.size());
-			for (size_t i = 0; i < sim_->agents_.size(); ++i)
-				if (sim_->agents_[i] != NULL)
-				{
-					if (!sim_->agents_[i]->isDeleted_)
-						agents_.push_back(sim_->agents_[i]);
-				}
 
-			size_t id = sim_->agents_.size() + 1;
+			for(std::map<size_t, Agent*>::iterator it = sim_->agents_.container.begin(); it != sim_->agents_.container.end(); ++it)
+			{
+				if (!it->second->isDeleted_)
+						agents_.push_back(it->second);
+			}
+
+			//for (size_t i = 0; i < sim_->agents_.size(); ++i)
+			//	if (sim_->agents_[i] != NULL)
+			//	{
+			//		if (!sim_->agents_[i]->isDeleted_)
+			//			agents_.push_back(sim_->agents_[i]);
+			//	}
+
+			size_t id = sim_->agents_.maximalID + 1; //create new ID for tmp agents and add them to agents list
 			for (size_t i = 0; i < sim_->tmpAgents_.size(); i++)
 			{
 				sim_->tmpAgents_[i]->id_ = id;
 				id++;
+				agents_.push_back(sim_->tmpAgents_[i]);
 			}
 
-			for (size_t i = 0; i < sim_->tmpAgents_.size(); i++)
-			//if(!sim_->tmpAgents_[i]->isDeleted_)
-				agents_.push_back(sim_->tmpAgents_[i]);
+			//for (size_t i = 0; i < sim_->tmpAgents_.size(); i++)
+			////if(!sim_->tmpAgents_[i]->isDeleted_)
+			//	agents_.push_back(sim_->tmpAgents_[i]);
 
 			if (!agents_.empty())
 			{
@@ -75,6 +102,7 @@ namespace SF
 	/// <param name="node"> Selected node  </param>
 	void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node)
 	{
+		//std::cerr<<" begin: " << begin << " end: " << end << " node: "  << node << std::endl; 
 		try
 		{
 			//printf("begin: %d end: %d node: %d \n", begin, end, node);

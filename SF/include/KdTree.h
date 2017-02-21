@@ -32,6 +32,21 @@ namespace SF
 			ObstacleTreeNode* left;		// The left obstacle tree node
 			const Obstacle* obstacle;	// The obstacle number
 			ObstacleTreeNode* right;	// The right obstacle tree node
+
+			size_t Size()
+			{
+				if(this != NULL)
+				{
+					size_t size = 0;
+					size += &this->left != NULL ? this->left->Size() : 0;
+					size += &this->right != NULL ? this->right->Size() : 0;
+					return sizeof(this) + size;
+				}
+				else
+				{
+					return 0;
+				}
+			}
 		};
 
 		/// <summary> Constructs a kd-tree instance </summary>
@@ -40,6 +55,8 @@ namespace SF
 
 		/// <summary> Destructor </summary>
 		~KdTree();
+
+		size_t Size();
 
 		/// <summary> Builds an agent kd-tree </summary>
 		void buildAgentTree();
