@@ -1438,6 +1438,7 @@ namespace SF
 	std::vector<Agent*> SFSimulator::getAliveAgents()
 	{
 		std::vector<Agent*> agentIdsList;
+		agentIdsList.reserve(agents_.container.size());
 		for(std::map<size_t, Agent*>::const_iterator it = agents_.begin(); it != agents_.end(); ++it)
 		{
 			agentIdsList.push_back(it->second);	
@@ -1453,6 +1454,13 @@ namespace SF
 		//}
 
 		return agentIdsList;
+	}
+
+		/// <summary> Returns the list containing alive agents </summary>
+	/// <returns> The list containing pointers of agents </returns>
+	std::map<size_t, Agent*> SFSimulator::getAllAgents()
+	{
+		return agents_.container;
 	}
 
 	/// <summary> Sets the new SF parameters </summary>

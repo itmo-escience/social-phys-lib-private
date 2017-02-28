@@ -1,6 +1,9 @@
 #ifndef KD_TREE_H
 #define KD_TREE_H
 
+// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "Definitions.h"
 //#include <mutex>          // std::mutex
 //#include <allocators>
@@ -40,7 +43,7 @@ namespace SF
 					size_t size = 0;
 					size += &this->left != NULL ? this->left->Size() : 0;
 					size += &this->right != NULL ? this->right->Size() : 0;
-					return sizeof(this) + size;
+					return sizeof(ObstacleTreeNode) + size;
 				}
 				else
 				{

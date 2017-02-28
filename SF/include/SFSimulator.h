@@ -439,6 +439,11 @@ namespace SF
 		/// <returns> The list containing pointers of agents </returns>
 		std::vector<Agent*> getAliveAgents();
 
+
+		/// <summary> Returns the map containing all agents </summary>
+		/// <returns> The map containing pointers to agents </returns>
+		std::map<size_t, Agent*> getAllAgents();
+
 		/// <summary> Set of rotation values in different simple time inretval </summary>
 		Vector3 rotationPast_;				
 		Vector3 rotationPast2Now_;

@@ -1,3 +1,6 @@
+// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <algorithm>
 
 #include "../include/Agent.h"
@@ -113,9 +116,9 @@ namespace SF
 	/// <param name="value"> New speed value </param>
 	void Agent::setSpeedList(size_t index, float value)
 	{
-		if (speedList_.count(index) < 1)
-			speedList_.insert(std::make_pair(index, value));
-		else
+		//if (speedList_.count(index) < 1)
+		//	speedList_.insert(std::make_pair(index, value));
+		//else
 			speedList_[index] = value;
 	}
 
@@ -169,8 +172,9 @@ namespace SF
 
 			velocity_ = newVelocity_;
 
-			if (newVelocity_.x() != newVelocity_.x() //Is NAN check
-				|| newVelocity_.y() != newVelocity_.y())
+			//if (newVelocity_.x() != newVelocity_.x() //Is NAN check
+			//	|| newVelocity_.y() != newVelocity_.y())
+			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
 			{
 				printf("error!getAccelerationTerm \n ");
 			}
@@ -191,8 +195,9 @@ namespace SF
 
 			position_ += velocity_ * sim_->timeStep_ * acceleration_;
 
-			if (newVelocity_.x() != newVelocity_.x() //Is NAN check
-				|| newVelocity_.y() != newVelocity_.y())
+			//if (newVelocity_.x() != newVelocity_.x() //Is NAN check
+			//	|| newVelocity_.y() != newVelocity_.y())
+			if(ISNAN(newVelocity_.x()) || ISNAN(newVelocity_.y()))
 			{
 				printf("error!\n");
 			}
@@ -280,24 +285,26 @@ namespace SF
 	{
 		try
 		{
+			//std::cout << "agent id: " << this->id_ << "  agentNeighbors_.size(): " <<  agentNeighbors_.size() << std::endl;
 			double pressure = 0;
-			Vector2 forceSum = Vector2();
+			Vector2 forceSum;// = Vector2();
 			float maxForceLength = FLT_MIN;
-
+			speedList_.clear();
 			//for(auto an: agentNeighbors_)
 			for(size_t i = 0; i < agentNeighbors_.size(); i++)
 			{
-				setNullSpeed(agentNeighbors_[i].second->id_);
-				Vector2 pos = agentNeighbors_[i].second->position_;
+				const Agent* ag= agentNeighbors_[i].second;
+				setNullSpeed(ag->id_);
+				Vector2 pos = ag->position_;
 
 				if (position_ == pos)
 					continue;
 
-				Vector2 velocity = agentNeighbors_[i].second->velocity_;
+				Vector2 velocity = ag->velocity_;
 
-				Vector2 y = agentNeighbors_[i].second->velocity_ * speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+				Vector2 y = ag->velocity_ * speedList_[ag->id_] * sim_->timeStep_;
 				Vector2 d = position_ - pos;
-				float radius = speedList_[agentNeighbors_[i].second->id_] * sim_->timeStep_;
+				float radius = speedList_[ag->id_] * sim_->timeStep_;
 
 				float b = sqrt(sqr(getLength(d) + getLength(d - y)) - sqr(radius)) / 2;
 				float potential = repulsiveAgent_ * exp(-b / repulsiveAgent_);
@@ -305,10 +312,10 @@ namespace SF
 				Vector2 sum = (d / getLength(d) + (d - y) / getLength(d - y));
 				Vector2 force = potential * ratio * sum * getPerception(&position_, &pos) * repulsiveAgentFactor_;
 
-				if(ISNAN(force.x()) || ISNAN(force.y()))
-				{
-					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-				}
+				//if(ISNAN(force.x()) || ISNAN(force.y()))
+				//{
+				//	std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				//}
 
 				float length = getLength(force);
 				pressure += length;
@@ -316,18 +323,20 @@ namespace SF
 				if (maxForceLength < length)
 					maxForceLength = length;
 
-				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
-				{
-					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-				}
+				//if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				//{
+				//	std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				//}
 
-				forceSum += force * agentNeighbors_[i].second->force_;
+				forceSum += force * ag->force_;
 
-				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
-				{
-					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-				}
+				//if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				//{
+				//	std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				//}
 			}
+
+			//std::cout << "speedList_.size(): " << speedList_.size() << std::endl;
 
 			float forceSumLength = getLength(forceSum);
 
@@ -336,21 +345,21 @@ namespace SF
 				float coeff = maxForceLength / forceSumLength;
 				forceSum *= coeff;
 
-				if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
-				{
-					std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-				}
+				//if(ISNAN(forceSum.x()) || ISNAN(forceSum.y()))
+				//{
+				//	std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+				//}
 			}
 
 			float maxPressure = repulsiveAgent_ * repulsiveAgentFactor_ * pow(10 * repulsiveAgent_, 2) * 0.8 / 10;
-			agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1;
+			agentPressure_ = (pressure < maxPressure) ? pressure / maxPressure : 1.0;
 
 			correction += forceSum;
 
-			if(ISNAN(correction.x()) || ISNAN(correction.y()))
-			{
-			std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
-			}
+			//if(ISNAN(correction.x()) || ISNAN(correction.y()))
+			//{
+			//std::cerr << " Error occured at file " << __FILE__ << " function: " << __FUNCTION__ << " line: " << __LINE__ << std::endl;
+			//}
 
 			agentForce_ = forceSum;
 		}
@@ -389,7 +398,8 @@ namespace SF
 			float minDistanceToObstacle = FLT_MAX;
 
 			std::vector<Vector2> nearestObstaclePointList;
-			nearestObstaclePointList.clear();
+			nearestObstaclePointList.reserve(obstacleNeighbors_.size());
+			//nearestObstaclePointList.clear();
 
 			Vector2 sum;
 
@@ -487,7 +497,8 @@ namespace SF
 			}
 
 			std::vector<float> forceWeightList;
-			forceWeightList.clear();
+			forceWeightList.reserve(forces.size());
+			//forceWeightList.clear();
 			//for (auto force : forces)
 			for(size_t i = 0; i < forces.size(); i++)
 			{
@@ -703,8 +714,7 @@ void Agent::getAttractiveForce()
 
 				correction += add;
 
-				if(correction.x() != correction.x() //Is NAN check
-					|| correction.y() != correction.y())
+				if(ISNAN(correction.x()) || ISNAN(correction.y()))
 				{
 					printf("error!\n");
 					getchar();
